@@ -35,8 +35,8 @@ app.get("/peca/:codigo", async (req, res) => {
 
     res.json(result.rows[0] || {});
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Erro no servidor");
+  console.error("ERRO REAL:", err.message);
+  res.status(500).send(err.message);
   }
 });
 
@@ -45,4 +45,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Servidor rodando na porta " + PORT);
 });
+
 
