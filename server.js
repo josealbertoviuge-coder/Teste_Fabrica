@@ -1,3 +1,5 @@
+const { Pool } = require("pg");
+
 const pool = new Pool({
  host: "db.weqlfktnorahxteiypul.supabase.co",
  user: "postgres",
@@ -6,4 +8,3 @@ const pool = new Pool({
  port: 5432,
  ssl: { rejectUnauthorized: false }
 });
-
