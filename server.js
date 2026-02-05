@@ -8,3 +8,9 @@ const pool = new Pool({
  port: 5432,
  ssl: { rejectUnauthorized: false }
 });
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Servidor rodando na porta " + PORT);
+});
