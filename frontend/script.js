@@ -1,26 +1,26 @@
+// =======================
+// PLUGINS
+// =======================
 Chart.register(ChartDataLabels);
 
+// =======================
+// DATA SEM FUSO (exibe como digitado)
+// =======================
 function dataSemFuso(data) {
   if (!data) return null;
-
-  // remove o "Z" e força interpretação local
   return new Date(data.replace("Z", ""));
 }
 
 // =======================
 // BUSCAR PEÇA
 // =======================
-
 async function buscar() {
-
   const codigo = document.getElementById("codigo").value;
+  if (!codigo) return;
 
-  if (!codigo) {
-    alert("Digite um código");
-    return;
-  }
-document.getElementById("titulo").innerText =
-  "Consulta de Peça — " + codigo;
+  document.getElementById("titulo").innerText =
+    "Consulta de Peça — " + codigo;
+
   gerarQRCode(codigo);
 
   const res = await fetch(
@@ -39,7 +39,6 @@ window.buscar = buscar;
 // =======================
 // TABELA
 // =======================
-
 function montarTabela(dados) {
 
   let html = `
@@ -89,30 +88,28 @@ function montarTabela(dados) {
 // =======================
 // GRÁFICO GANTT
 // =======================
-
 let chartGantt;
 
 function montarGraficoGantt(dados) {
 
   if (chartGantt) chartGantt.destroy();
 
- const agora = new Date();
+  const agora = new Date();
 
-const datas = dados
-  .flatMap(d => [
-    d.inicio ? new Date(d.inicio) : null,
-    d.fim ? new Date(d.fim) : agora
-  ])
-  .filter(Boolean);
+  const datas = dados
+    .flatMap(d => [
+      d.inicio ? new Date(d.inicio) : null,
+      d.fim ? new Date(d.fim) : agora
+    ])
+    .filter(Boolean);
 
-const minData = new Date(Math.min(...datas));
-const maxData = new Date(Math.max(...datas));
+  const minData = new Date(Math.min(...datas));
+  const maxData = new Date(Math.max(...datas));
 
-// margem visual (ex: 5% do intervalo)
-const margem = (maxData - minData) * 0.05;
+  const margem = (maxData - minData) * 0.05;
 
-const eixoMin = new Date(minData.getTime() - margem);
-const eixoMax = new Date(maxData.getTime() + margem);
+  const eixoMin = new Date(minData.getTime() - margem);
+  const eixoMax = new Date(maxData.getTime() + margem);
 
   const labels = [];
   const data = [];
@@ -126,8 +123,6 @@ const eixoMax = new Date(maxData.getTime() + margem);
 
     labels.push(d.nome_etapa);
     data.push([inicio, fim]);
-
-    // cores por status
     cores.push(d.fim ? "#2563eb" : "#f59e0b");
   });
 
@@ -136,14 +131,10 @@ const eixoMax = new Date(maxData.getTime() + margem);
     {
       type: "bar",
       data: {
-        labels: labels,
+        labels,
         datasets: [{
           label: "Linha do Tempo",
-          font: {
-      weight: "bold",
-      size: 14
-    }
-          data: data,
+          data,
           backgroundColor: cores,
           borderRadius: 6,
           barThickness: 18
@@ -152,73 +143,47 @@ const eixoMax = new Date(maxData.getTime() + margem);
       options: {
         indexAxis: "y",
         plugins: {
-  title: {
-    display: true,
-    text: "Gantt de Execução da Peça",
-    font: {
-      weight: "bold",
-      size: 16
-    }
-  },
-          tooltip: {
-            callbacks: {
-              label: ctx => {
-                const [ini, fim] = ctx.raw;
-                return (
-                  new Date(ini).toLocaleString() +
-                  " → " +
-                  new Date(fim).toLocaleString()
-                );
-              }
+          title: {
+            display: true,
+            text: "Gantt de Execução da Peça",
+            font: { weight: "bold", size: 16 }
+          },
+          datalabels: { display: false }
+        },
+        scales: {
+          x: {
+            type: "time",
+            min: eixoMin,
+            max: eixoMax,
+            ticks: {
+              autoSkip: true,
+              font: { weight: "bold" }
+            },
+            title: {
+              display: true,
+              text: "Tempo",
+              font: { weight: "bold" }
             }
           },
-          datalabels: {
-            display: false
+          y: {
+            title: {
+              display: true,
+              text: "Etapas",
+              font: { weight: "bold" }
+            },
+            ticks: {
+              font: { weight: "bold" }
+            }
           }
-        },
-scales: {
-  x: {
-    type: "time",
-    min: eixoMin,
-    max: eixoMax,
-    time: {
-      tooltipFormat: "dd/MM HH:mm"
-    },
-    ticks: {
-      autoSkip: true,
-      maxRotation: 0,
-      font: {
-        weight: "bold"
-      }
-    },
-    title: {
-      display: true,
-      text: "Tempo",
-      font: {
-        weight: "bold",
-        size: 14
-      }
-    }
-  },
-  y: {
-    title: {
-      display: true,
-      text: "Etapas",
-      font: {
-        weight: "bold",
-        size: 14
-      }
-    }
-  }
-}
+        }
       }
     }
   );
 }
+
 // =======================
 // GRÁFICO DE DURAÇÃO
 // =======================
-
 let chartDuracao;
 
 function montarGraficoDuracao(dados) {
@@ -230,34 +195,26 @@ function montarGraficoDuracao(dados) {
   let tempoTotalHoras = 0;
 
   dados.forEach(d => {
-
     if (!d.inicio) return;
 
     const inicio = new Date(d.inicio);
-    const fim = d.fim ? new Date(d.fim) : new Date(); // agora se em andamento
+    const fim = d.fim ? new Date(d.fim) : new Date();
 
-    const duracaoHoras =
-      (fim - inicio) / (1000 * 60 * 60);
-
-    const duracaoFinal = Number(duracaoHoras.toFixed(2));
+    const horas = (fim - inicio) / (1000 * 60 * 60);
+    const valor = Number(horas.toFixed(2));
 
     etapas.push(d.nome_etapa);
-    duracoes.push(duracaoFinal);
+    duracoes.push(valor);
+    tempoTotalHoras += valor;
 
-    tempoTotalHoras += duracaoFinal;
-
-    // 🔴 etapa em andamento → laranja
-    // 🔵 etapa concluída → azul
     cores.push(d.fim ? "#2563eb" : "#f59e0b");
   });
 
-  if (duracoes.length === 0) return;
+  if (!duracoes.length) return;
 
-  // 🔹 mostra tempo total no topo
   mostrarTempoTotal(tempoTotalHoras);
 
-  const maxDuracao = Math.max(...duracoes);
-  const maxEixo = maxDuracao * 1.1;
+  const maxEixo = Math.max(...duracoes) * 1.1;
 
   if (chartDuracao) chartDuracao.destroy();
 
@@ -269,10 +226,6 @@ function montarGraficoDuracao(dados) {
         labels: etapas,
         datasets: [{
           label: "Duração por Etapa (h)",
-          font: {
-      weight: "bold",
-      size: 14
-    }
           data: duracoes,
           backgroundColor: cores
         }]
@@ -283,19 +236,12 @@ function montarGraficoDuracao(dados) {
           title: {
             display: true,
             text: "Duração por Etapa do Processo",
-            font: {
-        weight: "bold",
-        size: 16
-      }
+            font: { weight: "bold", size: 16 }
           },
           datalabels: {
-            color: "black",
-            anchor: "center",
-            align: "center",
-            formatter: value => `${value} h`,
-            font: {
-              weight: "bold"
-            }
+            color: "#000",
+            formatter: v => `${v} h`,
+            font: { weight: "bold" }
           }
         },
         scales: {
@@ -305,20 +251,20 @@ function montarGraficoDuracao(dados) {
             title: {
               display: true,
               text: "Duração (horas)",
-              font: {
-        weight: "bold",
-        size: 14
-      }
+              font: { weight: "bold" }
+            },
+            ticks: {
+              font: { weight: "bold" }
             }
           },
           y: {
             title: {
               display: true,
               text: "Etapas",
-              font: {
-        weight: "bold",
-        size: 14
-      }
+              font: { weight: "bold" }
+            },
+            ticks: {
+              font: { weight: "bold" }
             }
           }
         }
@@ -326,55 +272,36 @@ function montarGraficoDuracao(dados) {
     }
   );
 }
+
 // =======================
 // AUTO BUSCA VIA URL
 // =======================
-
 window.addEventListener("load", () => {
-
-  const params = new URLSearchParams(window.location.search);
-  const codigo = params.get("codigo");
-
+  const codigo = new URLSearchParams(window.location.search).get("codigo");
   if (codigo) {
     document.getElementById("codigo").value = codigo;
     buscar();
   }
-
 });
 
 // =======================
 // QR CODE
 // =======================
-
-function gerarQRCode(codigo){
+function gerarQRCode(codigo) {
   document.getElementById("qrcode").src =
-   "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
-   "https://testefabrica-roan.vercel.app/?codigo=" + codigo;
+    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
+    "https://testefabrica-roan.vercel.app/?codigo=" + codigo;
 }
 
+// =======================
+// TEMPO TOTAL
+// =======================
 function mostrarTempoTotal(horas) {
-
   const dias = Math.floor(horas / 24);
-  const restoHoras = (horas % 24).toFixed(1);
+  const resto = (horas % 24).toFixed(1);
 
-  const texto =
+  document.getElementById("tempoTotal").innerText =
     dias > 0
-      ? `⏱ Tempo total da peça: ${dias}d ${restoHoras}h`
+      ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
-
-  document.getElementById("tempoTotal").innerText = texto;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
