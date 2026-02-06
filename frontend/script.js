@@ -67,16 +67,27 @@ function montarGraficoFluxo(dados) {
 
   if (chartFluxo) chartFluxo.destroy();
 
-  const pontos = dados
-    .filter(d => d.inicio)
+  // cria um dataset por etapa
+  const datasets = dados
+    .filter(d => d.inicio && d.fim)
     .map(d => ({
-      x: new Date(d.inicio),
-      y: d.nome_etapa
+      label: d.nome_etapa,
+      data: [
+        { x: new Date(d.inicio), y: d.nome_etapa },
+        { x: new Date(d.fim),    y: d.nome_etapa }
+      ],
+      showLine: true,
+      borderWidth: 6,
+      pointRadius: 0
     }));
 
-  if (pontos.length === 0) return;
+  if (datasets.length === 0) return;
 
-  const datas = pontos.map(p => p.x);
+  // limites do eixo X
+  const datas = dados
+    .flatMap(d => [d.inicio, d.fim])
+    .filter(Boolean)
+    .map(d => new Date(d));
 
   const inicioEixo = new Date(Math.min(...datas));
   const fimEixo = new Date(Math.max(...datas));
@@ -88,19 +99,15 @@ function montarGraficoFluxo(dados) {
     document.getElementById("grafico"),
     {
       type: "scatter",
-      data: {
-        datasets: [{
-          label: "Fluxo da Peça",
-          data: pontos,
-          showLine: true,
-          borderColor: "blue"
-        }]
-      },
+      data: { datasets },
       options: {
         plugins: {
           title: {
             display: true,
-            text: "Fluxo da Peça no Tempo"
+            text: "Linha do Tempo por Etapa"
+          },
+          legend: {
+            display: false // opcional
           }
         },
         scales: {
@@ -116,14 +123,14 @@ function montarGraficoFluxo(dados) {
             },
             title: {
               display: true,
-              text: "Data"
+              text: "Tempo"
             }
           },
           y: {
             type: "category",
             title: {
               display: true,
-              text: "Etapas do Processo"
+              text: "Etapas"
             }
           }
         }
@@ -243,4 +250,5 @@ function gerarQRCode(codigo){
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
    window.location.origin + "?codigo=" + codigo;
 }
+
 
