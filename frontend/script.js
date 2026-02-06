@@ -159,14 +159,16 @@ function montarGraficoDuracao(dados) {
 
   dados.forEach(d => {
 
-    // só considera etapas finalizadas
     if (!d.inicio || !d.fim) return;
 
-    etapas.push(d.nome_etapa);
+    const inicio = new Date(d.inicio);
+    const fim = new Date(d.fim);
 
-    duracoes.push(
-      calcularDuracaoHoras(d.inicio, d.fim)
-    );
+    const duracaoHoras =
+      (fim - inicio) / (1000 * 60 * 60);
+
+    etapas.push(d.nome_etapa);
+    duracoes.push(Number(duracaoHoras.toFixed(2)));
   });
 
   if (chartDuracao) chartDuracao.destroy();
@@ -178,29 +180,40 @@ function montarGraficoDuracao(dados) {
       data: {
         labels: etapas,
         datasets: [{
-          label: "Duração por Etapa (horas)",
+          label: "Duração por Etapa",
           data: duracoes,
           backgroundColor: "#2563eb"
         }]
       },
       options: {
-        indexAxis: "y", // barras horizontais
+        indexAxis: "y", // 👈 barras horizontais
+        responsive: true,
         plugins: {
           title: {
             display: true,
-            text: "Duração da Peça por Etapa"
+            text: "Tempo Gasto por Etapa do Processo"
           },
           tooltip: {
             callbacks: {
-              label: ctx => `${ctx.raw} h`
+              label: ctx => `${ctx.raw} horas`
             }
           }
         },
         scales: {
           x: {
+            beginAtZero: true,
             title: {
               display: true,
-              text: "Horas"
+              text: "Duração (horas)"
+            },
+            ticks: {
+              callback: value => `${value} h`
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: "Etapas"
             }
           }
         }
@@ -208,7 +221,3 @@ function montarGraficoDuracao(dados) {
     }
   );
 }
-
-
-
-
