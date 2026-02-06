@@ -60,3 +60,13 @@ async function buscar() {
 }
 
 window.buscar = buscar;
+
+window.onload = () => {
+  const params = new URLSearchParams(window.location.search);
+  const codigo = params.get("codigo");
+
+  if (codigo) {
+    document.getElementById("codigo").value = codigo;
+    buscar();
+  }
+};
