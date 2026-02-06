@@ -54,33 +54,31 @@ let chart;
 
 function montarGrafico(dados) {
 
-  const etapas = dados.map(d => d.nome_etapa);
-  const ordem = dados.map((d, i) => i + 1);
-
   if (chart) chart.destroy();
 
   chart = new Chart(
- document.getElementById("grafico"),
- {
-  type: "scatter",
-  data: {
-   datasets: [{
-    label: "Fluxo da Peça",
-    data: dados.map(d => ({
-      x: new Date(d.data),
-      y: d.nome_etapa
-    })),
-    showLine: true,
-    borderColor: "blue"
-   }]
-  },
-  options:{
-   scales:{
-    x:{ type:"time" }
-   }
-  }
- }
-);
+    document.getElementById("grafico"),
+    {
+      type: "scatter",
+      data: {
+        datasets: [{
+          label: "Fluxo da Peça",
+          data: dados.map(d => ({
+            x: new Date(d.data),
+            y: d.nome_etapa
+          })),
+          showLine: true,
+          borderColor: "blue"
+        }]
+      },
+      options: {
+        scales: {
+          x: { type: "time" }
+        }
+      }
+    }
+  );
+}
 
 // =======================
 // AUTO BUSCA VIA URL
@@ -103,5 +101,6 @@ function gerarQRCode(codigo){
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
    window.location.origin + "?codigo=" + codigo;
 }
+
 
 
