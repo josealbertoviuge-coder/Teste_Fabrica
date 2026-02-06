@@ -65,6 +65,6 @@ async function buscar() {
 
   console.log(dados);
 }
-window.buscar = buscar;
+
 
 
