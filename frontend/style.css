@@ -72,7 +72,7 @@ button {
 .topo-wrapper {
   display: flex !important;
   flex-direction: row !important;
-  align-items: center !important;
+  align-items: flex-start !important;
   gap: 20px;
   width: 100%;
 }
