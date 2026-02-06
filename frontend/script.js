@@ -20,7 +20,7 @@ async function buscar() {
   const dados = await res.json();
 
   montarTabela(dados);
-  montarGrafico(dados);
+  montarGraficoFluxo(dados);
   montarGraficoDuracao(dados);
 }
 
@@ -32,14 +32,22 @@ window.buscar = buscar;
 
 function montarTabela(dados) {
 
-  let html = "<tr><th>Etapa</th><th>Status</th><th>Data</th></tr>";
+  let html = `
+    <tr>
+      <th>Etapa</th>
+      <th>Status</th>
+      <th>Início</th>
+      <th>Fim</th>
+    </tr>
+  `;
 
   dados.forEach(d => {
     html += `
       <tr>
         <td>${d.nome_etapa}</td>
         <td>${d.status}</td>
-        <td>${new Date(d.data).toLocaleString()}</td>
+        <td>${d.inicio ? new Date(d.inicio).toLocaleString() : "-"}</td>
+        <td>${d.fim ? new Date(d.fim).toLocaleString() : "Em andamento"}</td>
       </tr>
     `;
   });
@@ -48,35 +56,40 @@ function montarTabela(dados) {
 }
 
 // =======================
-// GRÁFICO
+// GRÁFICO DE FLUXO (TEMPO)
 // =======================
 
-let chart;
+let chartFluxo;
 
-function montarGrafico(dados) {
+function montarGraficoFluxo(dados) {
 
-  if (chart) chart.destroy();
+  if (chartFluxo) chartFluxo.destroy();
 
-  const datas = dados.map(d => new Date(d.data));
+  const pontos = dados
+    .filter(d => d.inicio)
+    .map(d => ({
+      x: new Date(d.inicio),
+      y: d.nome_etapa
+    }));
 
-  const inicio = new Date(Math.min(...datas));
-  const fim = new Date(Math.max(...datas));
+  if (pontos.length === 0) return;
 
-  // margem de 1 dia
-  inicio.setDate(inicio.getDate() - 1);
-  fim.setDate(fim.getDate() + 1);
+  const datas = pontos.map(p => p.x);
 
-  chart = new Chart(
+  const inicioEixo = new Date(Math.min(...datas));
+  const fimEixo = new Date(Math.max(...datas));
+
+  inicioEixo.setDate(inicioEixo.getDate() - 1);
+  fimEixo.setDate(fimEixo.getDate() + 1);
+
+  chartFluxo = new Chart(
     document.getElementById("grafico"),
     {
       type: "scatter",
       data: {
         datasets: [{
           label: "Fluxo da Peça",
-          data: dados.map(d => ({
-            x: new Date(d.data),
-            y: d.nome_etapa
-          })),
+          data: pontos,
           showLine: true,
           borderColor: "blue"
         }]
@@ -91,8 +104,8 @@ function montarGrafico(dados) {
         scales: {
           x: {
             type: "time",
-            min: inicio,
-            max: fim,
+            min: inicioEixo,
+            max: fimEixo,
             time: {
               unit: "day",
               displayFormats: {
@@ -118,37 +131,8 @@ function montarGrafico(dados) {
 }
 
 // =======================
-// AUTO BUSCA VIA URL
+// GRÁFICO DE DURAÇÃO
 // =======================
-
-window.addEventListener("load", () => {
-
-  const params = new URLSearchParams(window.location.search);
-  const codigo = params.get("codigo");
-
-  if (codigo) {
-    document.getElementById("codigo").value = codigo;
-    buscar();
-  }
-
-});
-
-function gerarQRCode(codigo){
-  document.getElementById("qrcode").src =
-   "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
-   window.location.origin + "?codigo=" + codigo;
-}
-
-
-function calcularDuracaoHoras(inicio, fim) {
-  const inicioDate = new Date(inicio);
-  const fimDate = new Date(fim);
-
-  const diffMs = fimDate - inicioDate;
-  const diffHoras = diffMs / (1000 * 60 * 60);
-
-  return Number(diffHoras.toFixed(2));
-}
 
 let chartDuracao;
 
@@ -171,8 +155,10 @@ function montarGraficoDuracao(dados) {
     duracoes.push(Number(duracaoHoras.toFixed(2)));
   });
 
+  if (duracoes.length === 0) return;
+
   const maxDuracao = Math.max(...duracoes);
-  const maxEixo = maxDuracao * 1.1; // margem visual
+  const maxEixo = maxDuracao * 1.1;
 
   if (chartDuracao) chartDuracao.destroy();
 
@@ -183,32 +169,26 @@ function montarGraficoDuracao(dados) {
       data: {
         labels: etapas,
         datasets: [{
-          label: "Duração por Etapa",
+          label: "Duração por Etapa (h)",
           data: duracoes,
           backgroundColor: "#2563eb"
         }]
       },
       options: {
         indexAxis: "y",
-        responsive: true,
         plugins: {
           title: {
             display: true,
-            text: "Duração por Etapa do Processo"
+            text: "Tempo Gasto por Etapa"
           }
         },
         scales: {
           x: {
             min: 0,
             max: maxEixo,
-            beginAtZero: true,
             title: {
               display: true,
               text: "Duração (horas)"
-            },
-            ticks: {
-              stepSize: Math.ceil(maxDuracao / 5),
-              callback: value => `${value} h`
             }
           },
           y: {
@@ -221,4 +201,30 @@ function montarGraficoDuracao(dados) {
       }
     }
   );
+}
+
+// =======================
+// AUTO BUSCA VIA URL
+// =======================
+
+window.addEventListener("load", () => {
+
+  const params = new URLSearchParams(window.location.search);
+  const codigo = params.get("codigo");
+
+  if (codigo) {
+    document.getElementById("codigo").value = codigo;
+    buscar();
+  }
+
+});
+
+// =======================
+// QR CODE
+// =======================
+
+function gerarQRCode(codigo){
+  document.getElementById("qrcode").src =
+   "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
+   window.location.origin + "?codigo=" + codigo;
 }
