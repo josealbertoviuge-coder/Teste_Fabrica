@@ -234,7 +234,7 @@ function montarGraficoDuracao(dados) {
             text: "Duração por Etapa do Processo"
           },
           datalabels: {
-            color: "red",
+            color: "black",
             anchor: "center",
             align: "center",
             formatter: value => `${value} h`,
@@ -301,6 +301,7 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
 
