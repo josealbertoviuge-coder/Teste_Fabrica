@@ -88,5 +88,12 @@ button {
 .topo-wrapper {
   display: flex;
   gap: 20px;
-  align-items: center;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.header-card {
+  background: white;
+  padding: 20px 30px;
+  border-radius: 10px;
 }
