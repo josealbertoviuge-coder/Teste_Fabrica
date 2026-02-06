@@ -4,61 +4,43 @@
   <meta charset="UTF-8">
   <title>Rastreamento de Peça</title>
   <link rel="stylesheet" href="/style.css">
- 
-<div class="container topo-wrapper">
+</head>
+
+<body>
+
+<!-- TOPO -->
+<div class="topo-wrapper">
 
   <img id="qrcode">
 
-  <div>
+  <div class="header-card">
     <h2 id="titulo">Consulta de Peça</h2>
     <div id="tempoTotal"></div>
   </div>
 
 </div>
 
-    
-</head>
+<!-- CONTEÚDO -->
+<div class="container">
 
-<body>
+  <!-- input oculto via CSS -->
+  <input id="codigo" placeholder="Digite código da peça">
+  <button onclick="buscar()">Buscar</button>
 
-<input id="codigo" placeholder="Digite código da peça">
-<button onclick="buscar()">Buscar</button>
+  <table>
+    <tbody id="tabela"></tbody>
+  </table>
 
-<br><br>
-  <img id="qrcode">
-<br><br>
+  <canvas id="grafico" height="200"></canvas>
+  <canvas id="graficoDuracao" height="200"></canvas>
 
-<table border="1">
-  <tbody id="tabela"></tbody>
-</table>
+</div>
 
-<br>
-
-<canvas id="grafico" width="400" height="200"></canvas>
-<canvas id="graficoDuracao" height="200"></canvas>
-
-<!-- ChartJS -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<!-- SCRIPTS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-  
-<!-- Seu JS -->
 <script src="/script.js"></script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
