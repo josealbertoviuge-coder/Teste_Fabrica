@@ -22,3 +22,25 @@ function montarTabela(dados){
 
  document.getElementById("tabela").innerHTML = html;
 }
+
+let chart;
+
+function montarGrafico(dados){
+
+ const etapas = dados.map(d=>d.nome_etapa);
+ const ordem = dados.map((d,i)=>i+1);
+
+ if(chart) chart.destroy();
+
+ chart = new Chart(document.getElementById("grafico"),{
+   type:"line",
+   data:{
+     labels:etapas,
+     datasets:[{
+       label:"Fluxo da Peça",
+       data:ordem,
+       borderColor:"blue"
+     }]
+   }
+ });
+}
