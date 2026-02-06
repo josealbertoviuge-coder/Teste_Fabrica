@@ -72,10 +72,23 @@ function montarGrafico(dados) {
         }]
       },
       options: {
-        scales: {
-          x: { type: "time" }
-        }
+  scales: {
+    x: {
+      type: "time",
+      title: {
+        display: true,
+        text: "Tempo"
       }
+    },
+    y: {
+      type: "category",
+      title: {
+        display: true,
+        text: "Etapas do Processo"
+      }
+    }
+  }
+}
     }
   );
 }
@@ -101,6 +114,7 @@ function gerarQRCode(codigo){
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
    window.location.origin + "?codigo=" + codigo;
 }
+
 
 
 
