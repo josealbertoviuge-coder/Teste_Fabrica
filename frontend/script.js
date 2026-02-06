@@ -124,24 +124,29 @@ function montarGraficoGantt(dados) {
             display: false
           }
         },
-        scales: {
-          x: {
-            type: "time",
-            time: {
-              unit: "hour"
-            },
-            title: {
-              display: true,
-              text: "Tempo"
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: "Etapas"
-            }
-          }
-        }
+scales: {
+  x: {
+    type: "time",
+    time: {
+      tooltipFormat: "dd/MM HH:mm"
+    },
+    ticks: {
+      source: "auto",
+      autoSkip: true,
+      maxRotation: 0
+    },
+    title: {
+      display: true,
+      text: "Tempo"
+    }
+  },
+  y: {
+    title: {
+      display: true,
+      text: "Etapas"
+    }
+  }
+}
       }
     }
   );
@@ -279,6 +284,7 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
 
