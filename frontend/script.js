@@ -1,7 +1,7 @@
 async function buscar(){
 
  const codigo = document.getElementById("codigo").value;
- const res = await fetch(`/peca/${codigo}`);
+ const res = await fetch("https://teste-fabrica.onrender.com/peca/" + codigo);
  const dados = await res.json();
 
  montarTabela(dados);
@@ -53,3 +53,4 @@ window.onload = ()=>{
    buscar();
  }
 }
+
