@@ -1,5 +1,12 @@
 Chart.register(ChartDataLabels);
 
+function dataSemFuso(data) {
+  if (!data) return null;
+
+  // remove o "Z" e força interpretação local
+  return new Date(data.replace("Z", ""));
+}
+
 // =======================
 // BUSCAR PEÇA
 // =======================
@@ -47,7 +54,7 @@ function montarTabela(dados) {
   dados.forEach(d => {
 
     const inicio = d.inicio
-      ? new Date(d.inicio).toLocaleString("pt-BR", {
+      ? dataSemFuso(d.inicio).toLocaleString("pt-BR", {
           day: "2-digit",
           month: "2-digit",
           year: "numeric",
@@ -57,7 +64,7 @@ function montarTabela(dados) {
       : "-";
 
     const fim = d.fim
-      ? new Date(d.fim).toLocaleString("pt-BR", {
+      ? dataSemFuso(d.fim).toLocaleString("pt-BR", {
           day: "2-digit",
           month: "2-digit",
           year: "numeric",
@@ -322,6 +329,7 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
 
