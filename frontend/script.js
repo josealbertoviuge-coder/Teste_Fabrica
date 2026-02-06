@@ -11,6 +11,8 @@ async function buscar() {
     return;
   }
 
+  gerarQRCode(codigo);
+
   const res = await fetch(
     "https://teste-fabrica.onrender.com/peca/" + codigo
   );
@@ -95,3 +97,4 @@ function gerarQRCode(codigo){
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
    window.location.origin + "?codigo=" + codigo;
 }
+
