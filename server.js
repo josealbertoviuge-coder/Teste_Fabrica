@@ -51,6 +51,14 @@ app.listen(PORT, () => {
   console.log("Servidor iniciado");
 });
 
+app.post("/login",(req,res)=>{
+  const {user,pass} = req.body;
 
+  if(user==="admin" && pass==="123"){
+    res.json({ok:true});
+  }else{
+    res.status(401).send("Login inválido");
+  }
+});
 
 
