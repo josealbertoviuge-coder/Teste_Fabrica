@@ -148,10 +148,14 @@ const eixoMax = new Date(maxData.getTime() + margem);
       options: {
         indexAxis: "y",
         plugins: {
-          title: {
-            display: true,
-            text: "Gantt de Execução da Peça"
-          },
+  title: {
+    display: true,
+    text: "Gantt de Execução da Peça",
+    font: {
+      weight: "bold",
+      size: 16
+    }
+  },
           tooltip: {
             callbacks: {
               label: ctx => {
@@ -178,17 +182,28 @@ scales: {
     },
     ticks: {
       autoSkip: true,
-      maxRotation: 0
+      maxRotation: 0,
+      font: {
+        weight: "bold"
+      }
     },
     title: {
       display: true,
-      text: "Tempo"
+      text: "Tempo",
+      font: {
+        weight: "bold",
+        size: 14
+      }
     }
   },
   y: {
     title: {
       display: true,
-      text: "Etapas"
+      text: "Etapas",
+      font: {
+        weight: "bold",
+        size: 14
+      }
     }
   }
 }
@@ -259,7 +274,11 @@ function montarGraficoDuracao(dados) {
         plugins: {
           title: {
             display: true,
-            text: "Duração por Etapa do Processo"
+            text: "Duração por Etapa do Processo",
+            font: {
+        weight: "bold",
+        size: 16
+      }
           },
           datalabels: {
             color: "black",
@@ -277,13 +296,21 @@ function montarGraficoDuracao(dados) {
             max: maxEixo,
             title: {
               display: true,
-              text: "Duração (horas)"
+              text: "Duração (horas)",
+              font: {
+        weight: "bold",
+        size: 14
+      }
             }
           },
           y: {
             title: {
               display: true,
-              text: "Etapas"
+              text: "Etapas",
+              font: {
+        weight: "bold",
+        size: 14
+      }
             }
           }
         }
@@ -329,6 +356,7 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
 
