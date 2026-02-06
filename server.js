@@ -5,6 +5,15 @@ const { Pool } = pkg;
 
 const app = express();
 app.use(express.json());
+
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, "frontend")));
+
 const PORT = process.env.PORT || 3000;
 
 // Conexão única
@@ -18,8 +27,8 @@ pool.connect()
   .then(() => console.log("Banco conectado"))
   .catch(err => console.error("Erro conexão:", err));
 
-app.get("/", (req, res) => {
-  res.send("API rodando");
+app.get("/", (req,res)=>{
+  res.sendFile(path.join(__dirname,"frontend","index.html"));
 });
 
 app.get("/peca/:codigo", async (req, res) => {
@@ -61,6 +70,7 @@ app.post("/login",(req,res)=>{
     res.status(401).send("Login inválido");
   }
 });
+
 
 
 
