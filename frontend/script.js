@@ -56,15 +56,7 @@ window.onload = ()=>{
 
 async function buscar() {
   const codigo = document.getElementById("codigo").value;
-
-  const resposta = await fetch(
-    "https://teste-fabrica.onrender.com/peca/" + codigo
-  );
-
-  const dados = await resposta.json();
-
-  console.log(dados);
+  alert("Código digitado: " + codigo);
 }
 
-
-
+window.buscar = buscar;
