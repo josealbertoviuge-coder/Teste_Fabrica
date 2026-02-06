@@ -1,34 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <title>Status da Peça</title>
+<meta charset="UTF-8">
+<title>Rastreamento de Peça</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+  font-family: Arial;
+  background:#f4f6f8;
+}
+
+.container{
+  width:600px;
+  margin:40px auto;
+  background:white;
+  padding:30px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+
+input,button{
+  padding:10px;
+  width:100%;
+  margin-top:10px;
+}
+
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+
+table{
+  width:100%;
+  margin-top:20px;
+  border-collapse:collapse;
+}
+
+th,td{
+  border-bottom:1px solid #ddd;
+  padding:8px;
+}
+</style>
 </head>
+
 <body>
+
+<div class="container">
 
 <h2>Consulta de Peça</h2>
 
-<input id="codigo" placeholder="Digite código">
+<input id="codigo" placeholder="Digite o código da peça">
 <button onclick="buscar()">Buscar</button>
 
+<table id="tabela"></table>
+
 <canvas id="grafico"></canvas>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-async function buscar(){
-  const codigo = document.getElementById("codigo").value;
-  const res = await fetch(`/peca/${codigo}`);
-  const data = await res.json();
-  document.getElementById("resultado").innerText =
-    JSON.stringify(data,null,2);
-}
-</script>
+</div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
-
-</body>
-</html>
-
-
-
-
