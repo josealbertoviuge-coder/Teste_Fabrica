@@ -38,17 +38,17 @@ app.get("/peca/:codigo", async (req, res) => {
     const codigo = req.params.codigo;   // 👈 ESTA LINHA
 
     const result = await pool.query(`
-      SELECT 
-        p.codigo_peca,
-        p.descricao,
-        e.nome_etapa,
-        a.status,
-        a.data
-      FROM pecas p
-      JOIN andamento_pecas a ON p.id_peca = a.id_peca
-      JOIN etapas e ON a.id_etapa = e.id_etapa
-      WHERE p.codigo_peca = $1
-      ORDER BY a.data DESC
+      SELECT
+      p.codigo_peca,
+      e.nome_etapa,
+      a.status,
+      a.inicio,
+      a.fim
+    FROM andamento_pecas a
+    JOIN etapas e ON e.id_etapa = a.id_etapa
+    JOIN pecas p ON p.id_peca = a.id_peca
+    WHERE p.codigo_peca = $1
+    ORDER BY a.inicio;
     `, [codigo]);
 
     res.json(result.rows);
@@ -72,6 +72,7 @@ app.post("/login",(req,res)=>{
     res.status(401).send("Login inválido");
   }
 });
+
 
 
 
