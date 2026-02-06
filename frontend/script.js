@@ -139,6 +139,10 @@ const eixoMax = new Date(maxData.getTime() + margem);
         labels: labels,
         datasets: [{
           label: "Linha do Tempo",
+          font: {
+      weight: "bold",
+      size: 14
+    }
           data: data,
           backgroundColor: cores,
           borderRadius: 6,
@@ -265,6 +269,10 @@ function montarGraficoDuracao(dados) {
         labels: etapas,
         datasets: [{
           label: "Duração por Etapa (h)",
+          font: {
+      weight: "bold",
+      size: 14
+    }
           data: duracoes,
           backgroundColor: cores
         }]
@@ -356,6 +364,7 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
 
