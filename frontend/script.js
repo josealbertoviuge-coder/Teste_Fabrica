@@ -70,3 +70,14 @@ window.onload = () => {
     buscar();
   }
 };
+
+window.addEventListener("load", function () {
+  const params = new URLSearchParams(window.location.search);
+  const codigo = params.get("codigo");
+
+  if (codigo) {
+    const input = document.getElementById("codigo");
+    input.value = codigo;
+    buscar();
+  }
+});
