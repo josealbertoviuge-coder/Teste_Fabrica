@@ -55,9 +55,16 @@ button {
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-bottom: 20px;
+}
+
+.topo .container {
+  width: auto;
+  flex: 1;          /* ocupa o espaço restante */
 }
 
 #qrcode {
-  order: -1;
+  width: 110px;
+  height: 110px;
+  display: block;
+  flex-shrink: 0;   /* 👈 impede o QR de “pular linha” */
 }
