@@ -33,15 +33,6 @@ window.buscar = buscar;
 // TABELA
 // =======================
 
-function formatarDataBR(data) {
-  if (!data) return "-";
-
-  return new Date(data).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
-  });
-}
 function montarTabela(dados) {
 
   let html = `
@@ -58,8 +49,8 @@ function montarTabela(dados) {
       <tr>
         <td>${d.nome_etapa}</td>
         <td>${d.status}</td>
-<td>${formatarDataBR(d.inicio)}</td>
-<td>${d.fim ? formatarDataBR(d.fim) : "Em andamento"}</td>
+<td>${d.inicio ? new Date(d.inicio).toLocaleString() : "-"}</td>
+<td>${d.fim ? new Date(d.fim).toLocaleString() : "Em andamento"}</td>
       </tr>
     `;
   });
@@ -310,6 +301,7 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
 
