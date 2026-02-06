@@ -286,7 +286,7 @@ window.addEventListener("load", () => {
 function gerarQRCode(codigo){
   document.getElementById("qrcode").src =
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
-   window.location.origin + "?codigo=" + codigo;
+   "https://testefabrica-roan.vercel.app/?codigo=" + codigo;
 }
 
 function mostrarTempoTotal(horas) {
@@ -301,6 +301,7 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
 
