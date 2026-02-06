@@ -54,3 +54,7 @@ window.onload = ()=>{
  }
 }
 
+function buscar() {
+  alert("Buscar funcionando");
+}
+window.buscar = buscar;
