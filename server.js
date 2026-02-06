@@ -1,16 +1,21 @@
-const express = require("express");
-const cors = require("cors");
-const { Pool } = require("pg");
+import express from "express";
+import pkg from "pg";
+
+const { Pool } = pkg;
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
+// Conexão única
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  family: 4
+  ssl: { rejectUnauthorized: false }
 });
+
+// Teste inicial de conexão
+pool.connect()
+  .then(() => console.log("Banco conectado"))
+  .catch(err => console.error("Erro conexão:", err));
 
 app.get("/", (req, res) => {
   res.send("API rodando");
@@ -21,29 +26,17 @@ app.get("/peca/:codigo", async (req, res) => {
     const codigo = req.params.codigo;
 
     const result = await pool.query(
-      `SELECT p.codigo_peca,
-              p.descricao,
-              e.nome_etapa,
-              a.status
-       FROM pecas p
-       JOIN andamento_pecas a ON p.id_peca = a.id_peca
-       JOIN etapas e ON a.id_etapa = e.id_etapa
-       WHERE p.codigo_peca = $1
-       ORDER BY a.data DESC
-       LIMIT 1`,
+      `SELECT * FROM pecas WHERE codigo_peca = $1`,
       [codigo]
     );
 
-    res.json(result.rows[0] || {});
+    res.json(result.rows);
   } catch (err) {
-    console.error(err.message);
+    console.error("ERRO QUERY:", err);
     res.status(500).send(err.message);
   }
 });
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log("Servidor rodando");
+  console.log("Servidor iniciado");
 });
-
-
