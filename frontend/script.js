@@ -23,7 +23,7 @@ document.getElementById("titulo").innerText =
   const dados = await res.json();
 
   montarTabela(dados);
-  montarGraficoFluxo(dados);
+  montarGraficoGantt(dados);
   montarGraficoDuracao(dados);
 }
 
@@ -59,75 +59,76 @@ function montarTabela(dados) {
 }
 
 // =======================
-// GRÁFICO DE FLUXO (TEMPO)
+// GRÁFICO GANTT
 // =======================
 
-let chartFluxo;
+let chartGantt;
 
-function montarGraficoFluxo(dados) {
+function montarGraficoGantt(dados) {
 
-  if (chartFluxo) chartFluxo.destroy();
+  if (chartGantt) chartGantt.destroy();
 
-  // cria um dataset por etapa
-  const datasets = dados
-.filter(d => d.inicio)
-.map(d => {
+  const agora = new Date();
 
-  const inicio = new Date(d.inicio);
-  const fim = d.fim ? new Date(d.fim) : new Date();
+  const labels = [];
+  const data = [];
+  const cores = [];
 
-  return {
-    label: d.nome_etapa,
-    data: [
-      { x: inicio, y: d.nome_etapa },
-      { x: fim,    y: d.nome_etapa }
-    ],
-    showLine: true,
-    borderWidth: 6,
-    pointRadius: 0,
-    borderColor: d.fim ? "#2563eb" : "#f59e0b" // azul concluída, laranja em andamento
-  };
-});
+  dados.forEach(d => {
+    if (!d.inicio) return;
 
-  if (datasets.length === 0) return;
+    const inicio = new Date(d.inicio);
+    const fim = d.fim ? new Date(d.fim) : agora;
 
-  // limites do eixo X
-  const datas = dados
-    .flatMap(d => [d.inicio, d.fim])
-    .filter(Boolean)
-    .map(d => new Date(d));
+    labels.push(d.nome_etapa);
+    data.push([inicio, fim]);
 
-  const inicioEixo = new Date(Math.min(...datas));
-  const fimEixo = new Date(Math.max(...datas));
+    // cores por status
+    cores.push(d.fim ? "#2563eb" : "#f59e0b");
+  });
 
-  inicioEixo.setDate(inicioEixo.getDate() - 1);
-  fimEixo.setDate(fimEixo.getDate() + 1);
-
-  chartFluxo = new Chart(
+  chartGantt = new Chart(
     document.getElementById("grafico"),
     {
-      type: "scatter",
-      data: { datasets },
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Linha do Tempo",
+          data: data,
+          backgroundColor: cores,
+          borderRadius: 6,
+          barThickness: 18
+        }]
+      },
       options: {
+        indexAxis: "y",
         plugins: {
           title: {
             display: true,
-            text: "Linha do Tempo por Etapa"
+            text: "Gantt de Execução da Peça"
           },
-          legend: {
-            display: false // opcional
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const [ini, fim] = ctx.raw;
+                return (
+                  new Date(ini).toLocaleString() +
+                  " → " +
+                  new Date(fim).toLocaleString()
+                );
+              }
+            }
+          },
+          datalabels: {
+            display: false
           }
         },
         scales: {
           x: {
             type: "time",
-            min: inicioEixo,
-            max: fimEixo,
             time: {
-              unit: "day",
-              displayFormats: {
-                day: "dd/MM"
-              }
+              unit: "hour"
             },
             title: {
               display: true,
@@ -135,7 +136,6 @@ function montarGraficoFluxo(dados) {
             }
           },
           y: {
-            type: "category",
             title: {
               display: true,
               text: "Etapas"
@@ -146,7 +146,6 @@ function montarGraficoFluxo(dados) {
     }
   );
 }
-
 // =======================
 // GRÁFICO DE DURAÇÃO
 // =======================
@@ -280,6 +279,7 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
 
