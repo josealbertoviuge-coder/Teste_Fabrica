@@ -45,12 +45,33 @@ function montarTabela(dados) {
   `;
 
   dados.forEach(d => {
+
+    const inicio = d.inicio
+      ? new Date(d.inicio).toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : "-";
+
+    const fim = d.fim
+      ? new Date(d.fim).toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : "Em andamento";
+
     html += `
       <tr>
         <td>${d.nome_etapa}</td>
         <td>${d.status}</td>
-<td>${d.inicio ? new Date(d.inicio).toLocaleString() : "-"}</td>
-<td>${d.fim ? new Date(d.fim).toLocaleString() : "Em andamento"}</td>
+        <td>${inicio}</td>
+        <td>${fim}</td>
       </tr>
     `;
   });
@@ -301,6 +322,7 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
 
