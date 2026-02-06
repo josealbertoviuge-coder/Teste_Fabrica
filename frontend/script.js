@@ -69,17 +69,24 @@ function montarGraficoFluxo(dados) {
 
   // cria um dataset por etapa
   const datasets = dados
-    .filter(d => d.inicio && d.fim)
-    .map(d => ({
-      label: d.nome_etapa,
-      data: [
-        { x: new Date(d.inicio), y: d.nome_etapa },
-        { x: new Date(d.fim),    y: d.nome_etapa }
-      ],
-      showLine: true,
-      borderWidth: 6,
-      pointRadius: 0
-    }));
+.filter(d => d.inicio)
+.map(d => {
+
+  const inicio = new Date(d.inicio);
+  const fim = d.fim ? new Date(d.fim) : new Date();
+
+  return {
+    label: d.nome_etapa,
+    data: [
+      { x: inicio, y: d.nome_etapa },
+      { x: fim,    y: d.nome_etapa }
+    ],
+    showLine: true,
+    borderWidth: 6,
+    pointRadius: 0,
+    borderColor: d.fim ? "#2563eb" : "#f59e0b" // azul concluída, laranja em andamento
+  };
+});
 
   if (datasets.length === 0) return;
 
@@ -152,17 +159,17 @@ function montarGraficoDuracao(dados) {
 
   dados.forEach(d => {
 
-    if (!d.inicio || !d.fim) return;
+  if (!d.inicio) return;
 
-    const inicio = new Date(d.inicio);
-    const fim = new Date(d.fim);
+  const inicio = new Date(d.inicio);
+  const fim = d.fim ? new Date(d.fim) : new Date(); // 👈 AGORA
 
-    const duracaoHoras =
-      (fim - inicio) / (1000 * 60 * 60);
+  const duracaoHoras =
+    (fim - inicio) / (1000 * 60 * 60);
 
-    etapas.push(d.nome_etapa);
-    duracoes.push(Number(duracaoHoras.toFixed(2)));
-  });
+  etapas.push(d.nome_etapa);
+  duracoes.push(Number(duracaoHoras.toFixed(2)));
+});
 
   if (duracoes.length === 0) return;
 
@@ -250,5 +257,6 @@ function gerarQRCode(codigo){
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
    window.location.origin + "?codigo=" + codigo;
 }
+
 
 
