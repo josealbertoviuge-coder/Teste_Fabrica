@@ -1,11 +1,10 @@
-app.use(express.json());
-
 import express from "express";
 import pkg from "pg";
 
 const { Pool } = pkg;
 
 const app = express();
+app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 // Conexão única
@@ -62,6 +61,7 @@ app.post("/login",(req,res)=>{
     res.status(401).send("Login inválido");
   }
 });
+
 
 
 
