@@ -69,14 +69,6 @@ button {
   flex-shrink: 0;   /* 👈 impede o QR de “pular linha” */
 }
 
-.topo-wrapper {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: flex-start !important;
-  gap: 20px;
-  width: 100%;
-}
-
 .qrcode-box {
   flex: 0 0 auto;
 }
@@ -92,4 +84,10 @@ button {
   flex: 1 1 auto;
   width: auto !important;
   max-width: none !important;
+}
+
+.topo-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
