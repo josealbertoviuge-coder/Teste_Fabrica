@@ -156,22 +156,36 @@ function montarGraficoDuracao(dados) {
 
   const etapas = [];
   const duracoes = [];
+  const cores = [];
+
+  let tempoTotalHoras = 0;
 
   dados.forEach(d => {
 
-  if (!d.inicio) return;
+    if (!d.inicio) return;
 
-  const inicio = new Date(d.inicio);
-  const fim = d.fim ? new Date(d.fim) : new Date(); // 👈 AGORA
+    const inicio = new Date(d.inicio);
+    const fim = d.fim ? new Date(d.fim) : new Date(); // agora se em andamento
 
-  const duracaoHoras =
-    (fim - inicio) / (1000 * 60 * 60);
+    const duracaoHoras =
+      (fim - inicio) / (1000 * 60 * 60);
 
-  etapas.push(d.nome_etapa);
-  duracoes.push(Number(duracaoHoras.toFixed(2)));
-});
+    const duracaoFinal = Number(duracaoHoras.toFixed(2));
+
+    etapas.push(d.nome_etapa);
+    duracoes.push(duracaoFinal);
+
+    tempoTotalHoras += duracaoFinal;
+
+    // 🔴 etapa em andamento → laranja
+    // 🔵 etapa concluída → azul
+    cores.push(d.fim ? "#2563eb" : "#f59e0b");
+  });
 
   if (duracoes.length === 0) return;
+
+  // 🔹 mostra tempo total no topo
+  mostrarTempoTotal(tempoTotalHoras);
 
   const maxDuracao = Math.max(...duracoes);
   const maxEixo = maxDuracao * 1.1;
@@ -185,53 +199,48 @@ function montarGraficoDuracao(dados) {
       data: {
         labels: etapas,
         datasets: [{
-  label: "Duração por Etapa",
-  data: duracoes,
-  backgroundColor: "#2563eb",
-  datalabels: {
-    color: "red",
-    anchor: "center",
-    align: "center",
-    formatter: value => `${value} h`,
-    font: {
-      weight: "bold",
-      size: 14
-    }
-  }
-}]
+          label: "Duração por Etapa (h)",
+          data: duracoes,
+          backgroundColor: cores
+        }]
       },
-options: {
-  indexAxis: "y",
-  plugins: {
-    datalabels: {
-      display: true
-    },
-    title: {
-      display: true,
-      text: "Duração por Etapa do Processo"
-    }
-  },
-  scales: {
-    x: {
-      min: 0,
-      max: maxEixo,
-      title: {
-        display: true,
-        text: "Duração (horas)"
+      options: {
+        indexAxis: "y",
+        plugins: {
+          title: {
+            display: true,
+            text: "Duração por Etapa do Processo"
+          },
+          datalabels: {
+            color: "red",
+            anchor: "center",
+            align: "center",
+            formatter: value => `${value} h`,
+            font: {
+              weight: "bold"
+            }
+          }
+        },
+        scales: {
+          x: {
+            min: 0,
+            max: maxEixo,
+            title: {
+              display: true,
+              text: "Duração (horas)"
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: "Etapas"
+            }
+          }
+        }
       }
-    },
-    y: {
-      title: {
-        display: true,
-        text: "Etapas"
-      }
-    }
-  }
-}
     }
   );
 }
-
 // =======================
 // AUTO BUSCA VIA URL
 // =======================
@@ -258,5 +267,17 @@ function gerarQRCode(codigo){
    window.location.origin + "?codigo=" + codigo;
 }
 
+function mostrarTempoTotal(horas) {
+
+  const dias = Math.floor(horas / 24);
+  const restoHoras = (horas % 24).toFixed(1);
+
+  const texto =
+    dias > 0
+      ? `⏱ Tempo total da peça: ${dias}d ${restoHoras}h`
+      : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
+
+  document.getElementById("tempoTotal").innerText = texto;
+}
 
 
