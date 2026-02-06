@@ -68,7 +68,23 @@ function montarGraficoGantt(dados) {
 
   if (chartGantt) chartGantt.destroy();
 
-  const agora = new Date();
+ const agora = new Date();
+
+const datas = dados
+  .flatMap(d => [
+    d.inicio ? new Date(d.inicio) : null,
+    d.fim ? new Date(d.fim) : agora
+  ])
+  .filter(Boolean);
+
+const minData = new Date(Math.min(...datas));
+const maxData = new Date(Math.max(...datas));
+
+// margem visual (ex: 5% do intervalo)
+const margem = (maxData - minData) * 0.05;
+
+const eixoMin = new Date(minData.getTime() - margem);
+const eixoMax = new Date(maxData.getTime() + margem);
 
   const labels = [];
   const data = [];
@@ -127,11 +143,12 @@ function montarGraficoGantt(dados) {
 scales: {
   x: {
     type: "time",
+    min: eixoMin,
+    max: eixoMax,
     time: {
       tooltipFormat: "dd/MM HH:mm"
     },
     ticks: {
-      source: "auto",
       autoSkip: true,
       maxRotation: 0
     },
@@ -284,6 +301,7 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
 
