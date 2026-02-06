@@ -55,7 +55,15 @@ let chart;
 function montarGrafico(dados) {
 
   if (chart) chart.destroy();
+const datas = dados.map(d => new Date(d.data));
 
+const inicio = new Date(Math.min(...datas));
+const fim = new Date(Math.max(...datas));
+
+// opcional: margem de 1 dia
+inicio.setDate(inicio.getDate() - 1);
+fim.setDate(fim.getDate() + 1);
+  
   chart = new Chart(
     document.getElementById("grafico"),
     {
@@ -74,14 +82,20 @@ function montarGrafico(dados) {
       options: {
   scales: {
     x: {
-      type: "time",
-      time: {
-        unit: "day",
-        tooltipFormat: "dd/MM/yyyy",
-        displayFormats: {
-          day: "dd/MM"
-        }
-      },
+  type: "time",
+  min: inicio,
+  max: fim,
+  time: {
+    unit: "day",
+    displayFormats: {
+      day: "dd/MM"
+    }
+  },
+  title: {
+    display: true,
+    text: "Data"
+  }
+},
       title: {
         display: true,
         text: "Tempo"
@@ -121,6 +135,7 @@ function gerarQRCode(codigo){
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
    window.location.origin + "?codigo=" + codigo;
 }
+
 
 
 
