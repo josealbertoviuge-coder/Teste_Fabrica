@@ -1,9 +1,11 @@
 import express from "express";
+import cors from "cors";
 import pkg from "pg";
 
 const { Pool } = pkg;
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 import path from "path";
@@ -70,6 +72,7 @@ app.post("/login",(req,res)=>{
     res.status(401).send("Login inválido");
   }
 });
+
 
 
 
