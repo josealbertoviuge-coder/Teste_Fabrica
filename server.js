@@ -1,3 +1,5 @@
+app.use(express.json());
+
 import express from "express";
 import pkg from "pg";
 
@@ -60,5 +62,6 @@ app.post("/login",(req,res)=>{
     res.status(401).send("Login inválido");
   }
 });
+
 
 
