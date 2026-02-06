@@ -75,6 +75,13 @@ function montarGrafico(dados) {
   scales: {
     x: {
       type: "time",
+      time: {
+        unit: "day",
+        tooltipFormat: "dd/MM/yyyy",
+        displayFormats: {
+          day: "dd/MM"
+        }
+      },
       title: {
         display: true,
         text: "Tempo"
@@ -114,6 +121,7 @@ function gerarQRCode(codigo){
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
    window.location.origin + "?codigo=" + codigo;
 }
+
 
 
 
