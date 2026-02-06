@@ -55,15 +55,16 @@ let chart;
 function montarGrafico(dados) {
 
   if (chart) chart.destroy();
-const datas = dados.map(d => new Date(d.data));
 
-const inicio = new Date(Math.min(...datas));
-const fim = new Date(Math.max(...datas));
+  const datas = dados.map(d => new Date(d.data));
 
-// opcional: margem de 1 dia
-inicio.setDate(inicio.getDate() - 1);
-fim.setDate(fim.getDate() + 1);
-  
+  const inicio = new Date(Math.min(...datas));
+  const fim = new Date(Math.max(...datas));
+
+  // margem de 1 dia
+  inicio.setDate(inicio.getDate() - 1);
+  fim.setDate(fim.getDate() + 1);
+
   chart = new Chart(
     document.getElementById("grafico"),
     {
@@ -80,36 +81,37 @@ fim.setDate(fim.getDate() + 1);
         }]
       },
       options: {
-  scales: {
-    x: {
-  type: "time",
-  min: inicio,
-  max: fim,
-  time: {
-    unit: "day",
-    displayFormats: {
-      day: "dd/MM"
-    }
-  },
-  title: {
-    display: true,
-    text: "Data"
-  }
-},
-      title: {
-        display: true,
-        text: "Tempo"
+        plugins: {
+          title: {
+            display: true,
+            text: "Fluxo da Peça no Tempo"
+          }
+        },
+        scales: {
+          x: {
+            type: "time",
+            min: inicio,
+            max: fim,
+            time: {
+              unit: "day",
+              displayFormats: {
+                day: "dd/MM"
+              }
+            },
+            title: {
+              display: true,
+              text: "Data"
+            }
+          },
+          y: {
+            type: "category",
+            title: {
+              display: true,
+              text: "Etapas do Processo"
+            }
+          }
+        }
       }
-    },
-    y: {
-      type: "category",
-      title: {
-        display: true,
-        text: "Etapas do Processo"
-      }
-    }
-  }
-}
     }
   );
 }
@@ -135,6 +137,7 @@ function gerarQRCode(codigo){
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
    window.location.origin + "?codigo=" + codigo;
 }
+
 
 
 
