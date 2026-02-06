@@ -9,9 +9,7 @@ const PORT = process.env.PORT || 3000;
 // Conexão única
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: true
 });
 
 // Teste inicial de conexão
@@ -42,4 +40,5 @@ app.get("/peca/:codigo", async (req, res) => {
 app.listen(PORT, () => {
   console.log("Servidor iniciado");
 });
+
 
