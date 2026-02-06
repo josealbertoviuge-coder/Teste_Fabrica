@@ -21,6 +21,7 @@ async function buscar() {
 
   montarTabela(dados);
   montarGrafico(dados);
+  montarGraficoDuracao(dados);
 }
 
 window.buscar = buscar;
@@ -139,7 +140,74 @@ function gerarQRCode(codigo){
 }
 
 
+function calcularDuracaoHoras(inicio, fim) {
+  const inicioDate = new Date(inicio);
+  const fimDate = new Date(fim);
 
+  const diffMs = fimDate - inicioDate;
+  const diffHoras = diffMs / (1000 * 60 * 60);
+
+  return Number(diffHoras.toFixed(2));
+}
+
+let chartDuracao;
+
+function montarGraficoDuracao(dados) {
+
+  const etapas = [];
+  const duracoes = [];
+
+  dados.forEach(d => {
+
+    // só considera etapas finalizadas
+    if (!d.inicio || !d.fim) return;
+
+    etapas.push(d.nome_etapa);
+
+    duracoes.push(
+      calcularDuracaoHoras(d.inicio, d.fim)
+    );
+  });
+
+  if (chartDuracao) chartDuracao.destroy();
+
+  chartDuracao = new Chart(
+    document.getElementById("graficoDuracao"),
+    {
+      type: "bar",
+      data: {
+        labels: etapas,
+        datasets: [{
+          label: "Duração por Etapa (horas)",
+          data: duracoes,
+          backgroundColor: "#2563eb"
+        }]
+      },
+      options: {
+        indexAxis: "y", // barras horizontais
+        plugins: {
+          title: {
+            display: true,
+            text: "Duração da Peça por Etapa"
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.raw} h`
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: "Horas"
+            }
+          }
+        }
+      }
+    }
+  );
+}
 
 
 
