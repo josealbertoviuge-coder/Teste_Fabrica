@@ -1,3 +1,5 @@
+Chart.register(ChartDataLabels);
+
 // =======================
 // BUSCAR PEÇA
 // =======================
@@ -169,36 +171,49 @@ function montarGraficoDuracao(dados) {
       data: {
         labels: etapas,
         datasets: [{
-          label: "Duração por Etapa (h)",
-          data: duracoes,
-          backgroundColor: "#2563eb"
-        }]
+  label: "Duração por Etapa",
+  data: duracoes,
+  backgroundColor: "#2563eb",
+  datalabels: {
+    color: "red",
+    anchor: "center",
+    align: "center",
+    formatter: value => `${value} h`,
+    font: {
+      weight: "bold",
+      size: 14
+    }
+  }
+}]
       },
-      options: {
-        indexAxis: "y",
-        plugins: {
-          title: {
-            display: true,
-            text: "Tempo Gasto por Etapa"
-          }
-        },
-        scales: {
-          x: {
-            min: 0,
-            max: maxEixo,
-            title: {
-              display: true,
-              text: "Duração (horas)"
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: "Etapas"
-            }
-          }
-        }
+options: {
+  indexAxis: "y",
+  plugins: {
+    datalabels: {
+      display: true
+    },
+    title: {
+      display: true,
+      text: "Duração por Etapa do Processo"
+    }
+  },
+  scales: {
+    x: {
+      min: 0,
+      max: maxEixo,
+      title: {
+        display: true,
+        text: "Duração (horas)"
       }
+    },
+    y: {
+      title: {
+        display: true,
+        text: "Etapas"
+      }
+    }
+  }
+}
     }
   );
 }
@@ -228,3 +243,4 @@ function gerarQRCode(codigo){
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
    window.location.origin + "?codigo=" + codigo;
 }
+
