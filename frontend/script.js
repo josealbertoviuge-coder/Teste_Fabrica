@@ -58,7 +58,7 @@ async function buscar() {
   const codigo = document.getElementById("codigo").value;
 
   const resposta = await fetch(
-    "https://https://teste-fabrica.onrender.com/peca/" + codigo
+    "https://teste-fabrica.onrender.com/peca/" + codigo
   );
 
   const dados = await resposta.json();
@@ -66,4 +66,5 @@ async function buscar() {
   console.log(dados);
 }
 window.buscar = buscar;
+
 
