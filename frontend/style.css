@@ -88,6 +88,7 @@ button {
 }
 
 .topo-wrapper .container {
+  margin-top: 0
   flex: 1 1 auto;
   width: auto !important;
   max-width: none !important;
