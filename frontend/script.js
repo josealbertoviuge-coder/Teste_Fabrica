@@ -171,6 +171,9 @@ function montarGraficoDuracao(dados) {
     duracoes.push(Number(duracaoHoras.toFixed(2)));
   });
 
+  const maxDuracao = Math.max(...duracoes);
+  const maxEixo = maxDuracao * 1.1; // margem visual
+
   if (chartDuracao) chartDuracao.destroy();
 
   chartDuracao = new Chart(
@@ -186,27 +189,25 @@ function montarGraficoDuracao(dados) {
         }]
       },
       options: {
-        indexAxis: "y", // 👈 barras horizontais
+        indexAxis: "y",
         responsive: true,
         plugins: {
           title: {
             display: true,
-            text: "Tempo Gasto por Etapa do Processo"
-          },
-          tooltip: {
-            callbacks: {
-              label: ctx => `${ctx.raw} horas`
-            }
+            text: "Duração por Etapa do Processo"
           }
         },
         scales: {
           x: {
+            min: 0,
+            max: maxEixo,
             beginAtZero: true,
             title: {
               display: true,
               text: "Duração (horas)"
             },
             ticks: {
+              stepSize: Math.ceil(maxDuracao / 5),
               callback: value => `${value} h`
             }
           },
