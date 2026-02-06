@@ -2,19 +2,31 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Teste</title>
+  <title>Rastreamento de Peça</title>
+
+  <!-- ChartJS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Seu JS -->
+  <script src="/script.js"></script>
 </head>
 
 <body>
 
-<input id="codigo" placeholder="Digite código">
+<h2>Consulta de Peça</h2>
+
+<input id="codigo" placeholder="Digite código da peça">
 <button onclick="buscar()">Buscar</button>
 
-<script>
-function buscar() {
-  alert("Funcionando");
-}
-</script>
+<br><br>
+
+<table border="1">
+  <tbody id="tabela"></tbody>
+</table>
+
+<br>
+
+<canvas id="grafico" width="400" height="200"></canvas>
 
 </body>
 </html>
