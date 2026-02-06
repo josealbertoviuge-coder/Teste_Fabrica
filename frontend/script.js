@@ -12,7 +12,8 @@ async function buscar() {
     alert("Digite um código");
     return;
   }
-
+document.getElementById("titulo").innerText =
+  "Consulta de Peça — " + codigo;
   gerarQRCode(codigo);
 
   const res = await fetch(
@@ -279,5 +280,6 @@ function mostrarTempoTotal(horas) {
 
   document.getElementById("tempoTotal").innerText = texto;
 }
+
 
 
