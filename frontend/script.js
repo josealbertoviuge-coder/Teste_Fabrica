@@ -60,21 +60,27 @@ function montarGrafico(dados) {
   if (chart) chart.destroy();
 
   chart = new Chart(
-    document.getElementById("grafico"),
-    {
-      type: "line",
-      data: {
-        labels: etapas,
-        datasets: [{
-          label: "Fluxo da Peça",
-          data: ordem,
-          borderColor: "blue",
-          fill: false
-        }]
-      }
-    }
-  );
-}
+ document.getElementById("grafico"),
+ {
+  type: "scatter",
+  data: {
+   datasets: [{
+    label: "Fluxo da Peça",
+    data: dados.map(d => ({
+      x: new Date(d.data),
+      y: d.nome_etapa
+    })),
+    showLine: true,
+    borderColor: "blue"
+   }]
+  },
+  options:{
+   scales:{
+    x:{ type:"time" }
+   }
+  }
+ }
+);
 
 // =======================
 // AUTO BUSCA VIA URL
@@ -97,4 +103,5 @@ function gerarQRCode(codigo){
    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
    window.location.origin + "?codigo=" + codigo;
 }
+
 
