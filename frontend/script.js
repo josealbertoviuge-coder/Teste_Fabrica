@@ -138,20 +138,20 @@ function montarTabela(dados) {
 }
 
 // =======================
-// GRÁFICO GANTT (AGRUPADO POR ETAPA)
+// GRÁFICO GANTT (SCROLL + AGRUPADO)
 // =======================
 
 let chartGantt;
 
 function montarGraficoGantt(dados) {
 
-  // 🔁 Destroi o gráfico anterior
+  // 🔁 Remove gráfico anterior
   if (chartGantt) chartGantt.destroy();
 
   const agora = new Date();
 
   // =======================
-  // CÁLCULO DO RANGE DO EIXO X
+  // RANGE GLOBAL DOS DADOS
   // =======================
 
   const datas = dados
@@ -164,21 +164,23 @@ function montarGraficoGantt(dados) {
   if (!datas.length) return;
 
   const minData = new Date(Math.min(...datas));
-  const maxData = new Date(Math.max(...datas));
-
-  const margem = (maxData - minData) * 0.05;
-
-  const eixoMin = new Date(minData.getTime() - margem);
-  const eixoMax = new Date(maxData.getTime() + margem);
 
   // =======================
-  // LABELS ÚNICAS (1 LINHA POR ETAPA)
+  // JANELA FIXA DE 7 DIAS
+  // =======================
+
+  const eixoMin = new Date(minData);
+  const eixoMax = new Date(minData);
+  eixoMax.setDate(eixoMax.getDate() + 7);
+
+  // =======================
+  // ETAPAS ÚNICAS (1 LINHA)
   // =======================
 
   const labels = [...new Set(dados.map(d => d.nome_etapa))];
 
   // =======================
-  // DATASET COM MÚLTIPLOS PERÍODOS
+  // DATASET MULTI-PERÍODOS
   // =======================
 
   const data = [];
@@ -191,18 +193,19 @@ function montarGraficoGantt(dados) {
     const inicio = dataSemFuso(d.inicio);
     const fim = d.fim
       ? dataSemFuso(d.fim)
-      : dataSemFuso(new Date().toISOString());
+      : agora;
 
     data.push({
       x: [inicio, fim],
       y: d.nome_etapa
     });
 
+    // 🔵 concluída | 🟠 em andamento
     cores.push(d.fim ? "#2563eb" : "#f59e0b");
   });
 
   // =======================
-  // CRIAÇÃO DO CHART
+  // CRIAÇÃO DO GRÁFICO
   // =======================
 
   chartGantt = new Chart(
@@ -216,11 +219,16 @@ function montarGraficoGantt(dados) {
           data,
           backgroundColor: cores,
           borderRadius: 6,
-          barThickness: 18
+          barThickness: 18,
+          maxBarThickness: 22
         }]
       },
       options: {
 
+        responsive: true,
+        maintainAspectRatio: false,
+
+        // Gantt horizontal
         indexAxis: "y",
 
         // =======================
@@ -234,9 +242,7 @@ function montarGraficoGantt(dados) {
             font: { weight: "bold", size: 16 }
           },
 
-          legend: {
-            display: false
-          },
+          legend: { display: false },
 
           tooltip: {
             callbacks: {
@@ -247,9 +253,7 @@ function montarGraficoGantt(dados) {
             }
           },
 
-          datalabels: {
-            display: false
-          }
+          datalabels: { display: false }
         },
 
         // =======================
@@ -258,7 +262,7 @@ function montarGraficoGantt(dados) {
         scales: {
 
           // -----------------------
-          // EIXO X (TEMPO)
+          // EIXO X — TEMPO
           // -----------------------
           x: {
             type: "time",
@@ -272,15 +276,12 @@ function montarGraficoGantt(dados) {
 
             ticks: {
               autoSkip: false,
-              major: {
-                enabled: true
-              },
+              major: { enabled: true },
 
-              // 🧠 FORMATAÇÃO INTELIGENTE
-              callback: (value) => {
+              // 🗓 Data às 00:00 | ⏰ Hora nos demais
+              callback: value => {
                 const d = new Date(value);
 
-                // 🗓 meia-noite → mostra DATA
                 if (d.getHours() === 0 && d.getMinutes() === 0) {
                   return d.toLocaleDateString("pt-BR", {
                     day: "2-digit",
@@ -288,7 +289,6 @@ function montarGraficoGantt(dados) {
                   });
                 }
 
-                // ⏰ demais → mostra HORA
                 return d.toLocaleTimeString("pt-BR", {
                   hour: "2-digit",
                   minute: "2-digit"
@@ -303,21 +303,16 @@ function montarGraficoGantt(dados) {
               })
             },
 
-            // 📏 LINHAS DE GRADE
+            // 📏 Grade com virada de dia destacada
             grid: {
               color: ctx => {
                 const d = new Date(ctx.tick.value);
-
-                // 🔴 virada de dia
-                if (d.getHours() === 0 && d.getMinutes() === 0) {
-                  return "rgba(0,0,0,0.45)";
-                }
-
-                return "rgba(0,0,0,0.08)";
+                return (d.getHours() === 0 && d.getMinutes() === 0)
+                  ? "rgba(0,0,0,0.45)"
+                  : "rgba(0,0,0,0.08)";
               },
               lineWidth: ctx => {
                 const d = new Date(ctx.tick.value);
-
                 return (d.getHours() === 0 && d.getMinutes() === 0)
                   ? 2
                   : 0.5;
@@ -332,15 +327,15 @@ function montarGraficoGantt(dados) {
           },
 
           // -----------------------
-          // EIXO Y (ETAPAS)
+          // EIXO Y — ETAPAS
           // -----------------------
           y: {
+            ticks: {
+              font: { weight: "bold" }
+            },
             title: {
               display: true,
               text: "Etapas",
-              font: { weight: "bold" }
-            },
-            ticks: {
               font: { weight: "bold" }
             }
           }
@@ -349,6 +344,7 @@ function montarGraficoGantt(dados) {
     }
   );
 }
+
 // =======================
 // GRÁFICO DE DURAÇÃO (TOTAL POR ETAPA)
 // =======================
@@ -505,6 +501,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
