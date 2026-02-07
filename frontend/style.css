@@ -84,18 +84,16 @@ button {
    ======================= */
 .gantt-wrapper {
   width: 100%;
-  max-height: 320px;        /* ≈ 5 etapas visíveis */
-  overflow-y: auto;         /* scroll vertical */
-  overflow-x: auto;         /* scroll horizontal */
+  max-height: 320px;     /* ~5 etapas */
+  overflow-y: auto;
+  overflow-x: auto;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 10px;
-  margin-bottom: 30px;
 }
 
-/* 🔴 ESSENCIAL PARA O SCROLL FUNCIONAR */
 #grafico {
   display: block;
-  width: 100%;       /* mesmo tamanho do gráfico de duração */
-  height: 360px;     /* altura fixa */
+  width: 100%;           /* MESMA LARGURA do gráfico de duração */
+  height: 360px;
 }
