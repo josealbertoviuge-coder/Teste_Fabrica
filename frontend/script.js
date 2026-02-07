@@ -178,6 +178,23 @@ function montarGraficoGantt(dados) {
               autoSkip: true,
               font: { weight: "bold" }
             },
+            grid: {
+              color: ctx => {
+                const value = ctx.tick.value;
+                const date = new Date(value);
+          
+                // início de um novo dia (00:00)
+                if (date.getHours() === 0 && date.getMinutes() === 0) {
+                  return "rgba(0,0,0,0.35)"; // linha mais escura
+                }
+          
+                return "rgba(0,0,0,0.08)"; // linhas normais
+              },
+              lineWidth: ctx => {
+                const date = new Date(ctx.tick.value);
+                return date.getHours() === 0 ? 1.5 : 0.5;
+              }
+            },
             title: {
               display: true,
               text: "Tempo",
@@ -329,4 +346,5 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
