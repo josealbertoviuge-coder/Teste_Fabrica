@@ -275,22 +275,23 @@ function montarGraficoGantt(dados) {
 
             time: {
               unit: "hour",
+              stepSize: 1,               // 🔑 garante todas as horas
               displayFormats: {
                 hour: "HH:mm"
               }
             },
 
             ticks: {
-              autoSkip: true,
+              source: "auto",            // 🔑 não pula horários
+              autoSkip: false,           // 🔑 mantém todos os ticks
               font: { weight: "normal" }
             },
 
-            // 🔴 LINHA MAIS ESCURA NO INÍCIO DE CADA DIA (00:00)
+            // 🔴 LINHA MAIS ESCURA EM TODA VIRADA DE DIA (00:00)
             grid: {
               color: ctx => {
                 const date = new Date(ctx.tick.value);
 
-                // início de um novo dia
                 if (
                   date.getHours() === 0 &&
                   date.getMinutes() === 0
