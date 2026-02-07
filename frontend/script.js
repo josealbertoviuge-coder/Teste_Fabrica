@@ -166,11 +166,15 @@ function montarGraficoGantt(dados) {
   const minData = new Date(Math.min(...datas));
   const maxData = new Date(Math.max(...datas));
 
-  // margem visual (5%)
-  const margem = (maxData - minData) * 0.05;
+  // =======================
+  // ALINHA EIXO AO DIA (00:00 → 23:59)
+  // =======================
 
-  const eixoMin = new Date(minData.getTime() - margem);
-  const eixoMax = new Date(maxData.getTime() + margem);
+  const eixoMin = new Date(minData);
+  eixoMin.setHours(0, 0, 0, 0);
+
+  const eixoMax = new Date(maxData);
+  eixoMax.setHours(23, 59, 59, 999);
 
   // =======================
   // LABELS ÚNICAS (1 LINHA POR ETAPA)
@@ -275,15 +279,14 @@ function montarGraficoGantt(dados) {
 
             time: {
               unit: "hour",
-              stepSize: 1,               // 🔑 garante todas as horas
+              stepSize: 1,
               displayFormats: {
                 hour: "HH:mm"
               }
             },
 
             ticks: {
-              source: "auto",            // 🔑 não pula horários
-              autoSkip: false,           // 🔑 mantém todos os ticks
+              autoSkip: false,
               font: { weight: "normal" }
             },
 
@@ -338,7 +341,6 @@ function montarGraficoGantt(dados) {
     }
   );
 }
-
 // =======================
 // GRÁFICO DE DURAÇÃO (TOTAL POR ETAPA)
 // =======================
@@ -495,6 +497,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
