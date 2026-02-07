@@ -97,3 +97,17 @@ button {
   padding: 20px 30px;
   border-radius: 10px;
 }
+
+.gantt-wrapper {
+  width: 100%;
+  max-height: 320px;          /* ≈ 5 etapas */
+  overflow-y: auto;           /* scroll vertical */
+  overflow-x: auto;           /* scroll horizontal */
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+#grafico {
+  min-width: 1400px;          /* força scroll horizontal */
+}
