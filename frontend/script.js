@@ -184,7 +184,7 @@ function montarGraficoGantt(dados) {
                 const date = new Date(value);
           
                 // início de um novo dia (00:00)
-                if (date.getHours() === 0 && date.getMinutes() === 0) {
+                if (date.getHours() === 7 && date.getMinutes() === 0) or (date.getHours() === 19 && date.getMinutes() === 0) {
                   return "rgba(0,0,0,0.35)"; // linha mais escura
                 }
           
@@ -346,5 +346,6 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
