@@ -145,7 +145,7 @@ let chartGantt;
 
 function montarGraficoGantt(dados) {
 
-  // 🔁 Destroi o gráfico anterior (evita sobreposição)
+  // 🔁 Destroi o gráfico anterior
   if (chartGantt) chartGantt.destroy();
 
   const agora = new Date();
@@ -194,8 +194,7 @@ function montarGraficoGantt(dados) {
       ? dataSemFuso(d.fim)
       : dataSemFuso(new Date().toISOString());
 
-    // 👉 Cada período vira uma barra,
-    // mas aponta para a MESMA etapa (y)
+    // 👉 cada período vira uma barra
     data.push({
       x: [inicio, fim],
       y: d.nome_etapa
@@ -240,12 +239,12 @@ function montarGraficoGantt(dados) {
             font: { weight: "bold", size: 16 }
           },
 
-          // Remove legenda (não necessária)
+          // Remove legenda
           legend: {
             display: false
           },
 
-          // Tooltip com o MESMO formato da tabela
+          // Tooltip no mesmo formato da tabela
           tooltip: {
             callbacks: {
               label: ctx => {
@@ -255,7 +254,7 @@ function montarGraficoGantt(dados) {
             }
           },
 
-          // Sem labels sobre as barras
+          // Sem labels sobre barras
           datalabels: {
             display: false
           }
@@ -267,11 +266,10 @@ function montarGraficoGantt(dados) {
         scales: {
 
           // -----------------------
-          // EIXO X (HORAS)
+          // EIXO X (TEMPO)
           // -----------------------
           x: {
             type: "time",
-            position: "bottom",
             min: eixoMin,
             max: eixoMax,
 
@@ -284,10 +282,34 @@ function montarGraficoGantt(dados) {
 
             ticks: {
               autoSkip: true,
-              major: { enabled: true },
-              font: ctx => ({
-                weight: ctx.tick && ctx.tick.major ? "bold" : "normal"
-              })
+              font: { weight: "normal" }
+            },
+
+            // 🔴 LINHA MAIS ESCURA NO INÍCIO DE CADA DIA (00:00)
+            grid: {
+              color: ctx => {
+                const date = new Date(ctx.tick.value);
+
+                // início de um novo dia
+                if (
+                  date.getHours() === 0 &&
+                  date.getMinutes() === 0
+                ) {
+                  return "rgba(0,0,0,0.5)";
+                }
+
+                return "rgba(0,0,0,0.08)";
+              },
+              lineWidth: ctx => {
+                const date = new Date(ctx.tick.value);
+
+                return (
+                  date.getHours() === 0 &&
+                  date.getMinutes() === 0
+                )
+                  ? 2
+                  : 0.5;
+              }
             },
 
             title: {
@@ -472,6 +494,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
