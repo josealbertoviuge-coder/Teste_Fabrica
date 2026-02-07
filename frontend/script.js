@@ -325,6 +325,7 @@ let chartDuracao;
 function montarGraficoDuracao(dados) {
 
   const acumuladoPorEtapa = {};
+  const etapaEmAndamento = {};
   const agora = new Date();
 
   // =======================
@@ -338,15 +339,21 @@ function montarGraficoDuracao(dados) {
     const inicio = dataSemFuso(d.inicio);
     const fim = d.fim
       ? dataSemFuso(d.fim)
-      : agora; // 🟠 em andamento
+      : agora;
 
     const horas = (fim - inicio) / (1000 * 60 * 60);
 
     if (!acumuladoPorEtapa[d.nome_etapa]) {
       acumuladoPorEtapa[d.nome_etapa] = 0;
+      etapaEmAndamento[d.nome_etapa] = false;
     }
 
     acumuladoPorEtapa[d.nome_etapa] += horas;
+
+    // 🟠 se existir período sem fim
+    if (!d.fim) {
+      etapaEmAndamento[d.nome_etapa] = true;
+    }
   });
 
   const etapas = Object.keys(acumuladoPorEtapa);
@@ -356,18 +363,16 @@ function montarGraficoDuracao(dados) {
     Number(acumuladoPorEtapa[e].toFixed(2))
   );
 
+  const cores = etapas.map(e =>
+    etapaEmAndamento[e] ? "#f59e0b" : "#2563eb"
+  );
+
   // =======================
   // TEMPO TOTAL DA PEÇA
   // =======================
 
   const tempoTotalHoras = duracoes.reduce((a, b) => a + b, 0);
   mostrarTempoTotal(tempoTotalHoras);
-
-  // =======================
-  // CORES (NEUTRAS / AZUL)
-  // =======================
-
-  const cores = etapas.map(() => "#2563eb");
 
   // =======================
   // GRÁFICO
@@ -394,7 +399,7 @@ function montarGraficoDuracao(dados) {
         plugins: {
           title: {
             display: true,
-            text: "Duração Total por Etapa (Concluído + Em Andamento)",
+            text: "Duração Total por Etapa",
             font: { weight: "bold", size: 16 }
           },
           legend: {
@@ -434,6 +439,7 @@ function montarGraficoDuracao(dados) {
     }
   );
 }
+
 // =======================
 // AUTO BUSCA VIA URL
 // =======================
@@ -466,6 +472,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
