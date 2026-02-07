@@ -1,9 +1,3 @@
-// =======================
-// PLUGINS
-// =======================
-
-Chart.register(ChartDataLabels);
-Chart.register(turnoNoturnoPlugin);
 
 const turnoNoturnoPlugin = {
   id: "turnoNoturno",
@@ -50,6 +44,13 @@ const turnoNoturnoPlugin = {
     ctx.restore();
   }
 };
+
+// =======================
+// PLUGINS
+// =======================
+
+Chart.register(ChartDataLabels);
+Chart.register(turnoNoturnoPlugin);
 
 // =======================
 // DATA SEM FUSO (exibe como digitado)
@@ -401,4 +402,5 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
