@@ -95,7 +95,7 @@ button {
 
 /* 🔴 ESSENCIAL PARA O SCROLL FUNCIONAR */
 #grafico {
-  display: block;           /* canvas não pode ser inline */
-  min-width: 1600px;        /* força scroll horizontal */
-  height: 360px;            /* força scroll vertical */
+  display: block;
+  width: 100%;       /* mesmo tamanho do gráfico de duração */
+  height: 360px;     /* altura fixa */
 }
