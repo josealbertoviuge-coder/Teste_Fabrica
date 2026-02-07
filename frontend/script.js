@@ -181,18 +181,6 @@ function montarGraficoGantt(dados) {
   eixoMax.setDate(eixoMax.getDate() + 7);
 
   // =======================
-  // 🔴 CONTROLE DE SCROLL HORIZONTAL
-  // =======================
-
-  if (diasTotais > 7) {
-    wrapper.style.overflowX = "auto";
-    canvas.style.minWidth = "1600px";   // força scroll
-  } else {
-    wrapper.style.overflowX = "hidden";
-    canvas.style.minWidth = "100%";     // tamanho normal
-  }
-
-  // =======================
   // ETAPAS ÚNICAS (1 LINHA)
   // =======================
 
@@ -520,6 +508,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
