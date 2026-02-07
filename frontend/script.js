@@ -218,56 +218,95 @@ function montarGraficoGantt(dados) {
             display: false
           }
         },
-        scales: {
-          x: {
-            type: "time",
-            min: eixoMin,
-            max: eixoMax,
-            ticks: {
-              autoSkip: true,
-              font: { weight: "bold" }
-            },
-            grid: {
-              color: ctx => {
-                const date = new Date(ctx.tick.value);
+scales: {
+  // ======================
+  // EIXO X INFERIOR (HORAS)
+  // ======================
+  x: {
+    type: "time",
+    position: "bottom",
+    min: eixoMin,
+    max: eixoMax,
+    time: {
+      unit: "hour",
+      displayFormats: {
+        hour: "HH:mm"
+      }
+    },
+    ticks: {
+      autoSkip: true,
+      font: { weight: "bold" }
+    },
+    grid: {
+      color: ctx => {
+        const date = new Date(ctx.tick.value);
 
-                if (
-                  (date.getHours() === 7 && date.getMinutes() === 0) ||
-                  (date.getHours() === 19 && date.getMinutes() === 0)
-                ) {
-                  return "rgba(0,0,0,0.45)";
-                }
-
-                return "rgba(0,0,0,0.08)";
-              },
-              lineWidth: ctx => {
-                const date = new Date(ctx.tick.value);
-
-                return (
-                  (date.getHours() === 7 && date.getMinutes() === 0) ||
-                  (date.getHours() === 19 && date.getMinutes() === 0)
-                )
-                  ? 2
-                  : 0.5;
-              }
-            }, // ✅ vírgula corrigida aqui
-            title: {
-              display: true,
-              text: "Tempo",
-              font: { weight: "bold" }
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: "Etapas",
-              font: { weight: "bold" }
-            },
-            ticks: {
-              font: { weight: "bold" }
-            }
-          }
+        if (
+          (date.getHours() === 7 && date.getMinutes() === 0) ||
+          (date.getHours() === 19 && date.getMinutes() === 0)
+        ) {
+          return "rgba(0,0,0,0.45)";
         }
+        return "rgba(0,0,0,0.08)";
+      },
+      lineWidth: ctx => {
+        const date = new Date(ctx.tick.value);
+        return (
+          (date.getHours() === 7 && date.getMinutes() === 0) ||
+          (date.getHours() === 19 && date.getMinutes() === 0)
+        )
+          ? 2
+          : 0.5;
+      }
+    },
+    title: {
+      display: true,
+      text: "Horas",
+      font: { weight: "bold" }
+    }
+  },
+
+  // ======================
+  // EIXO X SUPERIOR (DIAS)
+  // ======================
+  xDias: {
+    type: "time",
+    position: "top",
+    min: eixoMin,
+    max: eixoMax,
+    time: {
+      unit: "day",
+      displayFormats: {
+        day: "dd/MM"
+      }
+    },
+    ticks: {
+      font: { weight: "bold" }
+    },
+    grid: {
+      drawOnChartArea: false // 👈 NÃO desenha linhas verticais
+    },
+    title: {
+      display: true,
+      text: "Dias",
+      font: { weight: "bold" }
+    }
+  },
+
+  // ======================
+  // EIXO Y
+  // ======================
+  y: {
+    title: {
+      display: true,
+      text: "Etapas",
+      font: { weight: "bold" }
+    },
+    ticks: {
+      font: { weight: "bold" }
+    }
+  }
+}
       }
     }
   );
@@ -402,5 +441,6 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
