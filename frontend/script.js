@@ -101,8 +101,8 @@ function montarGraficoGantt(dados) {
 
   const datas = dados
     .flatMap(d => [
-      d.inicio ? new Date(d.inicio) : null,
-      d.fim ? new Date(d.fim) : agora
+      d.inicio ? dataSemFuso(d.inicio) : null,
+      d.fim ? dataSemFuso(d.fim) : agora
     ])
     .filter(Boolean);
 
@@ -180,22 +180,20 @@ function montarGraficoGantt(dados) {
             },
             grid: {
               color: ctx => {
-                const value = ctx.tick.value;
-                const date = new Date(value);
-            
-                // início de turno: 07:00 ou 19:00
+                const date = new Date(ctx.tick.value);
+
                 if (
                   (date.getHours() === 7 && date.getMinutes() === 0) ||
                   (date.getHours() === 19 && date.getMinutes() === 0)
                 ) {
-                  return "rgba(0,0,0,0.45)"; // linha mais escura
+                  return "rgba(0,0,0,0.45)";
                 }
-            
+
                 return "rgba(0,0,0,0.08)";
               },
               lineWidth: ctx => {
                 const date = new Date(ctx.tick.value);
-            
+
                 return (
                   (date.getHours() === 7 && date.getMinutes() === 0) ||
                   (date.getHours() === 19 && date.getMinutes() === 0)
@@ -203,7 +201,7 @@ function montarGraficoGantt(dados) {
                   ? 2
                   : 0.5;
               }
-            }
+            }, // ✅ vírgula corrigida aqui
             title: {
               display: true,
               text: "Tempo",
@@ -242,8 +240,8 @@ function montarGraficoDuracao(dados) {
   dados.forEach(d => {
     if (!d.inicio) return;
 
-    const inicio = new Date(d.inicio);
-    const fim = d.fim ? new Date(d.fim) : new Date();
+    const inicio = dataSemFuso(d.inicio);
+    const fim = d.fim ? dataSemFuso(d.fim) : new Date();
 
     const horas = (fim - inicio) / (1000 * 60 * 60);
     const valor = Number(horas.toFixed(2));
@@ -355,8 +353,3 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
-
-
-
-
-
