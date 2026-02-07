@@ -166,15 +166,10 @@ function montarGraficoGantt(dados) {
   const minData = new Date(Math.min(...datas));
   const maxData = new Date(Math.max(...datas));
 
-  // =======================
-  // ALINHA EIXO AO DIA (00:00 → 23:59)
-  // =======================
+  const margem = (maxData - minData) * 0.05;
 
-  const eixoMin = new Date(minData);
-  eixoMin.setHours(0, 0, 0, 0);
-
-  const eixoMax = new Date(maxData);
-  eixoMax.setHours(23, 59, 59, 999);
+  const eixoMin = new Date(minData.getTime() - margem);
+  const eixoMax = new Date(maxData.getTime() + margem);
 
   // =======================
   // LABELS ÚNICAS (1 LINHA POR ETAPA)
@@ -198,13 +193,11 @@ function montarGraficoGantt(dados) {
       ? dataSemFuso(d.fim)
       : dataSemFuso(new Date().toISOString());
 
-    // 👉 cada período vira uma barra
     data.push({
       x: [inicio, fim],
       y: d.nome_etapa
     });
 
-    // 🔵 concluída | 🟠 em andamento
     cores.push(d.fim ? "#2563eb" : "#f59e0b");
   });
 
@@ -228,7 +221,6 @@ function montarGraficoGantt(dados) {
       },
       options: {
 
-        // Gantt horizontal
         indexAxis: "y",
 
         // =======================
@@ -236,19 +228,16 @@ function montarGraficoGantt(dados) {
         // =======================
         plugins: {
 
-          // Título
           title: {
             display: true,
             text: "Timeline de Execução da Peça",
             font: { weight: "bold", size: 16 }
           },
 
-          // Remove legenda
           legend: {
             display: false
           },
 
-          // Tooltip no mesmo formato da tabela
           tooltip: {
             callbacks: {
               label: ctx => {
@@ -258,7 +247,6 @@ function montarGraficoGantt(dados) {
             }
           },
 
-          // Sem labels sobre barras
           datalabels: {
             display: false
           }
@@ -279,38 +267,58 @@ function montarGraficoGantt(dados) {
 
             time: {
               unit: "hour",
-              stepSize: 1,
-              displayFormats: {
-                hour: "HH:mm"
-              }
+              stepSize: 6
             },
 
             ticks: {
               autoSkip: false,
-              font: { weight: "normal" }
+              major: {
+                enabled: true
+              },
+
+              // 🧠 FORMATAÇÃO INTELIGENTE
+              callback: (value) => {
+                const d = new Date(value);
+
+                // 🗓 meia-noite → mostra DATA
+                if (d.getHours() === 0 && d.getMinutes() === 0) {
+                  return d.toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "short"
+                  });
+                }
+
+                // ⏰ demais → mostra HORA
+                return d.toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                });
+              },
+
+              font: ctx => ({
+                weight:
+                  ctx.tick && ctx.tick.major
+                    ? "bold"
+                    : "normal"
+              })
             },
 
-            // 🔴 LINHA MAIS ESCURA EM TODA VIRADA DE DIA (00:00)
+            // 📏 LINHAS DE GRADE
             grid: {
               color: ctx => {
-                const date = new Date(ctx.tick.value);
+                const d = new Date(ctx.tick.value);
 
-                if (
-                  date.getHours() === 0 &&
-                  date.getMinutes() === 0
-                ) {
-                  return "rgba(0,0,0,0.5)";
+                // 🔴 virada de dia
+                if (d.getHours() === 0 && d.getMinutes() === 0) {
+                  return "rgba(0,0,0,0.45)";
                 }
 
                 return "rgba(0,0,0,0.08)";
               },
               lineWidth: ctx => {
-                const date = new Date(ctx.tick.value);
+                const d = new Date(ctx.tick.value);
 
-                return (
-                  date.getHours() === 0 &&
-                  date.getMinutes() === 0
-                )
+                return (d.getHours() === 0 && d.getMinutes() === 0)
                   ? 2
                   : 0.5;
               }
@@ -318,7 +326,7 @@ function montarGraficoGantt(dados) {
 
             title: {
               display: true,
-              text: "Horas",
+              text: "Tempo",
               font: { weight: "bold" }
             }
           },
@@ -497,6 +505,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
