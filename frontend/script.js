@@ -103,9 +103,10 @@ function montarGraficoGantt(dados) {
     ])
     .filter(Boolean);
 
+  if (!datas.length) return;
+
   const minData = new Date(Math.min(...datas));
   const maxData = new Date(Math.max(...datas));
-
   const margem = (maxData - minData) * 0.05;
 
   const eixoMin = new Date(minData.getTime() - margem);
@@ -143,19 +144,17 @@ function montarGraficoGantt(dados) {
       options: {
         indexAxis: "y",
         plugins: {
-  title: {
-    display: true,
-    text: "Timeline de Execução da Peça",
-    font: { weight: "bold", size: 16 }
-  },
-  legend: {
-    display: false
-  },
-  datalabels: {
-    display: false
-  }
-},
-          datalabels: { display: false }
+          title: {
+            display: true,
+            text: "Timeline de Execução da Peça",
+            font: { weight: "bold", size: 16 }
+          },
+          legend: {
+            display: false
+          },
+          datalabels: {
+            display: false
+          }
         },
         scales: {
           x: {
@@ -245,14 +244,11 @@ function montarGraficoDuracao(dados) {
             text: "Duração do Processo",
             font: { weight: "bold", size: 16 }
           },
-           legend: {
-    labels: {
-      font: {
-        weight: "bold",
-        size: 13
-      }
-    }
-  },
+          legend: {
+            labels: {
+              font: { weight: "bold", size: 13 }
+            }
+          },
           datalabels: {
             color: "#000",
             formatter: v => `${v} h`,
@@ -320,5 +316,3 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
-
-
