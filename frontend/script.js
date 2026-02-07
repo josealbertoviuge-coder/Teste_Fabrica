@@ -265,34 +265,6 @@ x: {
     font: { weight: "bold" }
   }
 },
-
-  // ======================
-  // EIXO X SUPERIOR (DIAS)
-  // ======================
-  xDias: {
-    type: "time",
-    position: "top",
-    min: eixoMin,
-    max: eixoMax,
-    time: {
-      unit: "day",
-      displayFormats: {
-        day: "dd/MM"
-      }
-    },
-    ticks: {
-      font: { weight: "bold" }
-    },
-    grid: {
-      drawOnChartArea: false // 👈 NÃO desenha linhas verticais
-    },
-    title: {
-      display: true,
-      text: "Dias",
-      font: { weight: "bold" }
-    }
-  },
-
   // ======================
   // EIXO Y
   // ======================
@@ -441,6 +413,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
