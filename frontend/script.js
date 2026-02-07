@@ -122,8 +122,10 @@ function montarGraficoGantt(dados) {
   dados.forEach(d => {
     if (!d.inicio) return;
 
-    const inicio = new Date(d.inicio);
-    const fim = d.fim ? new Date(d.fim) : agora;
+    const inicio = dataSemFuso(d.inicio);
+    const fim = d.fim
+      ? dataSemFuso(d.fim)
+      : dataSemFuso(new Date().toISOString());
 
     labels.push(d.nome_etapa);
     data.push([inicio, fim]);
@@ -327,3 +329,4 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
