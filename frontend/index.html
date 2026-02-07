@@ -11,28 +11,29 @@
 <!-- TOPO -->
 <div class="topo-wrapper">
   <img id="qrcode">
-
   <div class="header-card">
     <h2 id="titulo">Consulta de Peça</h2>
     <div id="tempoTotal"></div>
   </div>
 </div>
 
-<!-- GANTT COM SCROLL -->
-<div class="gantt-wrapper">
-  <canvas id="grafico"></canvas>
-</div>
-
 <!-- CONTEÚDO -->
 <div class="container">
 
-  <!-- input oculto via CSS -->
-  <input id="codigo" placeholder="Digite código da peça">
+  <input id="codigo">
   <button onclick="buscar()">Buscar</button>
 
+  <!-- TABELA -->
   <table>
     <tbody id="tabela"></tbody>
   </table>
+
+  <br><br>
+
+  <!-- GANTT -->
+  <div class="gantt-wrapper">
+    <canvas id="grafico"></canvas>
+  </div>
 
   <br><br>
 
@@ -49,3 +50,4 @@
 
 </body>
 </html>
+
