@@ -12,6 +12,21 @@ function dataSemFuso(data) {
 }
 
 // =======================
+// FORMATADOR PADRÃO (TABELA + TOOLTIP)
+// =======================
+function formatarDataTabela(dateObj) {
+  if (!(dateObj instanceof Date)) return "-";
+
+  return dateObj.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+// =======================
 // BUSCAR PEÇA
 // =======================
 async function buscar() {
@@ -53,23 +68,11 @@ function montarTabela(dados) {
   dados.forEach(d => {
 
     const inicio = d.inicio
-      ? dataSemFuso(d.inicio).toLocaleString("pt-BR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit"
-        })
+      ? formatarDataTabela(dataSemFuso(d.inicio))
       : "-";
 
     const fim = d.fim
-      ? dataSemFuso(d.fim).toLocaleString("pt-BR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit"
-        })
+      ? formatarDataTabela(dataSemFuso(d.fim))
       : "Em andamento";
 
     html += `
@@ -89,18 +92,6 @@ function montarTabela(dados) {
 // GRÁFICO GANTT
 // =======================
 let chartGantt;
-
-function formatarDataTabela(dateObj) {
-  if (!(dateObj instanceof Date)) return "-";
-
-  return dateObj.toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-}
 
 function montarGraficoGantt(dados) {
 
@@ -164,6 +155,14 @@ function montarGraficoGantt(dados) {
           legend: {
             display: false
           },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const [inicio, fim] = ctx.raw;
+                return `${formatarDataTabela(inicio)} → ${formatarDataTabela(fim)}`;
+              }
+            }
+          },
           datalabels: {
             display: false
           }
@@ -193,19 +192,7 @@ function montarGraficoGantt(dados) {
               font: { weight: "bold" }
             }
           }
-        },
-tooltip: {
-  callbacks: {
-    label: ctx => {
-      const [inicio, fim] = ctx.raw;
-
-      const inicioFmt = formatarDataTabela(inicio);
-      const fimFmt = formatarDataTabela(fim);
-
-      return `${inicioFmt} → ${fimFmt}`;
-    }
-  }
-}
+        }
       }
     }
   );
@@ -340,5 +327,3 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
-
-
