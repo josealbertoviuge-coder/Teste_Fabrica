@@ -317,37 +317,61 @@ function montarGraficoGantt(dados) {
 }
 
 // =======================
-// GRÁFICO DE DURAÇÃO
+// GRÁFICO DE DURAÇÃO (TOTAL POR ETAPA)
 // =======================
+
 let chartDuracao;
 
 function montarGraficoDuracao(dados) {
 
-  const etapas = [];
-  const duracoes = [];
-  const cores = [];
+  const acumuladoPorEtapa = {};
+  const agora = new Date();
 
-  let tempoTotalHoras = 0;
+  // =======================
+  // AGREGA TODOS OS PERÍODOS
+  // =======================
 
   dados.forEach(d => {
+
     if (!d.inicio) return;
 
     const inicio = dataSemFuso(d.inicio);
-    const fim = d.fim ? dataSemFuso(d.fim) : new Date();
+    const fim = d.fim
+      ? dataSemFuso(d.fim)
+      : agora; // 🟠 em andamento
 
     const horas = (fim - inicio) / (1000 * 60 * 60);
-    const valor = Number(horas.toFixed(2));
 
-    etapas.push(d.nome_etapa);
-    duracoes.push(valor);
-    tempoTotalHoras += valor;
+    if (!acumuladoPorEtapa[d.nome_etapa]) {
+      acumuladoPorEtapa[d.nome_etapa] = 0;
+    }
 
-    cores.push(d.fim ? "#2563eb" : "#f59e0b");
+    acumuladoPorEtapa[d.nome_etapa] += horas;
   });
 
-  if (!duracoes.length) return;
+  const etapas = Object.keys(acumuladoPorEtapa);
+  if (!etapas.length) return;
 
+  const duracoes = etapas.map(e =>
+    Number(acumuladoPorEtapa[e].toFixed(2))
+  );
+
+  // =======================
+  // TEMPO TOTAL DA PEÇA
+  // =======================
+
+  const tempoTotalHoras = duracoes.reduce((a, b) => a + b, 0);
   mostrarTempoTotal(tempoTotalHoras);
+
+  // =======================
+  // CORES (NEUTRAS / AZUL)
+  // =======================
+
+  const cores = etapas.map(() => "#2563eb");
+
+  // =======================
+  // GRÁFICO
+  // =======================
 
   const maxEixo = Math.max(...duracoes) * 1.1;
 
@@ -360,7 +384,7 @@ function montarGraficoDuracao(dados) {
       data: {
         labels: etapas,
         datasets: [{
-          label: "Duração por Etapa (h)",
+          label: "Tempo Total por Etapa (h)",
           data: duracoes,
           backgroundColor: cores
         }]
@@ -370,13 +394,11 @@ function montarGraficoDuracao(dados) {
         plugins: {
           title: {
             display: true,
-            text: "Duração do Processo",
+            text: "Duração Total por Etapa (Concluído + Em Andamento)",
             font: { weight: "bold", size: 16 }
           },
           legend: {
-            labels: {
-              font: { weight: "bold", size: 13 }
-            }
+            display: false
           },
           datalabels: {
             color: "#000",
@@ -390,7 +412,7 @@ function montarGraficoDuracao(dados) {
             max: maxEixo,
             title: {
               display: true,
-              text: "Duração (horas)",
+              text: "Horas acumuladas",
               font: { weight: "bold" }
             },
             ticks: {
@@ -412,7 +434,6 @@ function montarGraficoDuracao(dados) {
     }
   );
 }
-
 // =======================
 // AUTO BUSCA VIA URL
 // =======================
@@ -445,6 +466,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
