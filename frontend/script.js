@@ -287,21 +287,56 @@ function montarGraficoDuracao(dados) {
         backgroundColor: cores
       }]
     },
-    options: {
-      indexAxis: "y",
-      plugins: {
-        title: {
-          display: true,
-          text: "Duração Total por Etapa",
-          font: { weight: "bold", size: 16 }
-        },
-        legend: { display: false },
-        datalabels: {
-          formatter: v => `${v} h`,
-          font: { weight: "bold" }
-        }
+options: {
+  indexAxis: "y",
+
+  plugins: {
+    title: {
+      display: true,
+      text: "Duração Total por Etapa",
+      font: { weight: "bold", size: 16 }
+    },
+
+    // 🔹 LEGENDA (agora aparece)
+    legend: {
+      display: true,
+      labels: {
+        font: { weight: "bold" }
+      }
+    },
+
+    datalabels: {
+      formatter: v => `${v} h`,
+      font: { weight: "bold" }
+    }
+  },
+
+  scales: {
+    // 🔹 EIXO X (HORAS)
+    x: {
+      title: {
+        display: true,
+        text: "Horas acumuladas",
+        font: { weight: "bold" }
+      },
+      ticks: {
+        font: { weight: "bold" }
+      }
+    },
+
+    // 🔹 EIXO Y (ETAPAS)
+    y: {
+      title: {
+        display: true,
+        text: "Etapas",
+        font: { weight: "bold" }
+      },
+      ticks: {
+        font: { weight: "bold" }
       }
     }
+  }
+}
   });
 }
 
@@ -340,3 +375,4 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
