@@ -90,6 +90,18 @@ function montarTabela(dados) {
 // =======================
 let chartGantt;
 
+function formatarDataTabela(dateObj) {
+  if (!(dateObj instanceof Date)) return "-";
+
+  return dateObj.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
 function montarGraficoGantt(dados) {
 
   if (chartGantt) chartGantt.destroy();
@@ -182,26 +194,13 @@ function montarGraficoGantt(dados) {
             }
           }
         },
-        tooltip: {
+tooltip: {
   callbacks: {
     label: ctx => {
-      const [ini, fim] = ctx.raw;
+      const [inicio, fim] = ctx.raw;
 
-      const inicioFmt = dataSemFuso(ini.toISOString()).toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-
-      const fimFmt = dataSemFuso(fim.toISOString()).toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-      });
+      const inicioFmt = formatarDataTabela(inicio);
+      const fimFmt = formatarDataTabela(fim);
 
       return `${inicioFmt} → ${fimFmt}`;
     }
@@ -341,4 +340,5 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
