@@ -4,6 +4,9 @@ body{
   padding:40px;
 }
 
+/* =======================
+   CONTAINER PRINCIPAL
+   ======================= */
 .container{
   background:white;
   padding:30px;
@@ -45,51 +48,29 @@ th,td{
   border-bottom:1px solid #ddd;
 }
 
+/* =======================
+   CAMPOS OCULTOS
+   ======================= */
 #codigo,
 button {
   display: none;
 }
 
-.topo {
+/* =======================
+   TOPO (QR + TÍTULO)
+   ======================= */
+.topo-wrapper {
   display: flex;
-  align-items: center;
   gap: 20px;
-}
-
-.topo .container {
-  width: auto;
-  flex: 1;          /* ocupa o espaço restante */
+  align-items: flex-start;
+  margin-bottom: 20px;
 }
 
 #qrcode {
   width: 110px;
   height: 110px;
   display: block;
-  flex-shrink: 0;   /* 👈 impede o QR de “pular linha” */
-}
-
-.qrcode-box {
-  flex: 0 0 auto;
-}
-
-.qrcode-box img {
-  width: 110px;
-  height: 110px;
-  display: block;
-}
-
-.topo-wrapper .container {
-  margin-top: 0;
-  flex: 1 1 auto;
-  width: auto !important;
-  max-width: none !important;
-}
-
-.topo-wrapper {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
 .header-card {
@@ -98,16 +79,23 @@ button {
   border-radius: 10px;
 }
 
+/* =======================
+   GANTT COM SCROLL
+   ======================= */
 .gantt-wrapper {
   width: 100%;
-  max-height: 320px;          /* ≈ 5 etapas */
-  overflow-y: auto;           /* scroll vertical */
-  overflow-x: auto;           /* scroll horizontal */
+  max-height: 320px;        /* ≈ 5 etapas visíveis */
+  overflow-y: auto;         /* scroll vertical */
+  overflow-x: auto;         /* scroll horizontal */
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 10px;
+  margin-bottom: 30px;
 }
 
+/* 🔴 ESSENCIAL PARA O SCROLL FUNCIONAR */
 #grafico {
-  min-width: 1400px;          /* força scroll horizontal */
+  display: block;           /* canvas não pode ser inline */
+  min-width: 1600px;        /* força scroll horizontal */
+  height: 360px;            /* força scroll vertical */
 }
