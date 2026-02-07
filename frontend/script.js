@@ -138,15 +138,21 @@ function montarTabela(dados) {
 }
 
 // =======================
-// GRÁFICO GANTT
+// GRÁFICO GANTT (AGRUPADO POR ETAPA)
 // =======================
+
 let chartGantt;
 
 function montarGraficoGantt(dados) {
 
+  // 🔁 Destroi o gráfico anterior (evita sobreposição)
   if (chartGantt) chartGantt.destroy();
 
   const agora = new Date();
+
+  // =======================
+  // CÁLCULO DO RANGE DO EIXO X
+  // =======================
 
   const datas = dados
     .flatMap(d => [
@@ -159,16 +165,28 @@ function montarGraficoGantt(dados) {
 
   const minData = new Date(Math.min(...datas));
   const maxData = new Date(Math.max(...datas));
+
+  // margem visual (5%)
   const margem = (maxData - minData) * 0.05;
 
   const eixoMin = new Date(minData.getTime() - margem);
   const eixoMax = new Date(maxData.getTime() + margem);
 
-  const labels = [];
+  // =======================
+  // LABELS ÚNICAS (1 LINHA POR ETAPA)
+  // =======================
+
+  const labels = [...new Set(dados.map(d => d.nome_etapa))];
+
+  // =======================
+  // DATASET COM MÚLTIPLOS PERÍODOS
+  // =======================
+
   const data = [];
   const cores = [];
 
   dados.forEach(d => {
+
     if (!d.inicio) return;
 
     const inicio = dataSemFuso(d.inicio);
@@ -176,10 +194,20 @@ function montarGraficoGantt(dados) {
       ? dataSemFuso(d.fim)
       : dataSemFuso(new Date().toISOString());
 
-    labels.push(d.nome_etapa);
-    data.push([inicio, fim]);
+    // 👉 Cada período vira uma barra,
+    // mas aponta para a MESMA etapa (y)
+    data.push({
+      x: [inicio, fim],
+      y: d.nome_etapa
+    });
+
+    // 🔵 concluída | 🟠 em andamento
     cores.push(d.fim ? "#2563eb" : "#f59e0b");
   });
+
+  // =======================
+  // CRIAÇÃO DO CHART
+  // =======================
 
   chartGantt = new Chart(
     document.getElementById("grafico"),
@@ -196,89 +224,93 @@ function montarGraficoGantt(dados) {
         }]
       },
       options: {
+
+        // Gantt horizontal
         indexAxis: "y",
+
+        // =======================
+        // PLUGINS
+        // =======================
         plugins: {
+
+          // Título
           title: {
             display: true,
             text: "Timeline de Execução da Peça",
             font: { weight: "bold", size: 16 }
           },
+
+          // Remove legenda (não necessária)
           legend: {
             display: false
           },
+
+          // Tooltip com o MESMO formato da tabela
           tooltip: {
             callbacks: {
               label: ctx => {
-                const [inicio, fim] = ctx.raw;
-                return `${formatarDataTabela(inicio)} → ${formatarDataTabela(fim)}`;
+                const [ini, fim] = ctx.raw.x;
+                return `${formatarDataTabela(ini)} → ${formatarDataTabela(fim)}`;
               }
             }
           },
+
+          // Sem labels sobre as barras
           datalabels: {
             display: false
           }
         },
-scales: {
-  // ======================
-  // EIXO X INFERIOR (HORAS)
-  // ======================
-x: {
-  type: "time",
-  position: "bottom",
-  min: eixoMin,
-  max: eixoMax,
 
-  time: {
-    unit: "hour",
-    stepSize: 1,
-    displayFormats: {
-      hour: "HH:mm"
-    }
-  },
+        // =======================
+        // EIXOS
+        // =======================
+        scales: {
 
-  ticks: {
-    autoSkip: true,
-    major: {
-      enabled: true
-    },
-    font: ctx => ({
-      weight: ctx.tick && ctx.tick.major ? "bold" : "normal"
-    })
-  },
+          // -----------------------
+          // EIXO X (HORAS)
+          // -----------------------
+          x: {
+            type: "time",
+            position: "bottom",
+            min: eixoMin,
+            max: eixoMax,
 
-  grid: {
-    color: ctx => {
-      if (ctx.tick && ctx.tick.major) {
-        // 🔴 virada de dia
-        return "rgba(0,0,0,0.45)";
-      }
-      return "rgba(0,0,0,0.08)";
-    },
-    lineWidth: ctx => {
-      return (ctx.tick && ctx.tick.major) ? 2 : 0.5;
-    }
-  },
+            time: {
+              unit: "hour",
+              displayFormats: {
+                hour: "HH:mm"
+              }
+            },
 
-  title: {
-    display: true,
-    text: "Horas",
-    font: { weight: "bold" }
-  }
-},
-  // ======================
-  // EIXO Y
-  // ======================
-  y: {
-    title: {
-      display: true,
-      text: "Etapas",
-      font: { weight: "bold" }
-    },
-    ticks: {
-      font: { weight: "bold" }
-    }
-  }
-}
+            ticks: {
+              autoSkip: true,
+              major: { enabled: true },
+              font: ctx => ({
+                weight: ctx.tick && ctx.tick.major ? "bold" : "normal"
+              })
+            },
+
+            title: {
+              display: true,
+              text: "Horas",
+              font: { weight: "bold" }
+            }
+          },
+
+          // -----------------------
+          // EIXO Y (ETAPAS)
+          // -----------------------
+          y: {
+            title: {
+              display: true,
+              text: "Etapas",
+              font: { weight: "bold" }
+            },
+            ticks: {
+              font: { weight: "bold" }
+            }
+          }
+        }
       }
     }
   );
@@ -413,6 +445,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
