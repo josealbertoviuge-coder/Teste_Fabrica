@@ -145,9 +145,12 @@ function montarGraficoGantt(dados) {
         plugins: {
           title: {
             display: true,
-            text: "Gantt de Execução da Peça",
+            text: "Timeline de Execução da Peça",
             font: { weight: "bold", size: 16 }
           },
+         legend: {
+  display: false
+}
           datalabels: { display: false }
         },
         scales: {
@@ -235,9 +238,17 @@ function montarGraficoDuracao(dados) {
         plugins: {
           title: {
             display: true,
-            text: "Duração por Etapa do Processo",
+            text: "Duração do Processo",
             font: { weight: "bold", size: 16 }
           },
+           legend: {
+    labels: {
+      font: {
+        weight: "bold",
+        size: 13
+      }
+    }
+  },
           datalabels: {
             color: "#000",
             formatter: v => `${v} h`,
@@ -305,3 +316,4 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
