@@ -143,14 +143,18 @@ function montarGraficoGantt(dados) {
       options: {
         indexAxis: "y",
         plugins: {
-          title: {
-            display: true,
-            text: "Timeline de Execução da Peça",
-            font: { weight: "bold", size: 16 }
-          },
-         legend: {
-  display: false
-}
+  title: {
+    display: true,
+    text: "Timeline de Execução da Peça",
+    font: { weight: "bold", size: 16 }
+  },
+  legend: {
+    display: false
+  },
+  datalabels: {
+    display: false
+  }
+},
           datalabels: { display: false }
         },
         scales: {
@@ -316,4 +320,5 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
