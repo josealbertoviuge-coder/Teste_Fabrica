@@ -1,7 +1,55 @@
 // =======================
 // PLUGINS
 // =======================
+
 Chart.register(ChartDataLabels);
+Chart.register(turnoNoturnoPlugin);
+
+const turnoNoturnoPlugin = {
+  id: "turnoNoturno",
+
+  beforeDraw(chart) {
+    const { ctx, chartArea, scales } = chart;
+    const xScale = scales.x;
+
+    if (!xScale) return;
+
+    const inicio = xScale.min;
+    const fim = xScale.max;
+
+    let cursor = new Date(inicio);
+    cursor.setHours(19, 0, 0, 0);
+
+    // garante que começa antes do range visível
+    if (cursor > inicio) {
+      cursor.setDate(cursor.getDate() - 1);
+    }
+
+    ctx.save();
+    ctx.fillStyle = "rgba(37, 99, 235, 0.08)"; // azul claro
+
+    while (cursor < fim) {
+      const inicioTurno = new Date(cursor);
+      const fimTurno = new Date(cursor);
+      fimTurno.setDate(fimTurno.getDate() + 1);
+      fimTurno.setHours(7, 0, 0, 0);
+
+      const xInicio = xScale.getPixelForValue(inicioTurno);
+      const xFim = xScale.getPixelForValue(fimTurno);
+
+      ctx.fillRect(
+        xInicio,
+        chartArea.top,
+        xFim - xInicio,
+        chartArea.bottom - chartArea.top
+      );
+
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    ctx.restore();
+  }
+};
 
 // =======================
 // DATA SEM FUSO (exibe como digitado)
@@ -353,3 +401,4 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
