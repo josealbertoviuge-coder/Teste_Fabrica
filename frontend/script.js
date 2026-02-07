@@ -181,7 +181,32 @@ function montarGraficoGantt(dados) {
               font: { weight: "bold" }
             }
           }
-        }
+        },
+        tooltip: {
+  callbacks: {
+    label: ctx => {
+      const [ini, fim] = ctx.raw;
+
+      const inicioFmt = dataSemFuso(ini.toISOString()).toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      const fimFmt = dataSemFuso(fim.toISOString()).toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      return `${inicioFmt} → ${fimFmt}`;
+    }
+  }
+}
       }
     }
   );
@@ -316,3 +341,4 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
