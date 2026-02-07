@@ -182,22 +182,28 @@ function montarGraficoGantt(dados) {
               color: ctx => {
                 const value = ctx.tick.value;
                 const date = new Date(value);
-          
-                // início de um novo dia (00:00)
+            
+                // início de turno: 07:00 ou 19:00
                 if (
                   (date.getHours() === 7 && date.getMinutes() === 0) ||
-                   (date.getHours() === 19 && date.getMinutes() === 0) 
-                ( {
-                  return "rgba(0,0,0,0.35)"; // linha mais escura
+                  (date.getHours() === 19 && date.getMinutes() === 0)
+                ) {
+                  return "rgba(0,0,0,0.45)"; // linha mais escura
                 }
-          
-                return "rgba(0,0,0,0.08)"; // linhas normais
+            
+                return "rgba(0,0,0,0.08)";
               },
               lineWidth: ctx => {
                 const date = new Date(ctx.tick.value);
-                return date.getHours() === 0 ? 1.5 : 0.5;
+            
+                return (
+                  (date.getHours() === 7 && date.getMinutes() === 0) ||
+                  (date.getHours() === 19 && date.getMinutes() === 0)
+                )
+                  ? 2
+                  : 0.5;
               }
-            },
+            }
             title: {
               display: true,
               text: "Tempo",
@@ -349,6 +355,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
