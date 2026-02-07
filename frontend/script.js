@@ -1,3 +1,6 @@
+// =======================
+// PLUGIN — TURNO NOTURNO (19:00 → 07:00)
+// =======================
 
 const turnoNoturnoPlugin = {
   id: "turnoNoturno",
@@ -5,36 +8,32 @@ const turnoNoturnoPlugin = {
   beforeDraw(chart) {
     const { ctx, chartArea, scales } = chart;
     const xScale = scales.x;
-
     if (!xScale) return;
 
-    const inicio = xScale.min;
-    const fim = xScale.max;
+    const inicioVisivel = new Date(xScale.min);
+    const fimVisivel = new Date(xScale.max);
 
-    let cursor = new Date(inicio);
+    // normaliza para 19h
+    const cursor = new Date(inicioVisivel);
     cursor.setHours(19, 0, 0, 0);
-
-    // garante que começa antes do range visível
-    if (cursor > inicio) {
-      cursor.setDate(cursor.getDate() - 1);
-    }
+    if (cursor > inicioVisivel) cursor.setDate(cursor.getDate() - 1);
 
     ctx.save();
-    ctx.fillStyle = "rgba(37, 99, 235, 0.08)"; // azul claro
+    ctx.fillStyle = "rgba(37, 99, 235, 0.08)";
 
-    while (cursor < fim) {
-      const inicioTurno = new Date(cursor);
-      const fimTurno = new Date(cursor);
-      fimTurno.setDate(fimTurno.getDate() + 1);
-      fimTurno.setHours(7, 0, 0, 0);
+    while (cursor < fimVisivel) {
+      const ini = new Date(cursor);
+      const fim = new Date(cursor);
+      fim.setDate(fim.getDate() + 1);
+      fim.setHours(7, 0, 0, 0);
 
-      const xInicio = xScale.getPixelForValue(inicioTurno);
-      const xFim = xScale.getPixelForValue(fimTurno);
+      const xIni = xScale.getPixelForValue(ini);
+      const xFim = xScale.getPixelForValue(fim);
 
       ctx.fillRect(
-        xInicio,
+        xIni,
         chartArea.top,
-        xFim - xInicio,
+        xFim - xIni,
         chartArea.bottom - chartArea.top
       );
 
@@ -53,16 +52,18 @@ Chart.register(ChartDataLabels);
 Chart.register(turnoNoturnoPlugin);
 
 // =======================
-// DATA SEM FUSO (exibe como digitado)
+// DATA SEM FUSO (IGUAL AO SUPABASE)
 // =======================
+
 function dataSemFuso(data) {
   if (!data) return null;
   return new Date(data.replace("Z", ""));
 }
 
 // =======================
-// FORMATADOR PADRÃO (TABELA + TOOLTIP)
+// FORMATADOR PADRÃO
 // =======================
+
 function formatarDataTabela(dateObj) {
   if (!(dateObj instanceof Date)) return "-";
 
@@ -78,6 +79,7 @@ function formatarDataTabela(dateObj) {
 // =======================
 // BUSCAR PEÇA
 // =======================
+
 async function buscar() {
   const codigo = document.getElementById("codigo").value;
   if (!codigo) return;
@@ -90,7 +92,6 @@ async function buscar() {
   const res = await fetch(
     "https://teste-fabrica.onrender.com/peca/" + codigo
   );
-
   const dados = await res.json();
 
   montarTabela(dados);
@@ -103,6 +104,7 @@ window.buscar = buscar;
 // =======================
 // TABELA
 // =======================
+
 function montarTabela(dados) {
 
   let html = `
@@ -115,7 +117,6 @@ function montarTabela(dados) {
   `;
 
   dados.forEach(d => {
-
     const inicio = d.inicio
       ? formatarDataTabela(dataSemFuso(d.inicio))
       : "-";
@@ -138,22 +139,19 @@ function montarTabela(dados) {
 }
 
 // =======================
-// GRÁFICO GANTT (SCROLL + AGRUPADO)
+// GRÁFICO GANTT (AGRUPADO + SCROLL)
 // =======================
 
 let chartGantt;
 
 function montarGraficoGantt(dados) {
 
-  // 🔁 Remove gráfico anterior
   if (chartGantt) chartGantt.destroy();
 
   const agora = new Date();
-  const canvas = document.getElementById("grafico");
-  const wrapper = document.querySelector(".gantt-wrapper");
 
   // =======================
-  // RANGE GLOBAL DOS DADOS
+  // RANGE GLOBAL
   // =======================
 
   const datas = dados
@@ -166,22 +164,17 @@ function montarGraficoGantt(dados) {
   if (!datas.length) return;
 
   const minData = new Date(Math.min(...datas));
-  const maxData = new Date(Math.max(...datas));
 
   // =======================
-  // CONTROLE DE JANELA (7 DIAS)
+  // JANELA FIXA DE 7 DIAS
   // =======================
-
-  const diasTotais =
-    (maxData - minData) / (1000 * 60 * 60 * 24);
 
   const eixoMin = new Date(minData);
   const eixoMax = new Date(minData);
-
   eixoMax.setDate(eixoMax.getDate() + 7);
 
   // =======================
-  // ETAPAS ÚNICAS (1 LINHA)
+  // ETAPAS ÚNICAS
   // =======================
 
   const labels = [...new Set(dados.map(d => d.nome_etapa))];
@@ -194,29 +187,25 @@ function montarGraficoGantt(dados) {
   const cores = [];
 
   dados.forEach(d => {
-
     if (!d.inicio) return;
 
-    const inicio = dataSemFuso(d.inicio);
-    const fim = d.fim
-      ? dataSemFuso(d.fim)
-      : agora;
+    const ini = dataSemFuso(d.inicio);
+    const fim = d.fim ? dataSemFuso(d.fim) : agora;
 
     data.push({
-      x: [inicio, fim],
+      x: [ini, fim],
       y: d.nome_etapa
     });
 
-    // 🔵 concluída | 🟠 em andamento
     cores.push(d.fim ? "#2563eb" : "#f59e0b");
   });
 
   // =======================
-  // CRIAÇÃO DO GRÁFICO
+  // CHART
   // =======================
 
   chartGantt = new Chart(
-    canvas,
+    document.getElementById("grafico"),
     {
       type: "bar",
       data: {
@@ -226,31 +215,21 @@ function montarGraficoGantt(dados) {
           data,
           backgroundColor: cores,
           borderRadius: 6,
-          barThickness: 18,
-          maxBarThickness: 22
+          barThickness: 18
         }]
       },
       options: {
-
         responsive: true,
         maintainAspectRatio: false,
-
-        // Gantt horizontal
         indexAxis: "y",
 
-        // =======================
-        // PLUGINS
-        // =======================
         plugins: {
-
           title: {
             display: true,
             text: "Timeline de Execução da Peça",
             font: { weight: "bold", size: 16 }
           },
-
           legend: { display: false },
-
           tooltip: {
             callbacks: {
               label: ctx => {
@@ -259,18 +238,10 @@ function montarGraficoGantt(dados) {
               }
             }
           },
-
           datalabels: { display: false }
         },
 
-        // =======================
-        // EIXOS
-        // =======================
         scales: {
-
-          // -----------------------
-          // EIXO X — TEMPO
-          // -----------------------
           x: {
             type: "time",
             min: eixoMin,
@@ -283,32 +254,19 @@ function montarGraficoGantt(dados) {
 
             ticks: {
               autoSkip: false,
-              major: { enabled: true },
-
               callback: value => {
                 const d = new Date(value);
-
-                // 🗓 meia-noite → data
                 if (d.getHours() === 0 && d.getMinutes() === 0) {
                   return d.toLocaleDateString("pt-BR", {
                     day: "2-digit",
                     month: "short"
                   });
                 }
-
-                // ⏰ demais → hora
                 return d.toLocaleTimeString("pt-BR", {
                   hour: "2-digit",
                   minute: "2-digit"
                 });
-              },
-
-              font: ctx => ({
-                weight:
-                  ctx.tick && ctx.tick.major
-                    ? "bold"
-                    : "normal"
-              })
+              }
             },
 
             grid: {
@@ -320,9 +278,7 @@ function montarGraficoGantt(dados) {
               },
               lineWidth: ctx => {
                 const d = new Date(ctx.tick.value);
-                return (d.getHours() === 0 && d.getMinutes() === 0)
-                  ? 2
-                  : 0.5;
+                return (d.getHours() === 0 && d.getMinutes() === 0) ? 2 : 0.5;
               }
             },
 
@@ -333,13 +289,8 @@ function montarGraficoGantt(dados) {
             }
           },
 
-          // -----------------------
-          // EIXO Y — ETAPAS
-          // -----------------------
           y: {
-            ticks: {
-              font: { weight: "bold" }
-            },
+            ticks: { font: { weight: "bold" } },
             title: {
               display: true,
               text: "Etapas",
@@ -353,68 +304,45 @@ function montarGraficoGantt(dados) {
 }
 
 // =======================
-// GRÁFICO DE DURAÇÃO (TOTAL POR ETAPA)
+// GRÁFICO DE DURAÇÃO (SOMA POR ETAPA)
 // =======================
 
 let chartDuracao;
 
 function montarGraficoDuracao(dados) {
 
-  const acumuladoPorEtapa = {};
-  const etapaEmAndamento = {};
+  const acumulado = {};
+  const emAndamento = {};
   const agora = new Date();
 
-  // =======================
-  // AGREGA TODOS OS PERÍODOS
-  // =======================
-
   dados.forEach(d => {
-
     if (!d.inicio) return;
 
-    const inicio = dataSemFuso(d.inicio);
-    const fim = d.fim
-      ? dataSemFuso(d.fim)
-      : agora;
+    const ini = dataSemFuso(d.inicio);
+    const fim = d.fim ? dataSemFuso(d.fim) : agora;
+    const horas = (fim - ini) / (1000 * 60 * 60);
 
-    const horas = (fim - inicio) / (1000 * 60 * 60);
-
-    if (!acumuladoPorEtapa[d.nome_etapa]) {
-      acumuladoPorEtapa[d.nome_etapa] = 0;
-      etapaEmAndamento[d.nome_etapa] = false;
+    if (!acumulado[d.nome_etapa]) {
+      acumulado[d.nome_etapa] = 0;
+      emAndamento[d.nome_etapa] = false;
     }
 
-    acumuladoPorEtapa[d.nome_etapa] += horas;
-
-    // 🟠 se existir período sem fim
-    if (!d.fim) {
-      etapaEmAndamento[d.nome_etapa] = true;
-    }
+    acumulado[d.nome_etapa] += horas;
+    if (!d.fim) emAndamento[d.nome_etapa] = true;
   });
 
-  const etapas = Object.keys(acumuladoPorEtapa);
+  const etapas = Object.keys(acumulado);
   if (!etapas.length) return;
 
   const duracoes = etapas.map(e =>
-    Number(acumuladoPorEtapa[e].toFixed(2))
+    Number(acumulado[e].toFixed(2))
   );
 
   const cores = etapas.map(e =>
-    etapaEmAndamento[e] ? "#f59e0b" : "#2563eb"
+    emAndamento[e] ? "#f59e0b" : "#2563eb"
   );
 
-  // =======================
-  // TEMPO TOTAL DA PEÇA
-  // =======================
-
-  const tempoTotalHoras = duracoes.reduce((a, b) => a + b, 0);
-  mostrarTempoTotal(tempoTotalHoras);
-
-  // =======================
-  // GRÁFICO
-  // =======================
-
-  const maxEixo = Math.max(...duracoes) * 1.1;
+  mostrarTempoTotal(duracoes.reduce((a, b) => a + b, 0));
 
   if (chartDuracao) chartDuracao.destroy();
 
@@ -438,37 +366,11 @@ function montarGraficoDuracao(dados) {
             text: "Duração Total por Etapa",
             font: { weight: "bold", size: 16 }
           },
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           datalabels: {
             color: "#000",
             formatter: v => `${v} h`,
             font: { weight: "bold" }
-          }
-        },
-        scales: {
-          x: {
-            min: 0,
-            max: maxEixo,
-            title: {
-              display: true,
-              text: "Horas acumuladas",
-              font: { weight: "bold" }
-            },
-            ticks: {
-              font: { weight: "bold" }
-            }
-          },
-          y: {
-            title: {
-              display: true,
-              text: "Etapas",
-              font: { weight: "bold" }
-            },
-            ticks: {
-              font: { weight: "bold" }
-            }
           }
         }
       }
@@ -479,6 +381,7 @@ function montarGraficoDuracao(dados) {
 // =======================
 // AUTO BUSCA VIA URL
 // =======================
+
 window.addEventListener("load", () => {
   const codigo = new URLSearchParams(window.location.search).get("codigo");
   if (codigo) {
@@ -490,6 +393,7 @@ window.addEventListener("load", () => {
 // =======================
 // QR CODE
 // =======================
+
 function gerarQRCode(codigo) {
   document.getElementById("qrcode").src =
     "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
@@ -499,6 +403,7 @@ function gerarQRCode(codigo) {
 // =======================
 // TEMPO TOTAL
 // =======================
+
 function mostrarTempoTotal(horas) {
   const dias = Math.floor(horas / 24);
   const resto = (horas % 24).toFixed(1);
@@ -508,18 +413,3 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
