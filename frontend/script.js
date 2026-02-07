@@ -149,6 +149,8 @@ function montarGraficoGantt(dados) {
   if (chartGantt) chartGantt.destroy();
 
   const agora = new Date();
+  const canvas = document.getElementById("grafico");
+  const wrapper = document.querySelector(".gantt-wrapper");
 
   // =======================
   // RANGE GLOBAL DOS DADOS
@@ -164,14 +166,31 @@ function montarGraficoGantt(dados) {
   if (!datas.length) return;
 
   const minData = new Date(Math.min(...datas));
+  const maxData = new Date(Math.max(...datas));
 
   // =======================
-  // JANELA FIXA DE 7 DIAS
+  // CONTROLE DE JANELA (7 DIAS)
   // =======================
+
+  const diasTotais =
+    (maxData - minData) / (1000 * 60 * 60 * 24);
 
   const eixoMin = new Date(minData);
   const eixoMax = new Date(minData);
+
   eixoMax.setDate(eixoMax.getDate() + 7);
+
+  // =======================
+  // 🔴 CONTROLE DE SCROLL HORIZONTAL
+  // =======================
+
+  if (diasTotais > 7) {
+    wrapper.style.overflowX = "auto";
+    canvas.style.minWidth = "1600px";   // força scroll
+  } else {
+    wrapper.style.overflowX = "hidden";
+    canvas.style.minWidth = "100%";     // tamanho normal
+  }
 
   // =======================
   // ETAPAS ÚNICAS (1 LINHA)
@@ -209,7 +228,7 @@ function montarGraficoGantt(dados) {
   // =======================
 
   chartGantt = new Chart(
-    document.getElementById("grafico"),
+    canvas,
     {
       type: "bar",
       data: {
@@ -278,10 +297,10 @@ function montarGraficoGantt(dados) {
               autoSkip: false,
               major: { enabled: true },
 
-              // 🗓 Data às 00:00 | ⏰ Hora nos demais
               callback: value => {
                 const d = new Date(value);
 
+                // 🗓 meia-noite → data
                 if (d.getHours() === 0 && d.getMinutes() === 0) {
                   return d.toLocaleDateString("pt-BR", {
                     day: "2-digit",
@@ -289,6 +308,7 @@ function montarGraficoGantt(dados) {
                   });
                 }
 
+                // ⏰ demais → hora
                 return d.toLocaleTimeString("pt-BR", {
                   hour: "2-digit",
                   minute: "2-digit"
@@ -303,7 +323,6 @@ function montarGraficoGantt(dados) {
               })
             },
 
-            // 📏 Grade com virada de dia destacada
             grid: {
               color: ctx => {
                 const d = new Date(ctx.tick.value);
@@ -501,6 +520,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
