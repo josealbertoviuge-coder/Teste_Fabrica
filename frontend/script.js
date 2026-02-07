@@ -242,8 +242,7 @@ scales: {
         const date = new Date(ctx.tick.value);
 
         if (
-          (date.getHours() === 7 && date.getMinutes() === 0) ||
-          (date.getHours() === 19 && date.getMinutes() === 0)
+          (date.getHours() === 0 && date.getMinutes() === 0)
         ) {
           return "rgba(0,0,0,0.45)";
         }
@@ -252,8 +251,7 @@ scales: {
       lineWidth: ctx => {
         const date = new Date(ctx.tick.value);
         return (
-          (date.getHours() === 7 && date.getMinutes() === 0) ||
-          (date.getHours() === 19 && date.getMinutes() === 0)
+          (date.getHours() === 0 && date.getMinutes() === 0)
         )
           ? 2
           : 0.5;
@@ -441,6 +439,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
