@@ -222,47 +222,49 @@ scales: {
   // ======================
   // EIXO X INFERIOR (HORAS)
   // ======================
-  x: {
-    type: "time",
-    position: "bottom",
-    min: eixoMin,
-    max: eixoMax,
-    time: {
-      unit: "hour",
-      displayFormats: {
-        hour: "HH:mm"
-      }
-    },
-    ticks: {
-      autoSkip: true,
-      font: { weight: "bold" }
-    },
-    grid: {
-      color: ctx => {
-        const date = new Date(ctx.tick.value);
+x: {
+  type: "time",
+  position: "bottom",
+  min: eixoMin,
+  max: eixoMax,
 
-        if (
-          (date.getHours() === 0 && date.getMinutes() === 0)
-        ) {
-          return "rgba(0,0,0,0.45)";
-        }
-        return "rgba(0,0,0,0.08)";
-      },
-      lineWidth: ctx => {
-        const date = new Date(ctx.tick.value);
-        return (
-          (date.getHours() === 0 && date.getMinutes() === 0)
-        )
-          ? 2
-          : 0.5;
-      }
-    },
-    title: {
-      display: true,
-      text: "Horas",
-      font: { weight: "bold" }
+  time: {
+    unit: "hour",
+    stepSize: 1,
+    displayFormats: {
+      hour: "HH:mm"
     }
   },
+
+  ticks: {
+    autoSkip: true,
+    major: {
+      enabled: true
+    },
+    font: ctx => ({
+      weight: ctx.tick && ctx.tick.major ? "bold" : "normal"
+    })
+  },
+
+  grid: {
+    color: ctx => {
+      if (ctx.tick && ctx.tick.major) {
+        // 🔴 virada de dia
+        return "rgba(0,0,0,0.45)";
+      }
+      return "rgba(0,0,0,0.08)";
+    },
+    lineWidth: ctx => {
+      return (ctx.tick && ctx.tick.major) ? 2 : 0.5;
+    }
+  },
+
+  title: {
+    display: true,
+    text: "Horas",
+    font: { weight: "bold" }
+  }
+},
 
   // ======================
   // EIXO X SUPERIOR (DIAS)
@@ -439,6 +441,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
