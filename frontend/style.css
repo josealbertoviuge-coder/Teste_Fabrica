@@ -64,15 +64,17 @@ button {
 .topo-wrapper {
   display: flex;
   gap: 20px;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 20px;
 }
 
-#qrcode {
-  width: 110px;
+#qrcode,
+#logo {
+  width: auto;
   height: 110px;
   display: block;
   flex-shrink: 0;
+  object-fit: contain;
 }
 
 .header-card {
