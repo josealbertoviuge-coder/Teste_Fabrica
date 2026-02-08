@@ -266,9 +266,19 @@ function montarGraficoGantt(dados) {
             }
           }
         },
-        y: {
-          ticks: { font: { weight: "bold" } }
-        }
+y: {
+  ticks: {
+    font: { weight: "bold" },
+
+    // 🔒 força fundo branco atrás do texto
+    backdropColor: "#ffffff",
+    backdropPadding: 4
+  },
+
+  grid: {
+    drawOnChartArea: false // 👈 impede grid atrás dos rótulos
+  }
+}
       }
     }
   });
@@ -405,6 +415,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
