@@ -84,18 +84,17 @@ button {
    ======================= */
 .gantt-wrapper {
   width: 100%;
-  height: 320px;          /* ≈ 5 etapas visíveis */
-  overflow: auto;         /* ativa scroll nos dois sentidos */
+  height: 360px;              /* ≈ 5 etapas visíveis */
+  overflow-x: auto;           /* scroll horizontal */
+  overflow-y: auto;           /* scroll vertical */
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 10px;
 }
 
 /* =======================
    CANVAS — NÃO ESTICA
    ======================= */
 #grafico {
-  display: block;
-  width: 100%;
-  height: 600px;          /* maior que o wrapper → scroll vertical */
+  width: 1600px;              /* força scroll horizontal */
+  height: 600px;              /* força scroll vertical */
 }
