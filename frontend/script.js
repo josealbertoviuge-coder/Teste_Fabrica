@@ -5,7 +5,7 @@
 const turnoNoturnoPlugin = {
   id: "turnoNoturno",
 
-  beforeDraw(chart, args, options) {
+  beforeDatasetsDraw(chart, args, options) {
     // ⛔ só executa se o plugin estiver habilitado
     if (!options || !options.enabled) return;
 
@@ -415,6 +415,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
