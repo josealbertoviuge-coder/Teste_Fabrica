@@ -101,9 +101,13 @@ async function buscar() {
   const codigo = document.getElementById("codigo").value;
   if (!codigo) return;
 
-  document.getElementById("titulo").innerText =
-    "Consulta de Peça — " + codigo;
+  document.getElementById("titulo").innerText = "Consulta de Peça";
 
+document.getElementById("linhaInfo").innerText =
+  `TAG: ${info.tag}` +
+  (info.op ? ` | OP: ${info.op}` : "") +
+  (info.cliente_nome ? ` | Cliente: ${info.cliente_nome}` : "");
+  
   gerarQRCode(codigo);
 
   const res = await fetch(
@@ -480,6 +484,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
