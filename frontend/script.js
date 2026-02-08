@@ -6,6 +6,9 @@ const turnoNoturnoPlugin = {
   id: "turnoNoturno",
 
   beforeDatasetsDraw(chart) {
+    if (chart.options.plugins?.turnoNoturno?.enabled === false) {
+    return;
+  }
     const { ctx, chartArea, scales } = chart;
     const xScale = scales.x;
 
@@ -263,7 +266,8 @@ janelaInicialFim.setDate(janelaInicialFim.getDate() + 14);
       scales: {
 x: {
   type: "time",
-
+  min: minData,        // 🔒 limite real inferior
+  max: maxData,        // 🔒 limite real superior
   // 🔓 permite navegar por TODOS os dados
   suggestedMin: minData,
   suggestedMax: janelaInicialFim,
@@ -458,6 +462,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
