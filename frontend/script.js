@@ -265,7 +265,7 @@ janelaInicialFim.setDate(janelaInicialFim.getDate() + 14);
         },
         title: {
           display: true,
-          text: "Timeline de Execução da Peça",
+          text: "Timeline de Execução do Equipamento",
           font: { weight: "bold", size: 16 }
         },
         legend: { display: false },
@@ -396,7 +396,7 @@ function montarGraficoDuracao(dados) {
     data: {
       labels: etapas,
       datasets: [{
-        label: "Tempo Total por Etapa (h)",
+        label: "Tempo Total por Etapa de Fabricação do Equipamento (h)",
         data: duracoes,
         backgroundColor: cores
       }]
@@ -490,6 +490,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
