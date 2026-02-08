@@ -168,10 +168,27 @@ function montarGraficoGantt(dados) {
   const eixoMax = new Date(minData);
   eixoMax.setDate(eixoMax.getDate() + 7);
 
-  const labels = [...new Set(dados.map(d => d.nome_etapa))];
   const data = [];
   const cores = [];
 
+// =======================
+// ETAPAS ÚNICAS (1 LINHA)
+// =======================
+
+const labels = [...new Set(dados.map(d => d.nome_etapa))];
+
+// =======================
+// AJUSTE DE ALTURA DO CANVAS (SCROLL VERTICAL)
+// =======================
+
+const alturaPorEtapa = 55;     // px por linha
+const alturaMinima = 360;     // ≈ 5 etapas visíveis
+
+const alturaCanvas = labels.length * alturaPorEtapa;
+
+const canvas = document.getElementById("grafico");
+canvas.height = Math.max(alturaCanvas, alturaMinima);
+  
   dados.forEach(d => {
     if (!d.inicio) return;
 
@@ -375,5 +392,6 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
