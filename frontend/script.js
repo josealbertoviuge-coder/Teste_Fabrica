@@ -107,7 +107,7 @@ async function buscar() {
   gerarQRCode(codigo);
 
   const res = await fetch(
-    "https://teste-fabrica.onrender.com/peca/" + codigo
+    "https://teste-fabrica.onrender.com/tag/" + codigo
   );
 
   const dados = await res.json();
@@ -472,6 +472,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
