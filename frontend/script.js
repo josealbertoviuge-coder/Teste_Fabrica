@@ -101,31 +101,37 @@ async function buscar() {
   const codigo = document.getElementById("codigo").value;
   if (!codigo) return;
 
+  // Linha 1 (fixa)
   document.getElementById("titulo").innerText = "Consulta de Peça";
 
-document.getElementById("linhaInfo").innerText =
-  `TAG: ${info.tag}` +
-  (info.op ? ` | OP: ${info.op}` : "") +
-  (info.cliente_nome ? ` | Cliente: ${info.cliente_nome}` : "");
-  
   gerarQRCode(codigo);
 
   const res = await fetch(
     "https://teste-fabrica.onrender.com/tag/" + codigo
   );
 
-const resposta = await res.json();
+  const resposta = await res.json();
 
-const { tag, op, cliente_nome, etapas } = resposta;
+  // ⚠️ ajuste conforme seu backend
+  // aqui estou assumindo que o backend retorna:
+  // {
+  //   tag,
+  //   op,
+  //   cliente_nome,
+  //   etapas: [...]
+  // }
 
-document.getElementById("titulo").innerText =
-  `Consulta de Peça — TAG: ${tag}` +
-  (op ? ` | OP: ${op}` : "") +
-  (cliente_nome ? ` | Cliente: ${cliente_nome}` : "");
+  const { tag, op, cliente_nome, etapas } = resposta;
 
-montarTabela(etapas);
-montarGraficoGantt(etapas);
-montarGraficoDuracao(etapas);
+  // Linha 2 (dados)
+  document.getElementById("linhaInfo").innerText =
+    `TAG: ${tag}` +
+    (op ? ` | OP: ${op}` : "") +
+    (cliente_nome ? ` | Cliente: ${cliente_nome}` : "");
+
+  montarTabela(etapas);
+  montarGraficoGantt(etapas);
+  montarGraficoDuracao(etapas);
 }
 
 window.buscar = buscar;
@@ -484,6 +490,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
