@@ -75,7 +75,7 @@ button {
 
 .header-card {
   background: white;
-  padding: 20px 30px;
+  padding: 12px 20px;
   border-radius: 10px;
 
   display: flex;
@@ -84,7 +84,7 @@ button {
   justify-content: center;   /* ✅ centraliza verticalmente */
   align-items: center;       /* ✅ centraliza horizontalmente */
 
-  min-height: 110px;         /* 🔒 mesma altura visual do QR */
+  min-height: 80px;         /* 🔒 mesma altura visual do QR */
 }
 
 /* =======================
