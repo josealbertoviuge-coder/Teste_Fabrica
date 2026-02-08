@@ -5,12 +5,10 @@
 const turnoNoturnoPlugin = {
   id: "turnoNoturno",
 
-  beforeDatasetsDraw(chart, args, options) {
-    // ⛔ só executa se o plugin estiver habilitado
-    if (!options || !options.enabled) return;
-
+  beforeDatasetsDraw(chart) {
     const { ctx, chartArea, scales } = chart;
     const xScale = scales.x;
+
     if (!xScale) return;
 
     const inicio = xScale.min;
@@ -24,7 +22,18 @@ const turnoNoturnoPlugin = {
     }
 
     ctx.save();
-    ctx.fillStyle = "rgba(37, 99, 235, 0.08)"; // azul claro
+
+    // 🔒 CLIP EXATO: SOMENTE ÁREA DO GRÁFICO (SEM EIXO Y)
+    ctx.beginPath();
+    ctx.rect(
+      chartArea.left,        // 👈 começa DEPOIS dos rótulos
+      chartArea.top,
+      chartArea.right - chartArea.left,
+      chartArea.bottom - chartArea.top
+    );
+    ctx.clip();
+
+    ctx.fillStyle = "rgba(37, 99, 235, 0.08)";
 
     while (cursor < fim) {
       const inicioTurno = new Date(cursor);
@@ -415,6 +424,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
