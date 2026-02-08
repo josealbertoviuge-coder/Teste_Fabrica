@@ -84,7 +84,7 @@ button {
   justify-content: center;   /* ✅ centraliza verticalmente */
   align-items: center;       /* ✅ centraliza horizontalmente */
 
-  min-height: 85px;         /* 🔒 mesma altura visual do QR */
+  min-height: 90px;         /* 🔒 mesma altura visual do QR */
 }
 
 /* =======================
