@@ -68,10 +68,17 @@ button {
   margin-bottom: 20px;
 }
 
-#qrcode,
-#logo {
+#qrcode {
   width: auto;
   height: 110px;
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+#logo {
+  width: auto;
+  height: 40px;
   display: block;
   flex-shrink: 0;
   object-fit: contain;
