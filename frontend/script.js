@@ -317,13 +317,23 @@ y: {
   ticks: {
     font: { weight: "bold" },
 
-    // 🔒 força fundo branco atrás do texto
+    // mantém fundo branco atrás do texto
     backdropColor: "#ffffff",
     backdropPadding: 4
   },
 
   grid: {
-    drawOnChartArea: false // 👈 impede grid atrás dos rótulos
+    drawOnChartArea: true,   // ✅ desenha linhas horizontais
+    drawTicks: false,
+
+    color: "rgba(0,0,0,0.15)", // cinza suave
+    lineWidth: 1
+  },
+
+  title: {
+    display: true,
+    text: "Etapas",
+    font: { weight: "bold" }
   }
 }
       }
@@ -462,6 +472,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
