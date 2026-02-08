@@ -33,7 +33,7 @@ app.get("/", (req,res)=>{
   res.sendFile(path.join(__dirname,"frontend","index.html"));
 });
 
-app.get("/peca/:codigo", async (req, res) => {
+app.get("/tag/:codigo", async (req, res) => {
   try {
     const codigo = req.params.codigo;   // 👈 ESTA LINHA
 
@@ -72,6 +72,7 @@ app.post("/login",(req,res)=>{
     res.status(401).send("Login inválido");
   }
 });
+
 
 
 
