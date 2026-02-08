@@ -403,6 +403,7 @@ options: {
     },
 
     datalabels: {
+      color: "#000", 
       formatter: v => `${v} h`,
       font: { weight: "bold" }
     }
@@ -472,6 +473,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
