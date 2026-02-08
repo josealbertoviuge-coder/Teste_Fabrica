@@ -98,3 +98,10 @@ button {
   width: 1600px;              /* força scroll horizontal */
   height: 600px;              /* força scroll vertical */
 }
+
+#linhaInfo {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
