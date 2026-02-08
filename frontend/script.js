@@ -5,7 +5,10 @@
 const turnoNoturnoPlugin = {
   id: "turnoNoturno",
 
-  beforeDraw(chart) {
+  beforeDraw(chart, args, options) {
+    // ⛔ só executa se o plugin estiver habilitado
+    if (!options || !options.enabled) return;
+
     const { ctx, chartArea, scales } = chart;
     const xScale = scales.x;
     if (!xScale) return;
@@ -16,7 +19,6 @@ const turnoNoturnoPlugin = {
     let cursor = new Date(inicio);
     cursor.setHours(19, 0, 0, 0);
 
-    // garante que começa antes do range visível
     if (cursor > inicio) {
       cursor.setDate(cursor.getDate() - 1);
     }
@@ -153,7 +155,10 @@ function montarGraficoGantt(dados) {
   const agora = new Date();
   const canvas = document.getElementById("grafico");
 
+  // =======================
   // RANGE GLOBAL
+  // =======================
+
   const datas = dados
     .flatMap(d => [
       d.inicio ? dataSemFuso(d.inicio) : null,
@@ -164,30 +169,33 @@ function montarGraficoGantt(dados) {
   if (!datas.length) return;
 
   const minData = new Date(Math.min(...datas));
+
   const eixoMin = new Date(minData);
   const eixoMax = new Date(minData);
   eixoMax.setDate(eixoMax.getDate() + 7);
 
+  // =======================
+  // ETAPAS ÚNICAS (1 LINHA)
+  // =======================
+
+  const labels = [...new Set(dados.map(d => d.nome_etapa))];
+
+  // =======================
+  // AJUSTE DE ALTURA (SCROLL)
+  // =======================
+
+  const alturaPorEtapa = 55;
+  const alturaMinima = 360;
+
+  const alturaCanvas = labels.length * alturaPorEtapa;
+  canvas.height = Math.max(alturaCanvas, alturaMinima);
+
+  // =======================
+  // DATASET
+  // =======================
+
   const data = [];
   const cores = [];
-
-// =======================
-// ETAPAS ÚNICAS (1 LINHA)
-// =======================
-
-const labels = [...new Set(dados.map(d => d.nome_etapa))];
-
-// =======================
-// AJUSTE DE ALTURA DO CANVAS (SCROLL VERTICAL)
-// =======================
-
-const alturaPorEtapa = 55;     // px por linha
-const alturaMinima = 360;     // ≈ 5 etapas visíveis
-
-const alturaCanvas = labels.length * alturaPorEtapa;
-
-const canvas = document.getElementById("grafico");
-canvas.height = Math.max(alturaCanvas, alturaMinima);
   
   dados.forEach(d => {
     if (!d.inicio) return;
@@ -217,6 +225,11 @@ canvas.height = Math.max(alturaCanvas, alturaMinima);
       indexAxis: "y",
 
       plugins: {
+
+        // ✅ ATIVA O TURNO NOTURNO SÓ AQUI
+        turnoNoturno: {
+          enabled: true
+        },
         title: {
           display: true,
           text: "Timeline de Execução da Peça",
@@ -392,6 +405,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
