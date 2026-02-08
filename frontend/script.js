@@ -110,11 +110,18 @@ async function buscar() {
     "https://teste-fabrica.onrender.com/tag/" + codigo
   );
 
-  const dados = await res.json();
+const resposta = await res.json();
 
-  montarTabela(dados);
-  montarGraficoGantt(dados);
-  montarGraficoDuracao(dados);
+const { tag, op, cliente_nome, etapas } = resposta;
+
+document.getElementById("titulo").innerText =
+  `Consulta de Peça — TAG: ${tag}` +
+  (op ? ` | OP: ${op}` : "") +
+  (cliente_nome ? ` | Cliente: ${cliente_nome}` : "");
+
+montarTabela(etapas);
+montarGraficoGantt(etapas);
+montarGraficoDuracao(etapas);
 }
 
 window.buscar = buscar;
@@ -473,6 +480,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
