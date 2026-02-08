@@ -35,23 +35,43 @@ app.get("/", (req,res)=>{
 
 app.get("/tag/:codigo", async (req, res) => {
   try {
-    const codigo = req.params.codigo;   // 👈 ESTA LINHA
+    const codigo = req.params.codigo;
 
-    const result = await pool.query(`
+    // 🔹 Busca TAG + OP + Cliente
+    const cabecalho = await pool.query(`
       SELECT
-      p.tag,
-      e.nome_etapa,
-      a.status,
-      a.inicio,
-      a.fim
-    FROM andamento_pecas a
-    JOIN etapas e ON e.id_etapa = a.id_etapa
-    JOIN tags p ON p.tag = a.tag
-    WHERE p.tag = $1
-    ORDER BY a.inicio;
+        t.tag,
+        t.op,
+        o.cliente_nome
+      FROM tags t
+      LEFT JOIN ordem_de_producao o
+        ON o.ordem_producao = t.op
+      WHERE t.tag = $1
     `, [codigo]);
 
-    res.json(result.rows);
+    if (cabecalho.rowCount === 0) {
+      return res.status(404).json({ error: "TAG não encontrada" });
+    }
+
+    // 🔹 Busca etapas da peça
+    const etapas = await pool.query(`
+      SELECT
+        e.nome_etapa,
+        a.status,
+        a.inicio,
+        a.fim
+      FROM andamento_pecas a
+      JOIN etapas e ON e.id_etapa = a.id_etapa
+      WHERE a.tag = $1
+      ORDER BY a.inicio
+    `, [codigo]);
+
+    res.json({
+      tag: cabecalho.rows[0].tag,
+      op: cabecalho.rows[0].op,
+      cliente_nome: cabecalho.rows[0].cliente_nome,
+      etapas: etapas.rows
+    });
 
   } catch (err) {
     console.error("ERRO QUERY:", err);
@@ -72,6 +92,7 @@ app.post("/login",(req,res)=>{
     res.status(401).send("Login inválido");
   }
 });
+
 
 
 
