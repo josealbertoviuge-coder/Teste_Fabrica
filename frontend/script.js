@@ -177,11 +177,15 @@ function montarGraficoGantt(dados) {
 
   if (!datas.length) return;
 
-  const minData = new Date(Math.min(...datas));
+  // menor data real dos dados
+const minData = new Date(Math.min(...datas));
 
-  const eixoMin = new Date(minData);
-  const eixoMax = new Date(minData);
-  eixoMax.setDate(eixoMax.getDate() + 14);
+// maior data real dos dados (necessário para scroll total)
+const maxData = new Date(Math.max(...datas));
+
+// janela VISÍVEL inicial (14 dias)
+const janelaInicialFim = new Date(minData);
+janelaInicialFim.setDate(janelaInicialFim.getDate() + 14);
 
   // =======================
   // ETAPAS ÚNICAS (1 LINHA)
@@ -257,24 +261,54 @@ function montarGraficoGantt(dados) {
       },
 
       scales: {
-        x: {
-          type: "time",
-          min: eixoMin,
-          max: eixoMax,
-          time: { unit: "hour", stepSize: 6 },
-          ticks: {
-            autoSkip: false,
-            major: { enabled: true }
-          },
-          grid: {
-            color: ctx => {
-              const d = new Date(ctx.tick.value);
-              return (d.getHours() === 0 && d.getMinutes() === 0)
-                ? "rgba(0,0,0,0.45)"
-                : "rgba(0,0,0,0.08)";
-            }
-          }
-        },
+x: {
+  type: "time",
+
+  // 🔓 permite navegar por TODOS os dados
+  suggestedMin: minData,
+  suggestedMax: janelaInicialFim,
+
+  time: {
+    unit: "hour",
+    stepSize: 6
+  },
+
+  ticks: {
+    autoSkip: false,
+    major: { enabled: true },
+
+    callback: value => {
+      const d = new Date(value);
+
+      if (d.getHours() === 0 && d.getMinutes() === 0) {
+        return d.toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "short"
+        });
+      }
+
+      return d.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+  },
+
+  grid: {
+    color: ctx => {
+      const d = new Date(ctx.tick.value);
+      return (d.getHours() === 0 && d.getMinutes() === 0)
+        ? "rgba(0,0,0,0.45)"
+        : "rgba(0,0,0,0.08)";
+    }
+  },
+
+  title: {
+    display: true,
+    text: "Tempo",
+    font: { weight: "bold" }
+  }
+},
 y: {
   ticks: {
     font: { weight: "bold" },
@@ -424,6 +458,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
