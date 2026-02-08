@@ -33,21 +33,21 @@ app.get("/", (req,res)=>{
   res.sendFile(path.join(__dirname,"frontend","index.html"));
 });
 
-app.get("/peca/:codigo", async (req, res) => {
+app.get("/tag/:codigo", async (req, res) => {
   try {
     const codigo = req.params.codigo;   // 👈 ESTA LINHA
 
     const result = await pool.query(`
       SELECT
-      p.codigo_peca,
+      p.tag,
       e.nome_etapa,
       a.status,
       a.inicio,
       a.fim
     FROM andamento_pecas a
     JOIN etapas e ON e.id_etapa = a.id_etapa
-    JOIN pecas p ON p.id_peca = a.id_peca
-    WHERE p.codigo_peca = $1
+    JOIN tags p ON p.tag = a.tag
+    WHERE p.tag = $1
     ORDER BY a.inicio;
     `, [codigo]);
 
@@ -72,6 +72,7 @@ app.post("/login",(req,res)=>{
     res.status(401).send("Login inválido");
   }
 });
+
 
 
 
