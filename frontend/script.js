@@ -97,12 +97,47 @@ function formatarDataTabela(dateObj) {
 // BUSCAR PEÇA
 // =======================
 
+let componentesCache = {};
+let componenteAtual = null;
+
+function montarAbasComponentes(componentes) {
+  const container = document.getElementById("abasComponentes");
+  container.innerHTML = "";
+
+  Object.keys(componentes).forEach((nome, index) => {
+    const btn = document.createElement("button");
+    btn.innerText = nome;
+    btn.className = "aba-componente";
+
+    if (index === 0) {
+      btn.classList.add("ativa");
+      componenteAtual = nome;
+    }
+
+    btn.onclick = () => {
+      document
+        .querySelectorAll(".aba-componente")
+        .forEach(b => b.classList.remove("ativa"));
+
+      btn.classList.add("ativa");
+      componenteAtual = nome;
+
+      const dados = componentesCache[nome];
+      montarTabela(dados);
+      montarGraficoGantt(dados);
+      montarGraficoDuracao(dados);
+    };
+
+    container.appendChild(btn);
+  });
+}
+
 async function buscar() {
   const codigo = document.getElementById("codigo").value;
   if (!codigo) return;
 
-  // Linha 1 (fixa)
-  document.getElementById("titulo").innerText = "Tracking de Fabricação - Equipamentos";
+  document.getElementById("titulo").innerText =
+    "Tracking de Fabricação - Equipamentos";
 
   gerarQRCode(codigo);
 
@@ -111,31 +146,27 @@ async function buscar() {
   );
 
   const resposta = await res.json();
-  componentesCache = componentes;
-  // ⚠️ ajuste conforme seu backend
-  // aqui estou assumindo que o backend retorna:
-  // {
-  //   tag,
-  //   op,
-  //   cliente_nome,
-  //   etapas: [...]
-  // }
 
   const { tag, op, cliente_nome, componentes } = resposta;
 
-// Linha 2 (dados)
-document.getElementById("linhaInfo").innerText =
-  `TAG: ${tag}` +
-  (op ? ` | OP: ${op}` : "") +
-  (cliente_nome ? ` | Cliente: ${cliente_nome}` : "");
+  componentesCache = componentes;
 
-// 🔹 pega o PRIMEIRO componente por enquanto
-const primeiroComponente = Object.keys(componentes)[0];
-const dados = componentes[primeiroComponente];
+  // Linha de identificação
+  document.getElementById("linhaInfo").innerText =
+    `TAG: ${tag}` +
+    (op ? ` | OP: ${op}` : "") +
+    (cliente_nome ? ` | Cliente: ${cliente_nome}` : "");
 
-montarTabela(dados);
-montarGraficoGantt(dados);
-montarGraficoDuracao(dados);
+  // 🔹 cria abas
+  montarAbasComponentes(componentes);
+
+  // 🔹 carrega o primeiro componente
+  const primeiro = Object.keys(componentes)[0];
+  const dados = componentes[primeiro];
+
+  montarTabela(dados);
+  montarGraficoGantt(dados);
+  montarGraficoDuracao(dados);
 }
 let componentesCache = {};
 window.buscar = buscar;
@@ -494,4 +525,5 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
