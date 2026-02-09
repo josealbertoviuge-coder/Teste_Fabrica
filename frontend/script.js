@@ -111,7 +111,7 @@ async function buscar() {
   );
 
   const resposta = await res.json();
-
+  componentesCache = componentes;
   // ⚠️ ajuste conforme seu backend
   // aqui estou assumindo que o backend retorna:
   // {
@@ -121,19 +121,23 @@ async function buscar() {
   //   etapas: [...]
   // }
 
-  const { tag, op, cliente_nome, etapas } = resposta;
+  const { tag, op, cliente_nome, componentes } = resposta;
 
-  // Linha 2 (dados)
-  document.getElementById("linhaInfo").innerText =
-    `TAG: ${tag}` +
-    (op ? ` | OP: ${op}` : "") +
-    (cliente_nome ? ` | Cliente: ${cliente_nome}` : "");
+// Linha 2 (dados)
+document.getElementById("linhaInfo").innerText =
+  `TAG: ${tag}` +
+  (op ? ` | OP: ${op}` : "") +
+  (cliente_nome ? ` | Cliente: ${cliente_nome}` : "");
 
-  montarTabela(etapas);
-  montarGraficoGantt(etapas);
-  montarGraficoDuracao(etapas);
+// 🔹 pega o PRIMEIRO componente por enquanto
+const primeiroComponente = Object.keys(componentes)[0];
+const dados = componentes[primeiroComponente];
+
+montarTabela(dados);
+montarGraficoGantt(dados);
+montarGraficoDuracao(dados);
 }
-
+let componentesCache = {};
 window.buscar = buscar;
 
 // =======================
@@ -490,6 +494,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
