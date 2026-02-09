@@ -102,7 +102,7 @@ async function buscar() {
   if (!codigo) return;
 
   // Linha 1 (fixa)
-  document.getElementById("titulo").innerText = "Consulta de Equipamento";
+  document.getElementById("titulo").innerText = "Tracking de Fabricação - Equipamentos";
 
   gerarQRCode(codigo);
 
@@ -490,6 +490,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
