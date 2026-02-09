@@ -13,53 +13,66 @@
 
   <!-- COLUNA ESQUERDA: QR + LOGO -->
   <div class="qr-logo">
-    <img
-      id="logo"
-      src="/logo_Carbogas.png"
-      alt="Logo"
-    >
+    <img id="logo" src="/logo_Carbogas.png" alt="Logo">
     <img id="qrcode" alt="QR Code">
   </div>
-  
-<div class="header-card">
-  <h2 id="titulo">Tracking de Fabricação - Equipamentos</h2>
-  <div id="linhaInfo"></div>
-  <div id="tempoTotal"></div>
-</div>
+
+  <div class="header-card">
+    <h2 id="titulo">Tracking de Fabricação - Equipamentos</h2>
+    <div id="linhaInfo"></div>
+    <div id="tempoTotal"></div>
+  </div>
 </div>
 
 <!-- CONTEÚDO -->
 <div class="container">
 
-  <input id="codigo">
+  <input id="codigo" type="text" placeholder="Digite a TAG do equipamento">
   <button onclick="buscar()">Buscar</button>
 
-  <!-- TABELA -->
-  <div class="tabela-wrapper">
-  <table>
-    <tbody id="tabela"></tbody>
-  </table>
-</div>
-
-  <br><br>
-
-  <!-- GANTT -->
-  <div class="gantt-wrapper">
-    <canvas id="grafico"></canvas>
+  <!-- ===================== -->
+  <!-- GUIAS DE COMPONENTES -->
+  <!-- ===================== -->
+  <div class="abas-wrapper">
+    <div id="abas-componentes" class="abas">
+      <!-- JS cria os botões aqui -->
+    </div>
   </div>
 
-  <br><br>
+  <!-- ===================== -->
+  <!-- CONTEÚDO DA ABA ATIVA -->
+  <!-- ===================== -->
+  <div id="conteudo-componente">
 
-  <!-- GRÁFICO DE DURAÇÃO -->
-  <canvas id="graficoDuracao" height="200"></canvas>
+    <!-- TABELA -->
+    <div class="tabela-wrapper">
+      <table>
+        <tbody id="tabela"></tbody>
+      </table>
+    </div>
 
+    <br>
+
+    <!-- GANTT -->
+    <div class="gantt-wrapper">
+      <canvas id="grafico"></canvas>
+    </div>
+
+    <br>
+
+    <!-- GRÁFICO DE DURAÇÃO -->
+    <canvas id="graficoDuracao" height="200"></canvas>
+
+  </div>
 </div>
 
 <footer class="footer">
-  Desenvolvido por <strong>José Alberto Viuge - Gerente de Controle da Qualidade Carbogas - 02/2026</strong>
+  Desenvolvido por
+  <strong>
+    José Alberto Viuge - Gerente de Controle da Qualidade Carbogas - 02/2026
+  </strong>
 </footer>
 
-  
 <!-- SCRIPTS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
@@ -68,16 +81,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
