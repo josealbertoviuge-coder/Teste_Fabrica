@@ -168,7 +168,7 @@ async function buscar() {
   montarGraficoGantt(dados);
   montarGraficoDuracao(dados);
 }
-let componentesCache = {};
+
 window.buscar = buscar;
 
 // =======================
@@ -525,5 +525,6 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
