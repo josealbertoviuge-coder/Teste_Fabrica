@@ -84,7 +84,7 @@ button {
 
 /* Logo */
 #logo {
-  width: 130px;        /* mesma largura do QR */
+  width: 160px;        /* mesma largura do QR */
   height: auto;
   object-fit: contain;
 }
