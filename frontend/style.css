@@ -182,3 +182,36 @@ button {
   background: white;
   z-index: 1;
 }
+
+/* =======================
+   ABAS DE COMPONENTES
+   ======================= */
+
+.abas-componentes {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0 10px 0;
+  flex-wrap: wrap;           /* quebra linha se tiver muitos componentes */
+}
+
+.aba-componente {
+  padding: 8px 16px;
+  background: #e5e7eb;       /* cinza claro */
+  color: #111827;
+  border: none;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.aba-componente:hover {
+  background: #dbeafe;       /* azul bem claro */
+}
+
+.aba-componente.ativa {
+  background: #2563eb;       /* azul padrão do sistema */
+  color: white;
+  box-shadow: inset 0 -3px 0 #1e40af;
+}
