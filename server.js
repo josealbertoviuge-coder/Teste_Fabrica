@@ -37,7 +37,7 @@ app.get("/tag/:codigo", async (req, res) => {
   try {
     const codigo = req.params.codigo;
 
-    // 🔹 Busca TAG + OP + Cliente
+    // 🔹 Cabeçalho: TAG + OP + Cliente
     const cabecalho = await pool.query(`
       SELECT
         t.tag,
@@ -53,9 +53,10 @@ app.get("/tag/:codigo", async (req, res) => {
       return res.status(404).json({ error: "TAG não encontrada" });
     }
 
-    // 🔹 Busca etapas da peça
-    const etapas = await pool.query(`
+    // 🔹 Busca andamento COM componente
+    const andamento = await pool.query(`
       SELECT
+        a.componente,
         e.nome_etapa,
         a.status,
         a.inicio,
@@ -63,14 +64,32 @@ app.get("/tag/:codigo", async (req, res) => {
       FROM andamento_pecas a
       JOIN etapas e ON e.id_etapa = a.id_etapa
       WHERE a.tag = $1
-      ORDER BY a.inicio
+      ORDER BY a.componente, a.inicio
     `, [codigo]);
+
+    // 🔹 Agrupa por componente
+    const componentes = {};
+
+    andamento.rows.forEach(linha => {
+      const comp = linha.componente || "Sem componente";
+
+      if (!componentes[comp]) {
+        componentes[comp] = [];
+      }
+
+      componentes[comp].push({
+        nome_etapa: linha.nome_etapa,
+        status: linha.status,
+        inicio: linha.inicio,
+        fim: linha.fim
+      });
+    });
 
     res.json({
       tag: cabecalho.rows[0].tag,
       op: cabecalho.rows[0].op,
       cliente_nome: cabecalho.rows[0].cliente_nome,
-      etapas: etapas.rows
+      componentes
     });
 
   } catch (err) {
@@ -78,6 +97,7 @@ app.get("/tag/:codigo", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
 
 app.listen(PORT, () => {
   console.log("Servidor iniciado");
@@ -92,6 +112,7 @@ app.post("/login",(req,res)=>{
     res.status(401).send("Login inválido");
   }
 });
+
 
 
 
