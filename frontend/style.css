@@ -68,22 +68,6 @@ button {
   margin-bottom: 20px;
 }
 
-// #qrcode {
-//   width: auto;
-//   height: 110px;
-//   display: block;
-//   flex-shrink: 0;
-//   object-fit: contain;
-// }
-// 
-// #logo {
-//   width: auto;
-//   height: 40px;
-//   display: block;
-//   flex-shrink: 0;
-//   object-fit: contain;
-// }
-
 /* coluna QR + logo */
 .qr-logo {
   display: flex;
@@ -100,7 +84,7 @@ button {
 
 /* Logo */
 #logo {
-  width: 110px;        /* mesma largura do QR */
+  width: 130px;        /* mesma largura do QR */
   height: auto;
   object-fit: contain;
 }
