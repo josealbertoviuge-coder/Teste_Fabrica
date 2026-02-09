@@ -495,7 +495,3 @@ function mostrarTempoTotal(horas) {
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
 
-
-
-
-
