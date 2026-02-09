@@ -499,18 +499,3 @@ function mostrarTempoTotal(horas) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
