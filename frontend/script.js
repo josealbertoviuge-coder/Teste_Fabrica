@@ -491,7 +491,7 @@ options: {
     // 🔹 EIXO Y (ETAPAS)
     y: {
       categoryPercentage: 0.7, // ↓ espaço da categoria
-      barPercentage: 0.9,      // ↓ ocupação da barra
+      barPercentage: 0.5,      // ↓ ocupação da barra
       title: {
         display: true,
         text: "Etapas",
@@ -541,6 +541,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
