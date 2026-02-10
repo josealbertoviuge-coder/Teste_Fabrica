@@ -118,12 +118,19 @@ function montarAbasComponentes(componentes) {
 btn.onclick = () => {
   const conteudo = document.getElementById("conteudo-componente");
 
+  // ativa aba
   document
     .querySelectorAll(".aba-componente")
     .forEach(b => b.classList.remove("ativa"));
-
   btn.classList.add("ativa");
 
+  // 🔒 RESETA ANIMAÇÃO
+  conteudo.classList.remove("fade-in", "fade-out");
+
+  // 🔥 força reflow (ESSENCIAL)
+  void conteudo.offsetWidth;
+
+  // inicia fade-out
   conteudo.classList.add("fade-out");
 
   setTimeout(() => {
@@ -133,6 +140,7 @@ btn.onclick = () => {
     montarGraficoGantt(dados);
     montarGraficoDuracao(dados);
 
+    // troca para fade-in
     conteudo.classList.remove("fade-out");
     conteudo.classList.add("fade-in");
   }, 180);
@@ -592,6 +600,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
