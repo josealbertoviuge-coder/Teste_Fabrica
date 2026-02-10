@@ -309,6 +309,22 @@ function montarGraficoGantt(dados) {
   canvas.height = Math.max(alturaCanvas, alturaMinima);
 
   // =======================
+// AJUSTE DA JANELA VISÍVEL
+// =======================
+
+const wrapper = canvas.parentElement;
+
+const alturaMaxViewport = 800;   // limite visual agradável
+const paddingVisual = 40;        // respiro interno
+
+const alturaViewport = Math.min(
+  canvas.height + paddingVisual,
+  alturaMaxViewport
+);
+
+wrapper.style.height = `${alturaViewport}px`;
+
+  // =======================
   // DATASET
   // =======================
 
@@ -517,8 +533,23 @@ function montarGraficoDuracao(dados) {
   const duracoes = etapas.map(e => Number(acumulado[e].toFixed(2)));
   const cores = etapas.map(e => emAndamento[e] ? "#f59e0b" : "#2563eb");
 
+
   if (chartDuracao) chartDuracao.destroy();
 
+  const canvasDuracao = document.getElementById("graficoDuracao");
+
+const alturaPorEtapa = 45;
+const alturaMinima = 180;
+const alturaMaxima = 800;
+
+const alturaCalculada =
+  etapas.length * alturaPorEtapa;
+
+canvasDuracao.height = Math.min(
+  Math.max(alturaCalculada, alturaMinima),
+  alturaMaxima
+);
+  
   chartDuracao = new Chart(document.getElementById("graficoDuracao"), {
     type: "bar",
     data: {
@@ -620,6 +651,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
