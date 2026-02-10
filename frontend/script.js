@@ -265,8 +265,8 @@ function montarGraficoGantt(dados) {
   // AJUSTE DE ALTURA (SCROLL)
   // =======================
 
-  const alturaPorEtapa = 100;
-  const alturaMinima = 350;
+  const alturaPorEtapa = 65;
+  const alturaMinima = 280;
 
   const alturaCanvas = labels.length * alturaPorEtapa;
   canvas.height = Math.max(alturaCanvas, alturaMinima);
@@ -296,8 +296,8 @@ function montarGraficoGantt(dados) {
         label: "Linha do Tempo",
         data,
         backgroundColor: cores,
-        borderRadius: 6,
-        barThickness: 20
+        borderRadius: 5,
+        barThickness: 16
       }]
     },
     options: {
@@ -540,6 +540,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
