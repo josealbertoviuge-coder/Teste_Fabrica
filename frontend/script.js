@@ -331,24 +331,24 @@ function montarGraficoGantt(dados) {
       scales: {
 x: {
   type: "time",
-  min: minData,        // 🔒 limite real inferior
-  max: maxData,        // 🔒 limite real superior
-  // 🔓 permite navegar por TODOS os dados
-  suggestedMin: minData,
-  suggestedMax: janelaInicialFim,
+  min: minData,
+  max: maxData,
 
   time: {
     unit: "hour",
-    stepSize: 6
+    stepSize: 6,
+    displayFormats: {
+      hour: "HH:mm"
+    }
   },
 
   ticks: {
-    autoSkip: false,
-    major: { enabled: true },
-
+    autoSkip: false,          // 🔒 NÃO deixar o Chart decidir
+    source: "data",           // 🔒 usa o intervalo definido
     callback: value => {
       const d = new Date(value);
 
+      // data só à meia-noite
       if (d.getHours() === 0 && d.getMinutes() === 0) {
         return d.toLocaleDateString("pt-BR", {
           day: "2-digit",
@@ -356,6 +356,7 @@ x: {
         });
       }
 
+      // horas de 6 em 6
       return d.toLocaleTimeString("pt-BR", {
         hour: "2-digit",
         minute: "2-digit"
@@ -366,9 +367,9 @@ x: {
   grid: {
     color: ctx => {
       const d = new Date(ctx.tick.value);
-      return (d.getHours() === 0 && d.getMinutes() === 0)
-        ? "rgba(0,0,0,0.45)"
-        : "rgba(0,0,0,0.08)";
+      return d.getHours() % 6 === 0
+        ? "rgba(0,0,0,0.25)"   // linhas de 6h
+        : "rgba(0,0,0,0.05)";
     }
   },
 
@@ -539,6 +540,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
