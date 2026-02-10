@@ -104,50 +104,53 @@ function montarAbasComponentes(componentes) {
   const container = document.getElementById("abasComponentes");
   container.innerHTML = "";
 
-  Object.keys(componentes).forEach((nome, index) => {
+  // 🔥 ORDEM DESEJADA
+  const ordemDesejada = [
+    "Flange A",
+    "Flange B",
+    "Berco de Apoio",
+    "Tambor"
+  ];
+
+  // 1️⃣ Primeiro: na ordem definida
+  ordemDesejada.forEach(nome => {
+    if (!componentes[nome]) return;
+
+    criarAba(nome);
+  });
+
+  // 2️⃣ Depois: qualquer outro componente que venha da API
+  Object.keys(componentes).forEach(nome => {
+    if (ordemDesejada.includes(nome)) return;
+    criarAba(nome);
+  });
+
+  function criarAba(nome) {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.innerText = nome;
     btn.className = "aba-componente";
 
-    if (index === 0) {
+    // primeira aba ativa
+    if (!container.children.length) {
       btn.classList.add("ativa");
-      componenteAtual = nome;
     }
 
-btn.onclick = () => {
-  const conteudo = document.getElementById("conteudo-componente");
+    btn.onclick = () => {
+      document
+        .querySelectorAll(".aba-componente")
+        .forEach(b => b.classList.remove("ativa"));
 
-  // ativa aba
-  document
-    .querySelectorAll(".aba-componente")
-    .forEach(b => b.classList.remove("ativa"));
-  btn.classList.add("ativa");
+      btn.classList.add("ativa");
 
-  // 🔒 RESETA ANIMAÇÃO
-  conteudo.classList.remove("fade-in", "fade-out");
-
-  // 🔥 força reflow (ESSENCIAL)
-  void conteudo.offsetWidth;
-
-  // inicia fade-out
-  conteudo.classList.add("fade-out");
-
-  setTimeout(() => {
-    const dados = componentesCache[nome];
-
-    montarTabela(dados);
-    montarGraficoGantt(dados);
-    montarGraficoDuracao(dados);
-
-    // troca para fade-in
-    conteudo.classList.remove("fade-out");
-    conteudo.classList.add("fade-in");
-  }, 180);
-};
+      const dados = componentesCache[nome];
+      montarTabela(dados);
+      montarGraficoGantt(dados);
+      montarGraficoDuracao(dados);
+    };
 
     container.appendChild(btn);
-  });
+  }
 }
 
 async function buscar() {
@@ -600,6 +603,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
