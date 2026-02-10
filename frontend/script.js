@@ -265,8 +265,8 @@ function montarGraficoGantt(dados) {
   // AJUSTE DE ALTURA (SCROLL)
   // =======================
 
-  const alturaPorEtapa = 75;
-  const alturaMinima = 260;
+  const alturaPorEtapa = 100;
+  const alturaMinima = 350;
 
   const alturaCanvas = labels.length * alturaPorEtapa;
   canvas.height = Math.max(alturaCanvas, alturaMinima);
@@ -297,7 +297,7 @@ function montarGraficoGantt(dados) {
         data,
         backgroundColor: cores,
         borderRadius: 6,
-        barThickness: 18
+        barThickness: 20
       }]
     },
     options: {
@@ -446,7 +446,8 @@ function montarGraficoDuracao(dados) {
       datasets: [{
         label: "Tempo Total por Etapa de Fabricação do Equipamento (h)",
         data: duracoes,
-        backgroundColor: cores
+        backgroundColor: cores,
+        barThickness: 30
       }]
     },
 options: {
@@ -538,6 +539,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
