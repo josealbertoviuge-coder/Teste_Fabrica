@@ -247,7 +247,7 @@ function montarGraficoGantt(dados) {
   // =======================
   // TAMANHO HORIZONTAL (SCROLL)
   // =======================
-  const larguraPorDia = 300; // px
+  const larguraPorDia = 160; // px
   const diasVisiveis = 14;
 
   const diasTotais =
@@ -368,57 +368,55 @@ x: {
     stepSize: 6   // 🔒 base horária estável
   },
 
-  ticks: {
-    autoSkip: false,
-    font: { weight: "bold" },
+ticks: {
+  autoSkip: false,
+  callback: value => {
+    const d = new Date(value);
 
-    callback: (value) => {
-      const d = new Date(value);
-
-      // ❌ não mostra ticks fora de 6h
-      if (d.getHours() % 6 !== 0) return "";
-
-      // meia-noite → data
-      if (d.getHours() === 0) {
-        return d.toLocaleDateString("pt-BR", {
-          day: "2-digit",
-          month: "short"
-        });
-      }
-
-      // demais divisões de 6h
-      return d.toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
+    if (d.getHours() === 0) {
+      return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
     }
+
+    if (d.getHours() % 6 === 0) {
+      return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    return ""; // 🔥 3h sem label
+  }
+},
+
+grid: {
+  drawTicks: false,
+
+  color: ctx => {
+    const d = new Date(ctx.tick.value);
+
+    // virada do dia
+    if (d.getHours() === 0) {
+      return "rgba(0,0,0,0.45)";
+    }
+
+    // 6h → linha média
+    if (d.getHours() % 6 === 0) {
+      return "rgba(0,0,0,0.20)";
+    }
+
+    // 3h → linha bem suave
+    if (d.getHours() % 3 === 0) {
+      return "rgba(0,0,0,0.08)";
+    }
+
+    return "rgba(0,0,0,0)";
   },
 
-  grid: {
-    drawTicks: false,
-
-    color: (ctx) => {
-      const d = new Date(ctx.tick.value);
-
-      // 🔥 LINHA ESCURA APENAS NA VIRADA DO DIA
-      if (d.getHours() === 0) {
-        return "rgba(0,0,0,0.45)";
-      }
-
-      // linhas claras a cada 6h
-      if (d.getHours() % 6 === 0) {
-        return "rgba(0,0,0,0.18)";
-      }
-
-      // invisível para o resto
-      return "rgba(0,0,0,0)";
-    },
-
-    lineWidth: (ctx) => {
-      const d = new Date(ctx.tick.value);
-      return d.getHours() === 0 ? 2 : 1;
-    }
-  },
+  lineWidth: ctx => {
+    const d = new Date(ctx.tick.value);
+    if (d.getHours() === 0) return 2;
+    if (d.getHours() % 6 === 0) return 1.2;
+    if (d.getHours() % 3 === 0) return 0.6;
+    return 0;
+  }
+},
 
   title: {
     display: true,
@@ -588,6 +586,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
