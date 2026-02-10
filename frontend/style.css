@@ -123,6 +123,8 @@ th,td{
   overflow-y: auto;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
+  display: flex;          /* 🔥 chave */
+  align-items: center;    /* 🔥 centraliza verticalmente */
 }
 
 /* =======================
