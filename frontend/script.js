@@ -335,22 +335,21 @@ x: {
   max: maxData,
 
   time: {
-    unit: "hour",
-    stepSize: 6,          // 🔥 divisões reais de 6h
-    displayFormats: {
-      hour: "HH:mm"
-    }
+    unit: "hour"
   },
 
   ticks: {
-    autoSkip: true,       // 🔥 OBRIGATÓRIO
-    maxTicksLimit: 100,   // evita colapso em períodos longos
+    autoSkip: false,
+    source: "auto",
     font: { weight: "bold" },
 
-    callback: value => {
+    callback: (value) => {
       const d = new Date(value);
 
-      // início do dia → data
+      // 👉 só mostra texto a cada 6h
+      if (d.getHours() % 6 !== 0) return "";
+
+      // meia-noite → data
       if (d.getHours() === 0) {
         return d.toLocaleDateString("pt-BR", {
           day: "2-digit",
@@ -358,7 +357,7 @@ x: {
         });
       }
 
-      // demais → hora
+      // demais horários
       return d.toLocaleTimeString("pt-BR", {
         hour: "2-digit",
         minute: "2-digit"
@@ -367,16 +366,24 @@ x: {
   },
 
   grid: {
-    color: ctx => {
+    drawTicks: false,
+
+    // 👉 grade VISUAL controlada aqui
+    color: (ctx) => {
       const d = new Date(ctx.tick.value);
 
-      // 🔥 linha forte só no início do dia
-      if (d.getHours() === 0) {
+      // 🔥 LINHA FORTE apenas a cada 6h
+      if (d.getHours() % 6 === 0) {
         return "rgba(0,0,0,0.35)";
       }
 
-      // 🔥 linhas suaves a cada 6h
-      return "rgba(0,0,0,0.12)";
+      // linhas fracas (quase invisíveis)
+      return "rgba(0,0,0,0.05)";
+    },
+
+    lineWidth: (ctx) => {
+      const d = new Date(ctx.tick.value);
+      return d.getHours() % 6 === 0 ? 1.5 : 0.5;
     }
   },
 
@@ -548,6 +555,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
