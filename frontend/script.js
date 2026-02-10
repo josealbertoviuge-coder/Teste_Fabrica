@@ -366,14 +366,19 @@ x: {
     }
   },
 
-  grid: {
-    color: ctx => {
-      const d = new Date(ctx.tick.value);
-      return d.getHours() % 6 === 0
-        ? "rgba(0,0,0,0.35)"   // linhas fortes a cada 6h
-        : "rgba(0,0,0,0.05)";  // linhas fracas invisíveis
+grid: {
+  color: ctx => {
+    const d = new Date(ctx.tick.value);
+
+    // 🔥 linha forte SOMENTE no início do dia
+    if (d.getHours() === 0 && d.getMinutes() === 0) {
+      return "rgba(0,0,0,0.35)";
     }
-  },
+
+    // linhas suaves no restante
+    return "rgba(0,0,0,0.05)";
+  }
+},
 
   title: {
     display: true,
@@ -543,6 +548,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
