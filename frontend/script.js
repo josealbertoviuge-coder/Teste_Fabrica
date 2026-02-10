@@ -365,23 +365,31 @@ x: {
 
   time: {
     unit: "hour",
-    stepSize: 6   // 🔒 base horária estável
+    stepSize: 3   // 🔒 base horária estável
   },
 
 ticks: {
   autoSkip: false,
+  font: { weight: "bold" },
+
   callback: value => {
     const d = new Date(value);
 
     if (d.getHours() === 0) {
-      return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
+      return d.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short"
+      });
     }
 
     if (d.getHours() % 6 === 0) {
-      return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+      return d.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
     }
 
-    return ""; // 🔥 3h sem label
+    return ""; // 3h sem texto, MAS com linha
   }
 },
 
@@ -391,30 +399,23 @@ grid: {
   color: ctx => {
     const d = new Date(ctx.tick.value);
 
-    // virada do dia
-    if (d.getHours() === 0) {
-      return "rgba(0,0,0,0.45)";
-    }
+    // dia
+    if (d.getHours() === 0) return "rgba(0,0,0,0.35)";
 
-    // 6h → linha média
-    if (d.getHours() % 6 === 0) {
-      return "rgba(0,0,0,0.20)";
-    }
+    // 6h
+    if (d.getHours() % 6 === 0) return "rgba(0,0,0,0.18)";
 
-    // 3h → linha bem suave
-    if (d.getHours() % 3 === 0) {
-      return "rgba(0,0,0,0.08)";
-    }
+    // 3h (⚠️ nunca zero)
+    if (d.getHours() % 3 === 0) return "rgba(0,0,0,0.08)";
 
-    return "rgba(0,0,0,0)";
+    return "rgba(0,0,0,0.08)";
   },
 
   lineWidth: ctx => {
     const d = new Date(ctx.tick.value);
     if (d.getHours() === 0) return 2;
-    if (d.getHours() % 6 === 0) return 1.2;
-    if (d.getHours() % 3 === 0) return 0.6;
-    return 0;
+    if (d.getHours() % 6 === 0) return 1;
+    return 0.6; // 🔒 nunca 0
   }
 },
 
@@ -586,6 +587,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
