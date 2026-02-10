@@ -356,7 +356,7 @@ x: {
 
   time: {
     unit: "hour",
-    stepSize: 1   // 🔒 base horária estável
+    stepSize: 6   // 🔒 base horária estável
   },
 
   ticks: {
@@ -579,6 +579,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
