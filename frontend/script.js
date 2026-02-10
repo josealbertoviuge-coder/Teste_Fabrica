@@ -217,25 +217,12 @@ let chartGantt;
 function montarGraficoGantt(dados) {
   if (chartGantt) chartGantt.destroy();
 
-  // largura proporcional ao tempo (scroll horizontal)
-const larguraPorDia = 220; // px por dia (ajuste fino)
-const diasVisiveis = 14;
-
-const diasTotais =
-  (maxData - minData) / (1000 * 60 * 60 * 24);
-
-canvas.width = Math.max(
-  diasTotais * larguraPorDia,
-  diasVisiveis * larguraPorDia
-);
-
   const agora = new Date();
   const canvas = document.getElementById("grafico");
 
   // =======================
   // RANGE GLOBAL
   // =======================
-
   const datas = dados
     .flatMap(d => [
       d.inicio ? dataSemFuso(d.inicio) : null,
@@ -245,15 +232,28 @@ canvas.width = Math.max(
 
   if (!datas.length) return;
 
-  // menor data real dos dados
-const minData = new Date(Math.min(...datas));
+  const minData = new Date(Math.min(...datas));
+  const maxData = new Date(Math.max(...datas));
 
-// maior data real dos dados (necessário para scroll total)
-const maxData = new Date(Math.max(...datas));
+  // =======================
+  // TAMANHO HORIZONTAL (SCROLL)
+  // =======================
+  const larguraPorDia = 220; // px
+  const diasVisiveis = 14;
 
-// janela VISÍVEL inicial (14 dias)
-const janelaInicialFim = new Date(minData);
-janelaInicialFim.setDate(janelaInicialFim.getDate() + 14);
+  const diasTotais =
+    (maxData - minData) / (1000 * 60 * 60 * 24);
+
+  canvas.width = Math.max(
+    diasTotais * larguraPorDia,
+    diasVisiveis * larguraPorDia
+  );
+
+  // =======================
+  // JANELA VISÍVEL
+  // =======================
+  const janelaInicialFim = new Date(minData);
+  janelaInicialFim.setDate(janelaInicialFim.getDate() + diasVisiveis);
 
   // =======================
   // ETAPAS ÚNICAS (1 LINHA)
@@ -538,6 +538,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
