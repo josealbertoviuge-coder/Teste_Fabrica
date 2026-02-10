@@ -189,31 +189,38 @@ th,td{
 
 .abas-wrapper {
   margin: 20px 0;
-  overflow-x: auto;          /* caso tenha muitos componentes */
+  overflow-x: auto;
 }
 
 .abas {
-  display: flex;             /* 🔥 ISSO É O MAIS IMPORTANTE */
+  display: flex;
   gap: 8px;
-  flex-wrap: wrap;           /* quebra linha se não couber */
+  flex-wrap: wrap;
 }
 
+/* 🔹 Aba padrão (não selecionada) */
 .aba-componente {
   padding: 8px 14px;
   border-radius: 6px;
   border: 1px solid #d1d5db;
   background: #f9fafb;
+
   cursor: pointer;
   font-weight: 500;
   white-space: nowrap;
+
+  color: #6b7280;        /* ✅ CINZA elegante */
 }
 
+/* Hover */
 .aba-componente:hover {
   background: #e5e7eb;
+  color: #374151;        /* cinza mais escuro ao passar o mouse */
 }
 
+/* 🔹 Aba ativa */
 .aba-componente.ativa {
   background: #2563eb;
-  color: #ffffff;
+  color: #ffffff;        /* branco na aba ativa */
   border-color: #2563eb;
 }
