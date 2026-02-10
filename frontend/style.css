@@ -129,8 +129,7 @@ th,td{
    CANVAS — NÃO ESTICA
    ======================= */
 #grafico {
-  width: 1600px;              /* força scroll horizontal */
-  height: 600px;              /* força scroll vertical */
+  display: block;
 }
 
 #linhaInfo {
