@@ -343,6 +343,7 @@ x: {
   },
 
   ticks: {
+    source: "data",
     autoSkip: false,
     major: { enabled: true },
 
@@ -540,6 +541,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
