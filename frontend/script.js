@@ -446,8 +446,7 @@ function montarGraficoDuracao(dados) {
       datasets: [{
         label: "Tempo Total por Etapa de Fabricação do Equipamento (h)",
         data: duracoes,
-        backgroundColor: cores,
-        barThickness: 100
+        backgroundColor: cores
       }]
     },
 options: {
@@ -490,8 +489,8 @@ options: {
 
     // 🔹 EIXO Y (ETAPAS)
     y: {
-      categoryPercentage: 0.7, // ↓ espaço da categoria
-      barPercentage: 0.5,      // ↓ ocupação da barra
+      categoryPercentage: 0.6, // ↓ espaço da categoria
+      barPercentage: 0.85,      // ↓ ocupação da barra
       title: {
         display: true,
         text: "Etapas",
@@ -541,6 +540,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
