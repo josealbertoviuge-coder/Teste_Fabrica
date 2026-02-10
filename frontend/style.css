@@ -119,7 +119,6 @@ th,td{
    ======================= */
 .gantt-wrapper {
   width: 100%;
-  height: 800px;        /* área visível */
   overflow-x: auto;
   overflow-y: auto;
   border: 1px solid #e5e7eb;
