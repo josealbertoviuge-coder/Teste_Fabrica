@@ -227,3 +227,21 @@ th,td{
   color: #ffffff;        /* branco na aba ativa */
   border-color: #2563eb;
 }
+
+/* =======================
+   TRANSIÇÃO ENTRE ABAS
+   ======================= */
+
+#conteudo-componente {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+#conteudo-componente.fade-out {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+#conteudo-componente.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
