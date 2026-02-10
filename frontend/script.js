@@ -379,6 +379,8 @@ x: {
   }
 },
 y: {
+  categoryPercentage: 0.7, // ↓ espaço da categoria
+  barPercentage: 0.9,      // ↓ ocupação da barra
   ticks: {
     font: { weight: "bold" },
 
@@ -539,6 +541,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
