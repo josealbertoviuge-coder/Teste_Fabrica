@@ -329,6 +329,121 @@ function montarGraficoGantt(dados) {
       },
 
       scales: {
+function montarGraficoGantt(dados) {
+  if (chartGantt) chartGantt.destroy();
+
+  const agora = new Date();
+  const canvas = document.getElementById("grafico");
+
+  // =======================
+  // RANGE GLOBAL
+  // =======================
+  const datas = dados
+    .flatMap(d => [
+      d.inicio ? dataSemFuso(d.inicio) : null,
+      d.fim ? dataSemFuso(d.fim) : agora
+    ])
+    .filter(Boolean);
+
+  if (!datas.length) return;
+
+  const minData = new Date(Math.min(...datas));
+  const maxData = new Date(Math.max(...datas));
+
+  // =======================
+  // TAMANHO HORIZONTAL (SCROLL)
+  // =======================
+  const larguraPorDia = 220; // px
+  const diasVisiveis = 14;
+
+  const diasTotais =
+    (maxData - minData) / (1000 * 60 * 60 * 24);
+
+  canvas.width = Math.max(
+    diasTotais * larguraPorDia,
+    diasVisiveis * larguraPorDia
+  );
+
+  // =======================
+  // JANELA VISÍVEL
+  // =======================
+  const janelaInicialFim = new Date(minData);
+  janelaInicialFim.setDate(janelaInicialFim.getDate() + diasVisiveis);
+
+  // =======================
+  // ETAPAS ÚNICAS (1 LINHA)
+  // =======================
+
+  const labels = [...new Set(dados.map(d => d.nome_etapa))];
+
+  // =======================
+  // AJUSTE DE ALTURA (SCROLL)
+  // =======================
+
+  const alturaPorEtapa = 65;
+  const alturaMinima = 280;
+
+  const alturaCanvas = labels.length * alturaPorEtapa;
+  canvas.height = Math.max(alturaCanvas, alturaMinima);
+
+  // =======================
+  // DATASET
+  // =======================
+
+  const data = [];
+  const cores = [];
+  
+  dados.forEach(d => {
+    if (!d.inicio) return;
+
+    const inicio = dataSemFuso(d.inicio);
+    const fim = d.fim ? dataSemFuso(d.fim) : agora;
+
+    data.push({ x: [inicio, fim], y: d.nome_etapa });
+    cores.push(d.fim ? "#2563eb" : "#f59e0b");
+  });
+
+  chartGantt = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Linha do Tempo",
+        data,
+        backgroundColor: cores,
+        borderRadius: 5,
+        barThickness: 16
+      }]
+    },
+    options: {
+      responsive: false,
+      maintainAspectRatio: false,
+      indexAxis: "y",
+
+      plugins: {
+
+        // ✅ ATIVA O TURNO NOTURNO SÓ AQUI
+        turnoNoturno: {
+          enabled: true
+        },
+        title: {
+          display: true,
+          text: "Timeline de Execução do Equipamento",
+          font: { weight: "bold", size: 16 }
+        },
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const [ini, fim] = ctx.raw.x;
+              return `${formatarDataTabela(ini)} → ${formatarDataTabela(fim)}`;
+            }
+          }
+        },
+        datalabels: { display: false }
+      },
+
+      scales: {
 x: {
   type: "time",
   min: minData,        // 🔒 limite real inferior
@@ -379,6 +494,33 @@ x: {
     font: { weight: "bold" }
   }
 },
+y: {
+  ticks: {
+    font: { weight: "bold" },
+
+    // mantém fundo branco atrás do texto
+    backdropColor: "#ffffff",
+    backdropPadding: 4
+  },
+
+  grid: {
+    drawOnChartArea: true,   // ✅ desenha linhas horizontais
+    drawTicks: false,
+
+    color: "rgba(0,0,0,0.15)", // cinza suave
+    lineWidth: 1
+  },
+
+  title: {
+    display: true,
+    text: "Etapas",
+    font: { weight: "bold" }
+  }
+}
+      }
+    }
+  });
+}
 y: {
   ticks: {
     font: { weight: "bold" },
@@ -541,6 +683,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
