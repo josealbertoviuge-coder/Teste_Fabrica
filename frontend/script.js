@@ -354,14 +354,20 @@ x: {
   min: minData,
   max: maxData,
 
+  time: {
+    unit: "hour",
+    stepSize: 1   // 🔒 base horária estável
+  },
+
   ticks: {
-    source: "labels",
     autoSkip: false,
-    values: ticks6h,
     font: { weight: "bold" },
 
     callback: (value) => {
       const d = new Date(value);
+
+      // ❌ não mostra ticks fora de 6h
+      if (d.getHours() % 6 !== 0) return "";
 
       // meia-noite → data
       if (d.getHours() === 0) {
@@ -385,13 +391,18 @@ x: {
     color: (ctx) => {
       const d = new Date(ctx.tick.value);
 
-      // 🔥 LINHA ESCURA SOMENTE NA VIRADA DO DIA
+      // 🔥 LINHA ESCURA APENAS NA VIRADA DO DIA
       if (d.getHours() === 0) {
         return "rgba(0,0,0,0.45)";
       }
 
       // linhas claras a cada 6h
-      return "rgba(0,0,0,0.15)";
+      if (d.getHours() % 6 === 0) {
+        return "rgba(0,0,0,0.18)";
+      }
+
+      // invisível para o resto
+      return "rgba(0,0,0,0)";
     },
 
     lineWidth: (ctx) => {
@@ -568,6 +579,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
