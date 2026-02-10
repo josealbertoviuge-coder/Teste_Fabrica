@@ -108,8 +108,9 @@ function montarAbasComponentes(componentes) {
   const ordemDesejada = [
     "Flange A",
     "Flange B",
+    "Tambor",
     "Berco de Apoio",
-    "Tambor"
+    "Conjunto Montado"
   ];
 
   // 1️⃣ Primeiro: na ordem definida
@@ -603,6 +604,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
