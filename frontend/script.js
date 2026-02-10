@@ -106,6 +106,7 @@ function montarAbasComponentes(componentes) {
 
   Object.keys(componentes).forEach((nome, index) => {
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.innerText = nome;
     btn.className = "aba-componente";
 
@@ -525,6 +526,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
