@@ -447,7 +447,7 @@ function montarGraficoDuracao(dados) {
         label: "Tempo Total por Etapa de Fabricação do Equipamento (h)",
         data: duracoes,
         backgroundColor: cores,
-        barThickness: 30
+        barThickness: 100
       }]
     },
 options: {
@@ -539,6 +539,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
