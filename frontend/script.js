@@ -115,19 +115,28 @@ function montarAbasComponentes(componentes) {
       componenteAtual = nome;
     }
 
-    btn.onclick = () => {
-      document
-        .querySelectorAll(".aba-componente")
-        .forEach(b => b.classList.remove("ativa"));
+btn.onclick = () => {
+  const conteudo = document.getElementById("conteudo-componente");
 
-      btn.classList.add("ativa");
-      componenteAtual = nome;
+  document
+    .querySelectorAll(".aba-componente")
+    .forEach(b => b.classList.remove("ativa"));
 
-      const dados = componentesCache[nome];
-      montarTabela(dados);
-      montarGraficoGantt(dados);
-      montarGraficoDuracao(dados);
-    };
+  btn.classList.add("ativa");
+
+  conteudo.classList.add("fade-out");
+
+  setTimeout(() => {
+    const dados = componentesCache[nome];
+
+    montarTabela(dados);
+    montarGraficoGantt(dados);
+    montarGraficoDuracao(dados);
+
+    conteudo.classList.remove("fade-out");
+    conteudo.classList.add("fade-in");
+  }, 180);
+};
 
     container.appendChild(btn);
   });
@@ -579,6 +588,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
