@@ -217,6 +217,18 @@ let chartGantt;
 function montarGraficoGantt(dados) {
   if (chartGantt) chartGantt.destroy();
 
+  // largura proporcional ao tempo (scroll horizontal)
+const larguraPorDia = 220; // px por dia (ajuste fino)
+const diasVisiveis = 14;
+
+const diasTotais =
+  (maxData - minData) / (1000 * 60 * 60 * 24);
+
+canvas.width = Math.max(
+  diasTotais * larguraPorDia,
+  diasVisiveis * larguraPorDia
+);
+
   const agora = new Date();
   const canvas = document.getElementById("grafico");
 
@@ -526,6 +538,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
