@@ -233,15 +233,13 @@ th,td{
    ======================= */
 
 #conteudo-componente {
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-#conteudo-componente.fade-out {
-  opacity: 0;
-  transform: translateY(6px);
-}
-
-#conteudo-componente.fade-in {
   opacity: 1;
   transform: translateY(0);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  will-change: opacity, transform;
+}
+
+#conteudo-componente.is-hiding {
+  opacity: 0;
+  transform: translateY(8px);
 }
