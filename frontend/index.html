@@ -8,7 +8,9 @@
 
 <body>
 
+<!-- ===================== -->
 <!-- TOPO -->
+<!-- ===================== -->
 <div class="topo-wrapper">
 
   <!-- COLUNA ESQUERDA: QR + LOGO -->
@@ -17,6 +19,7 @@
     <img id="qrcode" alt="QR Code">
   </div>
 
+  <!-- HEADER -->
   <div class="header-card">
     <h2 id="titulo">Tracking de Fabricação - Equipamentos</h2>
     <div id="linhaInfo"></div>
@@ -24,9 +27,12 @@
   </div>
 </div>
 
+<!-- ===================== -->
 <!-- CONTEÚDO -->
+<!-- ===================== -->
 <div class="container">
 
+  <!-- CAMPOS OCULTOS -->
   <input id="codigo" type="text" placeholder="Digite a TAG do equipamento">
   <button id="btnBuscar" onclick="buscar()">Buscar</button>
 
@@ -44,7 +50,9 @@
   <!-- ===================== -->
   <div id="conteudo-componente">
 
+    <!-- ===================== -->
     <!-- TABELA -->
+    <!-- ===================== -->
     <div class="tabela-wrapper">
       <table>
         <tbody id="tabela"></tbody>
@@ -53,19 +61,36 @@
 
     <br>
 
-    <!-- GANTT -->
-    <div class="gantt-wrapper">
-      <canvas id="grafico"></canvas>
+    <!-- ===================== -->
+    <!-- GANTT (EIXO Y FIXO + SCROLL X) -->
+    <!-- ===================== -->
+    <div class="gantt-container">
+
+      <!-- EIXO Y FIXO (ETAPAS) -->
+      <div class="gantt-y-wrapper">
+        <canvas id="graficoY"></canvas>
+      </div>
+
+      <!-- ÁREA ROLÁVEL (TEMPO) -->
+      <div class="gantt-x-wrapper">
+        <canvas id="grafico"></canvas>
+      </div>
+
     </div>
 
     <br>
 
+    <!-- ===================== -->
     <!-- GRÁFICO DE DURAÇÃO -->
+    <!-- ===================== -->
     <canvas id="graficoDuracao" height="200"></canvas>
 
   </div>
 </div>
 
+<!-- ===================== -->
+<!-- RODAPÉ -->
+<!-- ===================== -->
 <footer class="footer">
   Desenvolvido por
   <strong>
@@ -73,7 +98,9 @@
   </strong>
 </footer>
 
+<!-- ===================== -->
 <!-- SCRIPTS -->
+<!-- ===================== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -81,5 +108,3 @@
 
 </body>
 </html>
-
-
