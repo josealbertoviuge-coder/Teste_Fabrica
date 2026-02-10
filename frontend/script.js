@@ -459,9 +459,9 @@ options: {
       font: { weight: "bold", size: 16 }
     },
 
-    // 🔹 LEGENDA (agora aparece)
+    // 🔹 LEGENDA
     legend: {
-      display: true,
+      display: false,
       labels: {
         font: { weight: "bold" }
       }
@@ -538,6 +538,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
