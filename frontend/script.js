@@ -372,9 +372,12 @@ ticks: {
   autoSkip: false,
   font: { weight: "bold" },
 
-  callback: value => {
-    const d = new Date(value);
+  callback: (value, index, ticks) => {
+    const d = new Date(ticks[index].value);
 
+    if (isNaN(d)) return "";
+
+    // meia-noite → data
     if (d.getHours() === 0) {
       return d.toLocaleDateString("pt-BR", {
         day: "2-digit",
@@ -382,6 +385,7 @@ ticks: {
       });
     }
 
+    // a cada 6h → hora
     if (d.getHours() % 6 === 0) {
       return d.toLocaleTimeString("pt-BR", {
         hour: "2-digit",
@@ -389,7 +393,8 @@ ticks: {
       });
     }
 
-    return ""; // 3h sem texto, MAS com linha
+    // 3h sem label (linha existe)
+    return "";
   }
 },
 
@@ -587,6 +592,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
