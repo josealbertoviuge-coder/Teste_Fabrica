@@ -55,7 +55,7 @@ th,td{
    CAMPOS OCULTOS
    ======================= */
 #codigo,
-button {
+#btnBuscar {
   display: none;
 }
 
