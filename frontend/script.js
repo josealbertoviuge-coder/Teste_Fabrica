@@ -288,6 +288,26 @@ function montarGraficoGantt(dados) {
     cores.push(d.fim ? "#2563eb" : "#f59e0b");
   });
 
+  function gerarTicks6h(inicio, fim) {
+  const ticks = [];
+  const cursor = new Date(inicio);
+
+  // alinha para a hora cheia mais próxima
+  cursor.setMinutes(0, 0, 0);
+
+  // ajusta para múltiplo de 6
+  cursor.setHours(Math.floor(cursor.getHours() / 6) * 6);
+
+  while (cursor <= fim) {
+    ticks.push(new Date(cursor));
+    cursor.setHours(cursor.getHours() + 6);
+  }
+
+  return ticks;
+}
+
+const ticks6h = gerarTicks6h(minData, maxData);
+  
   chartGantt = new Chart(canvas, {
     type: "bar",
     data: {
@@ -334,20 +354,14 @@ x: {
   min: minData,
   max: maxData,
 
-  time: {
-    unit: "hour"
-  },
-
   ticks: {
+    source: "labels",
     autoSkip: false,
-    source: "auto",
+    values: ticks6h,
     font: { weight: "bold" },
 
     callback: (value) => {
       const d = new Date(value);
-
-      // 👉 só mostra texto a cada 6h
-      if (d.getHours() % 6 !== 0) return "";
 
       // meia-noite → data
       if (d.getHours() === 0) {
@@ -357,7 +371,7 @@ x: {
         });
       }
 
-      // demais horários
+      // demais divisões de 6h
       return d.toLocaleTimeString("pt-BR", {
         hour: "2-digit",
         minute: "2-digit"
@@ -368,22 +382,21 @@ x: {
   grid: {
     drawTicks: false,
 
-    // 👉 grade VISUAL controlada aqui
     color: (ctx) => {
       const d = new Date(ctx.tick.value);
 
-      // 🔥 LINHA FORTE apenas a cada 6h
-      if (d.getHours() % 6 === 0) {
-        return "rgba(0,0,0,0.35)";
+      // 🔥 LINHA ESCURA SOMENTE NA VIRADA DO DIA
+      if (d.getHours() === 0) {
+        return "rgba(0,0,0,0.45)";
       }
 
-      // linhas fracas (quase invisíveis)
-      return "rgba(0,0,0,0.05)";
+      // linhas claras a cada 6h
+      return "rgba(0,0,0,0.15)";
     },
 
     lineWidth: (ctx) => {
       const d = new Date(ctx.tick.value);
-      return d.getHours() % 6 === 0 ? 1.5 : 0.5;
+      return d.getHours() === 0 ? 2 : 1;
     }
   },
 
@@ -555,6 +568,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
