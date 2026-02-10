@@ -408,33 +408,6 @@ y: {
     }
   });
 }
-y: {
-  ticks: {
-    font: { weight: "bold" },
-
-    // mantém fundo branco atrás do texto
-    backdropColor: "#ffffff",
-    backdropPadding: 4
-  },
-
-  grid: {
-    drawOnChartArea: true,   // ✅ desenha linhas horizontais
-    drawTicks: false,
-
-    color: "rgba(0,0,0,0.15)", // cinza suave
-    lineWidth: 1
-  },
-
-  title: {
-    display: true,
-    text: "Etapas",
-    font: { weight: "bold" }
-  }
-}
-      }
-    }
-  });
-}
 
 // =======================
 // GRÁFICO DE DURAÇÃO
@@ -570,6 +543,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
