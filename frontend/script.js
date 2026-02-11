@@ -538,7 +538,7 @@ function montarGraficoDuracao(dados) {
 
   const canvasDuracao = document.getElementById("graficoDuracao");
 
-const alturaPorEtapa = 45;
+const alturaPorEtapa = 25;
 const alturaMinima = 180;
 const alturaMaxima = 800;
 
@@ -651,19 +651,6 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
