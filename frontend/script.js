@@ -175,7 +175,7 @@ async function buscar() {
   if (!codigo) return;
 
   document.getElementById("titulo").innerText =
-    "Tracking de Fabricação - Equipamentos";
+    "MTS v1.0 - Manufacturing Tracking System";
 
   gerarQRCode(codigo);
 
@@ -651,6 +651,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
