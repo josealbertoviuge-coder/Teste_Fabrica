@@ -470,7 +470,7 @@ grid: {
 
   title: {
     display: true,
-    text: "Tempo",
+    text: "Tempo / Time",
     font: { weight: "bold" }
   }
 },
@@ -493,7 +493,7 @@ y: {
 
   title: {
     display: true,
-    text: "Etapas",
+    text: "Etapas / Steps",
     font: { weight: "bold" }
   }
 }
@@ -590,7 +590,7 @@ options: {
     x: {
       title: {
         display: true,
-        text: "Horas acumuladas",
+        text: "Horas acumuladas / Cumulated Hours",
         font: { weight: "bold" }
       },
       ticks: {
@@ -604,7 +604,7 @@ options: {
       barPercentage: 0.85,      // ↓ ocupação da barra
       title: {
         display: true,
-        text: "Etapas",
+        text: "Etapas / Steps",
         font: { weight: "bold" }
       },
       ticks: {
@@ -651,6 +651,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
