@@ -1,7 +1,7 @@
 {
-  "name": "Teste_Manufatura",
-  "version": "1.0.0",
-  "description": "Sistema simples de rastreabilidade de pecas",
+  "name": "MTS v1.0 - Manufacturing Tracking System",
+  "version": "1.0",
+  "description": "Sistema de rastreabilidade de fabricação de equipamentos",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -12,3 +12,4 @@
     "pg": "^8.11.3"
   }
 }
+
