@@ -366,7 +366,7 @@ const ticks6h = gerarTicks6h(minData, maxData);
     data: {
       labels,
       datasets: [{
-        label: "Linha do Tempo",
+        label: "Linha do Tempo / Timeline",
         data,
         backgroundColor: cores,
         borderRadius: 5,
@@ -386,7 +386,7 @@ const ticks6h = gerarTicks6h(minData, maxData);
         },
         title: {
           display: true,
-          text: "Timeline de Execução do Equipamento",
+          text: "Linha do Tempo de Fabricação / Manufacturing Timeline",
           font: { weight: "bold", size: 16 }
         },
         legend: { display: false },
@@ -566,7 +566,7 @@ options: {
   plugins: {
     title: {
       display: true,
-      text: "Duração Total por Etapa",
+      text: "Duração Total por Etapa / Total Time by Step",
       font: { weight: "bold", size: 16 }
     },
 
@@ -651,6 +651,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
