@@ -8,10 +8,14 @@
 
 <body>
 
-<!-- BARRA DE CARREGAMENTO -->
+<!-- =======================
+     LOADING BAR
+======================= -->
 <div id="loadingBar"></div>
-  
-<!-- TOPO -->
+
+<!-- =======================
+     TOPO
+======================= -->
 <div class="topo-wrapper">
 
   <!-- COLUNA ESQUERDA: QR + LOGO -->
@@ -25,63 +29,74 @@
     <div id="linhaInfo"></div>
     <div id="tempoTotal"></div>
   </div>
+
 </div>
 
-<!-- CONTEÚDO -->
-<div class="container">
+<!-- =======================
+     LAYOUT PRINCIPAL
+======================= -->
+<div class="layout">
 
-  <input id="codigo" type="text" placeholder="Digite a TAG do equipamento">
-  <button id="btnBuscar" onclick="buscar()">Buscar</button>
+  <!-- =======================
+       MENU LATERAL (TAGS)
+  ======================= -->
+  <aside class="sidebar">
 
-<!-- ===================== -->
-<!-- GUIAS DE TAGS -->
-<!-- ===================== -->
-<div class="abas-wrapper">
-  <div id="abasTags" class="abas"></div>
-</div>
-
-  
-  <!-- ===================== -->
-  <!-- GUIAS DE COMPONENTES -->
-  <!-- ===================== -->
-  <div class="abas-wrapper">
-    <div id="abasComponentes" class="abas">
-      <!-- JS cria os botões aqui -->
-    </div>
-  </div>
-
-  <!-- ===================== -->
-  <!-- CONTEÚDO DA ABA ATIVA -->
-  <!-- ===================== -->
-  <div id="conteudo-componente">
-
-    <!-- TABELA -->
-    <div class="tabela-wrapper">
-      <table>
-        <tbody id="tabela"></tbody>
-      </table>
+    <div class="sidebar-title">
+      TAGs da OP
     </div>
 
-    <br>
-
-    <!-- GANTT -->
-    <div class="gantt-wrapper">
-      <canvas id="grafico"></canvas>
+    <div id="abasTags" class="tag-list">
+      <!-- JS cria as TAGs aqui -->
     </div>
 
-    <br>
+  </aside>
 
-    <!-- GRÁFICO DE DURAÇÃO -->
-    <canvas id="graficoDuracao" height="200"></canvas>
+  <!-- =======================
+       CONTEÚDO PRINCIPAL
+  ======================= -->
+  <main class="main-content">
 
-  </div>
+    <!-- ===================== -->
+    <!-- GUIAS DE COMPONENTES -->
+    <!-- ===================== -->
+    <div class="abas-wrapper">
+      <div id="abasComponentes" class="abas"></div>
+    </div>
+
+    <!-- ===================== -->
+    <!-- CONTEÚDO DINÂMICO -->
+    <!-- ===================== -->
+    <div id="conteudo-componente">
+
+      <!-- TABELA -->
+      <div class="tabela-wrapper">
+        <table>
+          <tbody id="tabela"></tbody>
+        </table>
+      </div>
+
+      <br>
+
+      <!-- GANTT -->
+      <div class="gantt-wrapper">
+        <canvas id="grafico"></canvas>
+      </div>
+
+      <br>
+
+      <!-- GRÁFICO DE DURAÇÃO -->
+      <canvas id="graficoDuracao"></canvas>
+
+    </div>
+
+  </main>
+
 </div>
 
 <footer class="footer">
   Developed by
-  <strong>
-    José Alberto Viuge - Gerente de Controle da Qualidade Carbogas - 02/2026
-  </strong>
+  <strong>José Alberto Viuge</strong>
 </footer>
 
 <!-- SCRIPTS -->
@@ -92,5 +107,3 @@
 
 </body>
 </html>
-
-
