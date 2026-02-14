@@ -206,10 +206,6 @@ th,td{
 ======================= */
 @media (max-width:900px){
 
-  .layout{
-    flex-direction:column;
-  }
-
   .sidebar{
     width: 60%;
     min-width: 220px;
