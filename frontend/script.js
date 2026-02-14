@@ -549,23 +549,24 @@ function montarGraficoDuracao(dados) {
   const emAndamento = {};
   const agora = new Date();
 
-  dados.forEach(d => {
-    if (!d.inicio) return;
+dados.forEach(d => {
+  if (!d.inicio) return;
 
-    const ini = dataSemFuso(d.inicio);
-    const fim = d.fim ? dataSemFuso(d.fim) : agora;
-    const horas = (fim - ini) / 36e5;
+  const ini = dataSemFuso(d.inicio);
+  const fim = d.fim ? dataSemFuso(d.fim) : ini;
+  const horas = (fim - ini) / 36e5;
 
-    if (!acumulado[d.nome_etapa]) {
-      acumulado[d.nome_etapa] = 0;
-      emAndamento[d.nome_etapa] = false;
-    }
+  if (!acumulado[d.nome_etapa]) {
+    acumulado[d.nome_etapa] = 0;
+    emAndamento[d.nome_etapa] = false;
+  }
 
-    acumulado[d.nome_etapa] += horas;
-    if ((d.status || "").toLowerCase().includes("andamento")) {
-  emAndamento[d.nome_etapa] = true;
-}
-  });
+  acumulado[d.nome_etapa] += horas;
+
+  if ((d.status || "").toLowerCase().includes("andamento")) {
+    emAndamento[d.nome_etapa] = true;
+  }
+});
 
   const etapas = Object.keys(acumulado);
   const duracoes = etapas.map(e => Number(acumulado[e].toFixed(2)));
@@ -690,6 +691,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
