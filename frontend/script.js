@@ -415,7 +415,7 @@ afterBuildTicks: scale => {
   scale.ticks = ticks6h
     .filter(d => d >= scale.min && d <= scale.max)
     .map(d => ({ value: d }));
-}
+},
 
 ticks: {
   autoSkip: false,
@@ -656,6 +656,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
