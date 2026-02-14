@@ -212,3 +212,15 @@ th,td{
     max-height:35vh;
   }
 }
+
+/* =======================
+   FUNDO CENTRAL DO CONTEÚDO
+======================= */
+
+.main-content{
+  background:white;
+  border-radius:10px;
+  max-width:1000px;
+  margin:auto;
+  box-shadow:0 2px 6px rgba(0,0,0,0.06);
+}
