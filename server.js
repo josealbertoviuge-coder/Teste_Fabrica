@@ -112,15 +112,14 @@ app.get("/tag/:codigo", async (req, res) => {
 });
 
 // ======================================================
-// 🔹 BUSCA POR OP (MODO CORRIGIDO E ROBUSTO)
+// 🔹 BUSCA POR OP (SUPORTA BARRAS)
 // ======================================================
 
-app.get("/op/:codigo", async (req, res) => {
+app.get("/op/*", async (req, res) => {
   try {
 
-    // normaliza valor recebido
-    let op = decodeURIComponent(req.params.codigo)
-      .replace(/\u00A0/g, " ") // remove espaços invisíveis
+    let op = decodeURIComponent(req.params[0])
+      .replace(/\u00A0/g, " ")
       .trim();
 
     console.log("🔎 OP recebida:", `"${op}"`);
@@ -129,7 +128,6 @@ app.get("/op/:codigo", async (req, res) => {
       return res.status(400).json({ error: "OP inválida" });
     }
 
-    // 🔹 busca cabeçalho da OP (comparação tolerante)
     const cab = await pool.query(`
       SELECT cliente_nome, data_abertura
       FROM ordem_de_producao
@@ -138,11 +136,9 @@ app.get("/op/:codigo", async (req, res) => {
     `, [op]);
 
     if (cab.rowCount === 0) {
-      console.log("❌ OP não encontrada no cabeçalho");
-      return res.status(404).json({ error: "OP não encontrada no banco" });
+      return res.status(404).json({ error: "OP não encontrada" });
     }
 
-    // 🔹 busca andamento das TAGs da OP
     const dados = await pool.query(`
       SELECT
         t.tag,
@@ -157,8 +153,6 @@ app.get("/op/:codigo", async (req, res) => {
       WHERE TRIM(t.op::text) = TRIM($1)
       ORDER BY t.tag, a.componente, a.inicio
     `, [op]);
-
-    console.log(`✅ ${dados.rowCount} registros encontrados`);
 
     const tags = {};
 
@@ -190,6 +184,7 @@ app.get("/op/:codigo", async (req, res) => {
   }
 });
 
+
 // ======================================================
 // 🔹 ROTA DE LOGIN (OPCIONAL)
 // ======================================================
@@ -211,3 +206,4 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
