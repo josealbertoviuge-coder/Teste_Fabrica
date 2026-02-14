@@ -357,12 +357,13 @@ wrapper.style.height = `${alturaViewport}px`;
 
     const inicio = dataSemFuso(primeiro.inicio);
 
-    const concluida =
-      ultimo.fim && new Date(ultimo.fim) <= agora;
+const statusUltimo = (ultimo.status || "").toLowerCase();
 
-    const fim = concluida
-      ? dataSemFuso(ultimo.fim)
-      : agora;
+const concluida = !statusUltimo.includes("andamento");
+
+const fim = concluida
+  ? dataSemFuso(ultimo.fim)
+  : agora;
 
     data.push({
   x: [inicio, fim],
@@ -687,6 +688,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
