@@ -171,41 +171,72 @@ function montarAbasComponentes(componentes) {
 
   let primeiraAba = true;
 
+function montarAbasComponentes(componentes) {
+  const container = document.getElementById("abasComponentes");
+  container.innerHTML = "";
+
+  const conteudo = document.getElementById("conteudo-componente");
+
+  // 🔥 ORDEM DESEJADA
+  const ordemDesejada = [
+    "Flange A",
+    "Flange B",
+    "Tambor",
+    "Berco de Apoio",
+    "Conjunto Montado"
+  ];
+
+  let primeiraAba = true;
+
   function criarAba(nome) {
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.className = "aba-componente";
     btn.innerText = nome;
 
-    // ativa a primeira aba criada
+    // 👉 primeira aba ativa e carrega sem animação
     if (primeiraAba) {
       btn.classList.add("ativa");
-      carregarComponente(nome);
+      carregarComponente(nome); // carrega direto
       primeiraAba = false;
     }
 
     btn.onclick = () => {
-      document.querySelectorAll(".aba-componente")
+
+      // evita recarregar a aba já ativa
+      if (btn.classList.contains("ativa")) return;
+
+      document
+        .querySelectorAll(".aba-componente")
         .forEach(b => b.classList.remove("ativa"));
 
       btn.classList.add("ativa");
-      carregarComponente(nome);
+
+      // 🔥 animação suave
+      conteudo.classList.add("is-hiding");
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+
+          carregarComponente(nome);
+
+          conteudo.classList.remove("is-hiding");
+
+        }, 180); // deve ser menor que o transition CSS
+      });
     };
 
     container.appendChild(btn);
   }
 
-  // 1️⃣ cria primeiro na ordem desejada
+  // 1️⃣ cria na ordem desejada
   ordemDesejada.forEach(nome => {
-    if (componentes[nome]) {
-      criarAba(nome);
-    }
+    if (componentes[nome]) criarAba(nome);
   });
 
-  // 2️⃣ cria os restantes vindos da API
+  // 2️⃣ cria restantes da API
   Object.keys(componentes).forEach(nome => {
-    if (!ordemDesejada.includes(nome)) {
-      criarAba(nome);
-    }
+    if (!ordemDesejada.includes(nome)) criarAba(nome);
   });
 }
 
@@ -687,6 +718,7 @@ window.addEventListener("load", () => {
     buscar();
   }
 });
+
 
 
 
