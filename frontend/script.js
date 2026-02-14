@@ -160,24 +160,8 @@ function montarAbasComponentes(componentes) {
   const container = document.getElementById("abasComponentes");
   container.innerHTML = "";
 
-  // 🔥 ORDEM DESEJADA
-  const ordemDesejada = [
-    "Flange A",
-    "Flange B",
-    "Tambor",
-    "Berco de Apoio",
-    "Conjunto Montado"
-  ];
-
-  let primeiraAba = true;
-
-function montarAbasComponentes(componentes) {
-  const container = document.getElementById("abasComponentes");
-  container.innerHTML = "";
-
   const conteudo = document.getElementById("conteudo-componente");
 
-  // 🔥 ORDEM DESEJADA
   const ordemDesejada = [
     "Flange A",
     "Flange B",
@@ -194,16 +178,15 @@ function montarAbasComponentes(componentes) {
     btn.className = "aba-componente";
     btn.innerText = nome;
 
-    // 👉 primeira aba ativa e carrega sem animação
+    // primeira aba abre sem animação
     if (primeiraAba) {
       btn.classList.add("ativa");
-      carregarComponente(nome); // carrega direto
+      carregarComponente(nome);
       primeiraAba = false;
     }
 
     btn.onclick = () => {
 
-      // evita recarregar a aba já ativa
       if (btn.classList.contains("ativa")) return;
 
       document
@@ -212,7 +195,7 @@ function montarAbasComponentes(componentes) {
 
       btn.classList.add("ativa");
 
-      // 🔥 animação suave
+      // animação
       conteudo.classList.add("is-hiding");
 
       requestAnimationFrame(() => {
@@ -222,19 +205,19 @@ function montarAbasComponentes(componentes) {
 
           conteudo.classList.remove("is-hiding");
 
-        }, 180); // deve ser menor que o transition CSS
+        }, 180);
       });
     };
 
     container.appendChild(btn);
   }
 
-  // 1️⃣ cria na ordem desejada
+  // ordem desejada
   ordemDesejada.forEach(nome => {
     if (componentes[nome]) criarAba(nome);
   });
 
-  // 2️⃣ cria restantes da API
+  // restantes
   Object.keys(componentes).forEach(nome => {
     if (!ordemDesejada.includes(nome)) criarAba(nome);
   });
@@ -459,7 +442,7 @@ const ticks6h = gerarTicks6h(minData, maxData);
           callbacks: {
             label: ctx => {
               const [ini, fim] = ctx.raw.x;
-              return `${formatarDataTabela(ini)} → ${formatarDataTabela(fim)}`;
+              return `${formatarData(ini)} → ${formatarData(fim)}`;
             }
           }
         },
@@ -718,6 +701,7 @@ window.addEventListener("load", () => {
     buscar();
   }
 });
+
 
 
 
