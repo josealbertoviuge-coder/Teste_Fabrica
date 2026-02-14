@@ -89,7 +89,7 @@ async function buscar() {
   const codigo = document.getElementById("codigo").value;
   if (!codigo) return;
 
-  const res = await fetch("/op/" + codigo);
+  const res = await fetch("/op/" + encodeURIComponent(codigo));
   const resposta = await res.json();
 
   dadosOP = resposta.tags;
@@ -339,3 +339,4 @@ window.addEventListener("load", () => {
     buscar();
   }
 });
+
