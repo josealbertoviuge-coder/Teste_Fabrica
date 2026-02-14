@@ -113,19 +113,34 @@ async function buscar() {
 
   iniciarLoading();
 
-  const res = await fetch(
-    "https://teste-fabrica.onrender.com/op/" +
-    encodeURIComponent(codigo)
-  );
+  try {
 
-  const resposta = await res.json();
+    // ✅ QR Code
+    document.getElementById("qrcode").src =
+      "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
+      window.location.origin +
+      "/?codigo=" + encodeURIComponent(codigo);
 
-  dadosOP = resposta.tags;
+    const res = await fetch(
+      "https://teste-fabrica.onrender.com/op/" +
+      encodeURIComponent(codigo)
+    );
 
-  document.getElementById("linhaInfo").innerText =
-    `OP: ${resposta.op} | Cliente: ${resposta.cliente_nome}`;
+    if (!res.ok) throw new Error("Erro ao buscar dados");
 
-  montarAbasTags();
+    const resposta = await res.json();
+
+    dadosOP = resposta.tags;
+
+    document.getElementById("linhaInfo").innerText =
+      `OP: ${resposta.op} | Cliente: ${resposta.cliente_nome}`;
+
+    montarAbasTags();
+
+  } catch (erro) {
+    console.error("Erro:", erro);
+    alert("Erro ao carregar dados da OP.");
+  }
 
   finalizarLoading();
 }
@@ -761,3 +776,4 @@ window.addEventListener("load", () => {
     finalizarLoading();
   }
 });
+
