@@ -120,7 +120,7 @@ app.get("/tag/:codigo", async (req, res) => {
 
 app.get("/op/:numero", async (req, res) => {
   try {
-    const op = req.params.numero;
+    const op = decodeURIComponent(req.params.numero);
 
     // cabeçalho da OP
     const cab = await pool.query(`
@@ -202,3 +202,4 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
