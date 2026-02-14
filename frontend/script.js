@@ -347,32 +347,30 @@ wrapper.style.height = `${alturaViewport}px`;
     etapas[d.nome_etapa].push(d);
   });
 
-  Object.values(etapas).forEach(lista => {
+Object.values(etapas).forEach(lista => {
 
-    // ordena por início
-    lista.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
+  // ordena por início
+  lista.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
 
-    const primeiro = lista[0];
-    const ultimo = lista[lista.length - 1];
+  const primeiro = lista[0];
+  const ultimo = lista[lista.length - 1];
 
-    const inicio = dataSemFuso(primeiro.inicio);
+  const statusUltimo = (ultimo.status || "").toLowerCase();
+  const concluida = !statusUltimo.includes("andamento");
 
-const statusUltimo = (ultimo.status || "").toLowerCase();
-const concluida = !statusUltimo.includes("andamento");
+  const inicio = dataSemFuso(primeiro.inicio);
 
-const inicio = dataSemFuso(primeiro.inicio);
+  // usa sempre o fim registrado
+  const fim = ultimo.fim
+    ? dataSemFuso(ultimo.fim)
+    : dataSemFuso(ultimo.inicio);
 
-// usa SEMPRE o fim registrado
-const fim = ultimo.fim
-  ? dataSemFuso(ultimo.fim)
-  : dataSemFuso(ultimo.inicio);
-
-data.push({
-  x: [inicio, fim],
-  y: primeiro.nome_etapa,
-  backgroundColor: concluida ? "#2563eb" : "#f59e0b"
-});
+  data.push({
+    x: [inicio, fim],
+    y: primeiro.nome_etapa,
+    backgroundColor: concluida ? "#2563eb" : "#f59e0b"
   });
+});
 
   function gerarTicks6h(inicio, fim) {
   const ticks = [];
@@ -564,7 +562,9 @@ function montarGraficoDuracao(dados) {
     }
 
     acumulado[d.nome_etapa] += horas;
-    if (!d.fim) emAndamento[d.nome_etapa] = true;
+    if ((d.status || "").toLowerCase().includes("andamento")) {
+  emAndamento[d.nome_etapa] = true;
+}
   });
 
   const etapas = Object.keys(acumulado);
@@ -690,6 +690,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
