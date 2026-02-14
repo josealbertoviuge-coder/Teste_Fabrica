@@ -112,17 +112,17 @@ app.get("/tag/:codigo", async (req, res) => {
 });
 
 // ======================================================
-// 🔹 BUSCA POR OP (SUPORTA BARRAS)
+// 🔹 BUSCA POR OP (SUPORTA BARRAS - VERSÃO FINAL)
 // ======================================================
 
-app.get("/op/*", async (req, res) => {
+app.get(/^\/op\/(.+)/, async (req, res) => {
   try {
 
     let op = decodeURIComponent(req.params[0])
       .replace(/\u00A0/g, " ")
       .trim();
 
-    console.log("🔎 OP recebida:", `"${op}"`);
+    console.log("🔎 OP recebida:", op);
 
     if (!op) {
       return res.status(400).json({ error: "OP inválida" });
@@ -206,4 +206,5 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
