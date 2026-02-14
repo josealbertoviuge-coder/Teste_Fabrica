@@ -7,11 +7,10 @@ function iniciarLoading() {
   if (!bar) return;
 
   bar.style.opacity = "1";
-  bar.style.width = "30%";
+  bar.style.width = "15%";
 
-  setTimeout(() => {
-    bar.style.width = "65%";
-  }, 200);
+  setTimeout(() => bar.style.width = "55%", 150);
+  setTimeout(() => bar.style.width = "80%", 400);
 }
 
 function finalizarLoading() {
@@ -114,17 +113,24 @@ let componentesCache = {};
 // =======================
 
 async function buscar() {
-  const codigo = document.getElementById("codigo").value;
+  const campoCodigo = document.getElementById("codigo");
+if (!campoCodigo) return;
+
+const codigo = campoCodigo.value;
+if (!codigo) return;
   if (!codigo) return;
 
   iniciarLoading();
 
   try {
 
-    document.getElementById("qrcode").src =
-      "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
-      window.location.origin +
-      "/?codigo=" + encodeURIComponent(codigo);
+    const qr = document.getElementById("qrcode");
+if (qr) {
+  qr.src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
+    window.location.origin +
+    "/?codigo=" + encodeURIComponent(codigo);
+}
 
     const res = await fetch(
       "https://teste-fabrica.onrender.com/op/" +
@@ -135,7 +141,7 @@ async function buscar() {
 
     const resposta = await res.json();
 
-    dadosOP = resposta.tags;
+    dadosOP = resposta.tags || {};
 
     document.getElementById("linhaInfo").innerText =
       `OP: ${resposta.op} | Cliente: ${resposta.cliente_nome}`;
@@ -288,6 +294,8 @@ function montarAbasComponentes(componentes) {
 
 function carregarComponente(nome) {
   const dados = componentesCache[nome];
+  if (!dados || !dados.length) return;
+
   montarTabela(dados);
   montarGraficoGantt(dados);
   montarGraficoDuracao(dados);
@@ -768,4 +776,5 @@ if (campoCodigo) {
     finalizarLoading();
   }
 });
+
 
