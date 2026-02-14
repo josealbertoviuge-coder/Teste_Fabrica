@@ -121,7 +121,6 @@ async function buscar() {
 
   try {
 
-    // ✅ QR Code
     document.getElementById("qrcode").src =
       "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
       window.location.origin +
@@ -146,9 +145,9 @@ async function buscar() {
   } catch (erro) {
     console.error("Erro:", erro);
     alert("Erro ao carregar dados da OP.");
+  } finally {
+    finalizarLoading(); // 🔥 garante execução
   }
-
-  finalizarLoading();
 }
 
 
@@ -755,14 +754,6 @@ datasets: [{
 // =======================
 
 window.addEventListener("load", () => {
-  const codigo = new URLSearchParams(window.location.search).get("codigo");
-  if (codigo) {
-    document.getElementById("codigo").value = codigo;
-    buscar();
-  }
-});
-
-window.addEventListener("load", () => {
   iniciarLoading();
 
   const codigo = new URLSearchParams(window.location.search).get("codigo");
@@ -774,8 +765,3 @@ window.addEventListener("load", () => {
     finalizarLoading();
   }
 });
-
-
-
-
-
