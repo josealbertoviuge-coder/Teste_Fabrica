@@ -1,43 +1,62 @@
+// =======================
+// IMPORTAÇÕES
+// =======================
+
 import express from "express";
 import cors from "cors";
 import pkg from "pg";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const { Pool } = pkg;
+
+// =======================
+// CONFIGURAÇÃO BÁSICA
+// =======================
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-import path from "path";
-import { fileURLToPath } from "url";
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// pasta do frontend
 app.use(express.static(path.join(__dirname, "frontend")));
 
 const PORT = process.env.PORT || 3000;
 
-// Conexão única
+// =======================
+// CONEXÃO COM BANCO
+// =======================
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: true
+  ssl: { rejectUnauthorized: false } // necessário para Render / cloud
 });
 
-// Teste inicial de conexão
+// teste inicial
 pool.connect()
-  .then(() => console.log("Banco conectado"))
-  .catch(err => console.error("Erro conexão:", err));
+  .then(() => console.log("✅ Banco conectado"))
+  .catch(err => console.error("❌ Erro conexão:", err));
 
-app.get("/", (req,res)=>{
-  res.sendFile(path.join(__dirname,"frontend","index.html"));
+// =======================
+// ROTA PRINCIPAL
+// =======================
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "index.html"));
 });
+
+// ======================================================
+// 🔹 BUSCA POR TAG (MODO ORIGINAL)
+// ======================================================
 
 app.get("/tag/:codigo", async (req, res) => {
   try {
     const codigo = req.params.codigo;
 
-    // 🔹 Cabeçalho: TAG + OP + Cliente
+    // cabeçalho
     const cabecalho = await pool.query(`
       SELECT
         t.tag,
@@ -53,7 +72,7 @@ app.get("/tag/:codigo", async (req, res) => {
       return res.status(404).json({ error: "TAG não encontrada" });
     }
 
-    // 🔹 Busca andamento COM componente
+    // andamento
     const andamento = await pool.query(`
       SELECT
         a.componente,
@@ -67,21 +86,18 @@ app.get("/tag/:codigo", async (req, res) => {
       ORDER BY a.componente, a.inicio
     `, [codigo]);
 
-    // 🔹 Agrupa por componente
     const componentes = {};
 
-    andamento.rows.forEach(linha => {
-      const comp = linha.componente || "Sem componente";
+    andamento.rows.forEach(l => {
+      const comp = l.componente || "Sem componente";
 
-      if (!componentes[comp]) {
-        componentes[comp] = [];
-      }
+      if (!componentes[comp]) componentes[comp] = [];
 
       componentes[comp].push({
-        nome_etapa: linha.nome_etapa,
-        status: linha.status,
-        inicio: linha.inicio,
-        fim: linha.fim
+        nome_etapa: l.nome_etapa,
+        status: l.status,
+        inicio: l.inicio,
+        fim: l.fim
       });
     });
 
@@ -93,34 +109,96 @@ app.get("/tag/:codigo", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("ERRO QUERY:", err);
+    console.error("ERRO TAG:", err);
     res.status(500).send(err.message);
   }
 });
 
+// ======================================================
+// 🔹 BUSCA POR OP (NOVO MODO)
+// ======================================================
 
-app.listen(PORT, () => {
-  console.log("Servidor iniciado");
+app.get("/op/:numero", async (req, res) => {
+  try {
+    const op = req.params.numero;
+
+    // cabeçalho da OP
+    const cab = await pool.query(`
+      SELECT cliente_nome, data_abertura
+      FROM ordem_de_producao
+      WHERE ordem_producao = $1
+    `, [op]);
+
+    if (cab.rowCount === 0) {
+      return res.status(404).json({ error: "OP não encontrada" });
+    }
+
+    // busca andamento das TAGs da OP
+    const dados = await pool.query(`
+      SELECT
+        t.tag,
+        a.componente,
+        e.nome_etapa,
+        a.status,
+        a.inicio,
+        a.fim
+      FROM tags t
+      JOIN andamento_pecas a ON a.tag = t.tag
+      JOIN etapas e ON e.id_etapa = a.id_etapa
+      WHERE t.op = $1
+      ORDER BY t.tag, a.componente, a.inicio
+    `, [op]);
+
+    const tags = {};
+
+    dados.rows.forEach(l => {
+
+      const tag = l.tag;
+      const comp = l.componente || "Sem componente";
+
+      if (!tags[tag]) tags[tag] = {};
+      if (!tags[tag][comp]) tags[tag][comp] = [];
+
+      tags[tag][comp].push({
+        nome_etapa: l.nome_etapa,
+        status: l.status,
+        inicio: l.inicio,
+        fim: l.fim
+      });
+
+    });
+
+    res.json({
+      op,
+      cliente_nome: cab.rows[0].cliente_nome,
+      data_abertura: cab.rows[0].data_abertura,
+      tags
+    });
+
+  } catch (err) {
+    console.error("ERRO OP:", err);
+    res.status(500).send(err.message);
+  }
 });
 
-app.post("/login",(req,res)=>{
-  const {user,pass} = req.body;
+// ======================================================
+// 🔹 ROTA DE LOGIN (OPCIONAL)
+// ======================================================
 
-  if(user==="admin" && pass==="123"){
-    res.json({ok:true});
-  }else{
+app.post("/login", (req, res) => {
+  const { user, pass } = req.body;
+
+  if (user === "admin" && pass === "123") {
+    res.json({ ok: true });
+  } else {
     res.status(401).send("Login inválido");
   }
 });
 
+// =======================
+// INICIA SERVIDOR
+// =======================
 
-
-
-
-
-
-
-
-
-
-
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor iniciado na porta ${PORT}`);
+});
