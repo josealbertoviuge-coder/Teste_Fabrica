@@ -236,7 +236,7 @@ th,td{
 
 #grafico{
   display:block;
-  min-width: 100%;
+  min-width: 700px; /* garante scroll */
 }
 
 #graficoDuracao{
