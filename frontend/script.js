@@ -358,14 +358,16 @@ wrapper.style.height = `${alturaViewport}px`;
     const inicio = dataSemFuso(primeiro.inicio);
 
 const statusUltimo = (ultimo.status || "").toLowerCase();
-
 const concluida = !statusUltimo.includes("andamento");
 
-const fim = concluida
-  ? dataSemFuso(ultimo.fim)
-  : agora;
+const inicio = dataSemFuso(primeiro.inicio);
 
-    data.push({
+// usa SEMPRE o fim registrado
+const fim = ultimo.fim
+  ? dataSemFuso(ultimo.fim)
+  : dataSemFuso(ultimo.inicio);
+
+data.push({
   x: [inicio, fim],
   y: primeiro.nome_etapa,
   backgroundColor: concluida ? "#2563eb" : "#f59e0b"
@@ -688,6 +690,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
