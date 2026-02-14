@@ -211,10 +211,13 @@ th,td{
   }
 
   .sidebar{
-    width:100%;
+    width: 38%;
+    min-width: 180px;
+    max-width: 260px;
     border-right:none;
     border-bottom:1px solid #e5e7eb;
   }
+
 
   .tag-list{
     max-height:35vh;
