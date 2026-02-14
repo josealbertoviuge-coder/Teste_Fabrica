@@ -272,6 +272,8 @@ function montarGraficoGantt(dados) {
   const minData = new Date(Math.min(...datas));
   const maxData = new Date(Math.max(...datas));
 
+  minData.setHours(0, 0, 0, 0);
+
   // =======================
   // TAMANHO HORIZONTAL (SCROLL)
   // =======================
@@ -656,6 +658,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
