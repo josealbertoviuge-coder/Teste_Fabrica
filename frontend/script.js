@@ -89,6 +89,13 @@ async function buscar() {
   const codigo = document.getElementById("codigo").value;
   if (!codigo) return;
 
+  // 🔹 GERA QR CODE DA OP
+  document.getElementById("qrcode").src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
+    window.location.origin +
+    "/?codigo=" + encodeURIComponent(codigo);
+
+  // 🔹 BUSCA DADOS DA OP
   const res = await fetch("/op/" + encodeURIComponent(codigo));
   const resposta = await res.json();
 
@@ -339,4 +346,5 @@ window.addEventListener("load", () => {
     buscar();
   }
 });
+
 
