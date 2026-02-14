@@ -275,7 +275,7 @@ function montarGraficoGantt(dados) {
   // =======================
   // TAMANHO HORIZONTAL (SCROLL)
   // =======================
-  const larguraPorDia = 230; // px
+  const larguraPorDia = 250; // px
   const diasVisiveis = 10;
 
   const diasTotais =
@@ -651,6 +651,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
