@@ -252,21 +252,30 @@ th,td{
   color: #374151;
 }
 
-/* =======================
-   LOADING BAR
-   ======================= */
+// =======================
+// LOADING BAR
+// =======================
 
-#loadingBar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 4px;
-  background: #2563eb;
-  z-index: 9999;
-  transition: width 0.35s ease, opacity 0.3s ease;
+function iniciarLoading() {
+  const bar = document.getElementById("loadingBar");
+  if (!bar) return;
+
+  bar.style.opacity = "1";
+  bar.style.width = "30%";
+
+  setTimeout(() => {
+    bar.style.width = "65%";
+  }, 200);
 }
 
-#loadingBar.hidden {
-  opacity: 0;
+function finalizarLoading() {
+  const bar = document.getElementById("loadingBar");
+  if (!bar) return;
+
+  bar.style.width = "100%";
+
+  setTimeout(() => {
+    bar.style.opacity = "0";
+    bar.style.width = "0%";
+  }, 300);
 }
