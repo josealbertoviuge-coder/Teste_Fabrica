@@ -272,12 +272,13 @@ function montarGraficoGantt(dados) {
   const minData = new Date(Math.min(...datas));
   const maxData = new Date(Math.max(...datas));
 
+  // começa sempre às 00:00 do primeiro dia
   minData.setHours(0, 0, 0, 0);
 
   // =======================
   // TAMANHO HORIZONTAL (SCROLL)
   // =======================
-  const larguraPorDia = 120; // px
+  const larguraPorDia = 120;
   const diasVisiveis = 14;
 
   const diasTotais =
@@ -289,86 +290,104 @@ function montarGraficoGantt(dados) {
   );
 
   // =======================
-  // JANELA VISÍVEL
+  // ETAPAS ÚNICAS
   // =======================
-  const janelaInicialFim = new Date(minData);
-  janelaInicialFim.setDate(janelaInicialFim.getDate() + diasVisiveis);
-
-  // =======================
-  // ETAPAS ÚNICAS (1 LINHA)
-  // =======================
-
   const labels = [...new Set(dados.map(d => d.nome_etapa))];
 
   // =======================
-  // AJUSTE DE ALTURA (SCROLL)
+  // ALTURA DINÂMICA
   // =======================
-
   const alturaPorEtapa = 65;
   const alturaMinima = 280;
 
   const alturaCanvas = labels.length * alturaPorEtapa;
   canvas.height = Math.max(alturaCanvas, alturaMinima);
 
-  // =======================
-// AJUSTE DA JANELA VISÍVEL
-// =======================
+  const wrapper = canvas.parentElement;
+  const alturaMaxViewport = 800;
+  const paddingVisual = 40;
 
-const wrapper = canvas.parentElement;
+  const alturaViewport = Math.min(
+    canvas.height + paddingVisual,
+    alturaMaxViewport
+  );
 
-const alturaMaxViewport = 800;   // limite visual agradável
-const paddingVisual = 40;        // respiro interno
-
-const alturaViewport = Math.min(
-  canvas.height + paddingVisual,
-  alturaMaxViewport
-);
-
-wrapper.style.height = `${alturaViewport}px`;
+  wrapper.style.height = `${alturaViewport}px`;
 
   // =======================
-  // DATASET
+  // AGRUPAR LANÇAMENTOS POR ETAPA
   // =======================
+  const etapasAgrupadas = {};
 
-  const data = [];
-  const cores = [];
-  
   dados.forEach(d => {
     if (!d.inicio) return;
 
-    const inicio = dataSemFuso(d.inicio);
-    const fim = d.fim ? dataSemFuso(d.fim) : agora;
+    if (!etapasAgrupadas[d.nome_etapa]) {
+      etapasAgrupadas[d.nome_etapa] = [];
+    }
 
-    data.push({ x: [inicio, fim], y: d.nome_etapa });
-    cores.push(d.fim ? "#2563eb" : "#f59e0b");
+    etapasAgrupadas[d.nome_etapa].push(d);
   });
 
+  const data = [];
+  const cores = [];
+
+  Object.values(etapasAgrupadas).forEach(lista => {
+
+    // ordena por início
+    lista.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
+
+    const primeiro = lista[0];
+    const ultimo = lista[lista.length - 1];
+
+    const inicio = dataSemFuso(primeiro.inicio);
+
+    const etapaConcluida =
+      ultimo.fim && new Date(ultimo.fim) <= agora;
+
+    const fim = etapaConcluida
+      ? dataSemFuso(ultimo.fim)
+      : agora;
+
+    data.push({
+      x: [inicio, fim],
+      y: primeiro.nome_etapa
+    });
+
+    cores.push(
+      etapaConcluida ? "#2563eb" : "#f59e0b"
+    );
+  });
+
+  // =======================
+  // TICKS 6H
+  // =======================
   function gerarTicks6h(inicio, fim) {
-  const ticks = [];
-  const cursor = new Date(inicio);
+    const ticks = [];
+    const cursor = new Date(inicio);
 
-  // alinha para a hora cheia mais próxima
-  cursor.setMinutes(0, 0, 0);
+    cursor.setMinutes(0, 0, 0);
+    cursor.setHours(Math.floor(cursor.getHours() / 6) * 6);
 
-  // ajusta para múltiplo de 6
-  cursor.setHours(Math.floor(cursor.getHours() / 6) * 6);
+    while (cursor <= fim) {
+      ticks.push(new Date(cursor));
+      cursor.setHours(cursor.getHours() + 6);
+    }
 
-  while (cursor <= fim) {
-    ticks.push(new Date(cursor));
-    cursor.setHours(cursor.getHours() + 6);
+    return ticks;
   }
 
-  return ticks;
-}
+  const ticks6h = gerarTicks6h(minData, maxData);
 
-const ticks6h = gerarTicks6h(minData, maxData);
-  
+  // =======================
+  // CRIA GRÁFICO
+  // =======================
   chartGantt = new Chart(canvas, {
     type: "bar",
     data: {
       labels,
       datasets: [{
-        label: "Linha do Tempo / Timeline",
+        label: "Timeline",
         data,
         backgroundColor: cores,
         borderRadius: 5,
@@ -381,129 +400,64 @@ const ticks6h = gerarTicks6h(minData, maxData);
       indexAxis: "y",
 
       plugins: {
-
-        // ✅ ATIVA O TURNO NOTURNO SÓ AQUI
-        turnoNoturno: {
-          enabled: true
-        },
-        title: {
-          display: true,
-          text: "Linha do Tempo de Fabricação / Manufacturing Timeline",
-          font: { weight: "bold", size: 16 }
-        },
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => {
-              const [ini, fim] = ctx.raw.x;
-              return `${formatarDataTabela(ini)} → ${formatarDataTabela(fim)}`;
-            }
-          }
-        },
-        datalabels: { display: false }
+        turnoNoturno: { enabled: true },
+        legend: { display: false }
       },
 
       scales: {
-x: {
-  type: "time",
-  min: minData,
-  max: maxData,
+        x: {
+          type: "time",
+          min: minData,
+          max: maxData,
 
-  time: {
-    unit: "hour",
-    stepSize: 3   // 🔒 base horária estável
-  },
-afterBuildTicks: scale => {
-  scale.ticks = ticks6h
-    .filter(d => d >= scale.min && d <= scale.max)
-    .map(d => ({ value: d }));
-},
+          time: {
+            unit: "hour",
+            stepSize: 3
+          },
 
-ticks: {
-  autoSkip: false,
-  font: { weight: "bold" },
+          afterBuildTicks: scale => {
+            const ticks = ticks6h.filter(d => d <= scale.max);
 
-  callback: (value, index, ticks) => {
-    const d = new Date(ticks[index].value);
+            if (ticks.length && ticks[0] > scale.min) {
+              ticks.unshift(new Date(scale.min));
+            }
 
-    if (isNaN(d)) return "";
+            scale.ticks = ticks.map(d => ({ value: d }));
+          },
 
-    // meia-noite → data
-    if (d.getHours() === 0) {
-      return d.toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "short"
-      });
-    }
+          ticks: {
+            autoSkip: false,
+            font: { weight: "bold" },
 
-    // a cada 6h → hora
-    if (d.getHours() % 6 === 0) {
-      return d.toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-    }
+            callback: (value, index, ticks) => {
+              const d = new Date(ticks[index].value);
 
-    // 3h sem label (linha existe)
-    return "";
-  }
-},
+              if (d.getHours() === 0) {
+                return d.toLocaleDateString("pt-BR", {
+                  day: "2-digit",
+                  month: "short"
+                });
+              }
 
-grid: {
-  drawTicks: true,
+              if (d.getHours() % 6 === 0) {
+                return d.toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                });
+              }
 
-  color: ctx => {
-    const d = new Date(ctx.tick.value);
+              return "";
+            }
+          }
+        },
 
-    // dia
-    if (d.getHours() === 0) return "rgba(0,0,0,0.35)";
-
-    // 6h
-    if (d.getHours() % 6 === 0) return "rgba(0,0,0,0.18)";
-
-    // 3h (⚠️ nunca zero)
-    if (d.getHours() % 3 === 0) return "rgba(0,0,0,0.08)";
-
-    return "rgba(0,0,0,0.08)";
-  },
-
-  lineWidth: ctx => {
-    const d = new Date(ctx.tick.value);
-    if (d.getHours() === 0) return 2;
-    if (d.getHours() % 6 === 0) return 1;
-    return 0.6; // 🔒 nunca 0
-  }
-},
-
-  title: {
-    display: true,
-    text: "Tempo / Time",
-    font: { weight: "bold" }
-  }
-},
-y: {
-  ticks: {
-    font: { weight: "bold" },
-
-    // mantém fundo branco atrás do texto
-    backdropColor: "#ffffff",
-    backdropPadding: 4
-  },
-
-  grid: {
-    drawOnChartArea: true,   // ✅ desenha linhas horizontais
-    drawTicks: false,
-
-    color: "rgba(0,0,0,0.15)", // cinza suave
-    lineWidth: 1
-  },
-
-  title: {
-    display: true,
-    text: "Etapas / Steps",
-    font: { weight: "bold" }
-  }
-}
+        y: {
+          ticks: {
+            font: { weight: "bold" },
+            backdropColor: "#ffffff",
+            backdropPadding: 4
+          }
+        }
       }
     }
   });
@@ -658,6 +612,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
