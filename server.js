@@ -56,7 +56,6 @@ app.get("/tag/:codigo", async (req, res) => {
   try {
     const codigo = req.params.codigo;
 
-    // cabeçalho
     const cabecalho = await pool.query(`
       SELECT
         t.tag,
@@ -72,7 +71,6 @@ app.get("/tag/:codigo", async (req, res) => {
       return res.status(404).json({ error: "TAG não encontrada" });
     }
 
-    // andamento
     const andamento = await pool.query(`
       SELECT
         a.componente,
@@ -90,7 +88,6 @@ app.get("/tag/:codigo", async (req, res) => {
 
     andamento.rows.forEach(l => {
       const comp = l.componente || "Sem componente";
-
       if (!componentes[comp]) componentes[comp] = [];
 
       componentes[comp].push({
@@ -115,28 +112,37 @@ app.get("/tag/:codigo", async (req, res) => {
 });
 
 // ======================================================
-// 🔹 BUSCA POR OP (NOVO MODO)
+// 🔹 BUSCA POR OP (MODO CORRIGIDO E ROBUSTO)
 // ======================================================
 
-app.get("/op/*", async (req, res) => {
+app.get("/op/:codigo", async (req, res) => {
   try {
-    // captura tudo após /op/
-    const op = decodeURIComponent(req.params[0]).trim();
 
-    console.log("🔎 OP recebida:", op);
+    // normaliza valor recebido
+    let op = decodeURIComponent(req.params.codigo)
+      .replace(/\u00A0/g, " ") // remove espaços invisíveis
+      .trim();
 
-    // cabeçalho da OP
+    console.log("🔎 OP recebida:", `"${op}"`);
+
+    if (!op) {
+      return res.status(400).json({ error: "OP inválida" });
+    }
+
+    // 🔹 busca cabeçalho da OP (comparação tolerante)
     const cab = await pool.query(`
       SELECT cliente_nome, data_abertura
       FROM ordem_de_producao
-      WHERE ordem_producao = $1
+      WHERE TRIM(ordem_producao::text) = TRIM($1)
+      LIMIT 1
     `, [op]);
 
     if (cab.rowCount === 0) {
-      return res.status(404).json({ error: "OP não encontrada" });
+      console.log("❌ OP não encontrada no cabeçalho");
+      return res.status(404).json({ error: "OP não encontrada no banco" });
     }
 
-    // busca andamento das TAGs da OP
+    // 🔹 busca andamento das TAGs da OP
     const dados = await pool.query(`
       SELECT
         t.tag,
@@ -148,9 +154,11 @@ app.get("/op/*", async (req, res) => {
       FROM tags t
       JOIN andamento_pecas a ON a.tag = t.tag
       JOIN etapas e ON e.id_etapa = a.id_etapa
-      WHERE t.op = $1
+      WHERE TRIM(t.op::text) = TRIM($1)
       ORDER BY t.tag, a.componente, a.inicio
     `, [op]);
+
+    console.log(`✅ ${dados.rowCount} registros encontrados`);
 
     const tags = {};
 
@@ -203,5 +211,3 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
-
-
