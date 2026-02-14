@@ -443,7 +443,7 @@ ticks: {
 },
 
 grid: {
-  drawTicks: false,
+  drawTicks: true,
 
   color: ctx => {
     const d = new Date(ctx.tick.value);
@@ -651,6 +651,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
