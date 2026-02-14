@@ -160,14 +160,27 @@ function montarAbasComponentes(componentes) {
   const container = document.getElementById("abasComponentes");
   container.innerHTML = "";
 
-  Object.keys(componentes).forEach((nome, index) => {
+  // 🔥 ORDEM DESEJADA
+  const ordemDesejada = [
+    "Flange A",
+    "Flange B",
+    "Tambor",
+    "Berco de Apoio",
+    "Conjunto Montado"
+  ];
+
+  let primeiraAba = true;
+
+  function criarAba(nome) {
     const btn = document.createElement("button");
     btn.className = "aba-componente";
     btn.innerText = nome;
 
-    if (index === 0) {
+    // ativa a primeira aba criada
+    if (primeiraAba) {
       btn.classList.add("ativa");
       carregarComponente(nome);
+      primeiraAba = false;
     }
 
     btn.onclick = () => {
@@ -179,6 +192,20 @@ function montarAbasComponentes(componentes) {
     };
 
     container.appendChild(btn);
+  }
+
+  // 1️⃣ cria primeiro na ordem desejada
+  ordemDesejada.forEach(nome => {
+    if (componentes[nome]) {
+      criarAba(nome);
+    }
+  });
+
+  // 2️⃣ cria os restantes vindos da API
+  Object.keys(componentes).forEach(nome => {
+    if (!ordemDesejada.includes(nome)) {
+      criarAba(nome);
+    }
   });
 }
 
@@ -660,6 +687,7 @@ window.addEventListener("load", () => {
     buscar();
   }
 });
+
 
 
 
