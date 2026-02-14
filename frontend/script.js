@@ -1,204 +1,329 @@
 // =======================
-// IMPORTAÇÕES
+// PLUGIN: TURNO NOTURNO
 // =======================
 
-import express from "express";
-import cors from "cors";
-import pkg from "pg";
-import path from "path";
-import { fileURLToPath } from "url";
+const turnoNoturnoPlugin = {
+  id: "turnoNoturno",
 
-const { Pool } = pkg;
+  beforeDatasetsDraw(chart) {
+    if (chart.options.plugins?.turnoNoturno?.enabled === false) return;
 
-// =======================
-// CONFIGURAÇÃO BÁSICA
-// =======================
+    const { ctx, chartArea, scales } = chart;
+    const xScale = scales.x;
+    if (!xScale) return;
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+    const inicio = xScale.min;
+    const fim = xScale.max;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+    let cursor = new Date(inicio);
+    cursor.setHours(19, 0, 0, 0);
 
-// pasta do frontend
-app.use(express.static(path.join(__dirname, "frontend")));
+    if (cursor > inicio) cursor.setDate(cursor.getDate() - 1);
 
-const PORT = process.env.PORT || 3000;
+    ctx.save();
 
-// =======================
-// CONEXÃO COM BANCO
-// =======================
+    ctx.beginPath();
+    ctx.rect(
+      chartArea.left,
+      chartArea.top,
+      chartArea.right - chartArea.left,
+      chartArea.bottom - chartArea.top
+    );
+    ctx.clip();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // necessário para Render / cloud
-});
+    ctx.fillStyle = "rgba(37, 99, 235, 0.08)";
 
-// teste inicial
-pool.connect()
-  .then(() => console.log("✅ Banco conectado"))
-  .catch(err => console.error("❌ Erro conexão:", err));
+    while (cursor < fim) {
+      const inicioTurno = new Date(cursor);
+      const fimTurno = new Date(cursor);
+      fimTurno.setDate(fimTurno.getDate() + 1);
+      fimTurno.setHours(7, 0, 0, 0);
 
-// =======================
-// ROTA PRINCIPAL
-// =======================
+      const xInicio = xScale.getPixelForValue(inicioTurno);
+      const xFim = xScale.getPixelForValue(fimTurno);
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "index.html"));
-});
+      ctx.fillRect(
+        xInicio,
+        chartArea.top,
+        xFim - xInicio,
+        chartArea.bottom - chartArea.top
+      );
 
-// ======================================================
-// 🔹 BUSCA POR TAG (MODO ORIGINAL)
-// ======================================================
-
-app.get("/tag/:codigo", async (req, res) => {
-  try {
-    const codigo = req.params.codigo;
-
-    // cabeçalho
-    const cabecalho = await pool.query(`
-      SELECT
-        t.tag,
-        t.op,
-        o.cliente_nome
-      FROM tags t
-      LEFT JOIN ordem_de_producao o
-        ON o.ordem_producao = t.op
-      WHERE t.tag = $1
-    `, [codigo]);
-
-    if (cabecalho.rowCount === 0) {
-      return res.status(404).json({ error: "TAG não encontrada" });
+      cursor.setDate(cursor.getDate() + 1);
     }
 
-    // andamento
-    const andamento = await pool.query(`
-      SELECT
-        a.componente,
-        e.nome_etapa,
-        a.status,
-        a.inicio,
-        a.fim
-      FROM andamento_pecas a
-      JOIN etapas e ON e.id_etapa = a.id_etapa
-      WHERE a.tag = $1
-      ORDER BY a.componente, a.inicio
-    `, [codigo]);
-
-    const componentes = {};
-
-    andamento.rows.forEach(l => {
-      const comp = l.componente || "Sem componente";
-
-      if (!componentes[comp]) componentes[comp] = [];
-
-      componentes[comp].push({
-        nome_etapa: l.nome_etapa,
-        status: l.status,
-        inicio: l.inicio,
-        fim: l.fim
-      });
-    });
-
-    res.json({
-      tag: cabecalho.rows[0].tag,
-      op: cabecalho.rows[0].op,
-      cliente_nome: cabecalho.rows[0].cliente_nome,
-      componentes
-    });
-
-  } catch (err) {
-    console.error("ERRO TAG:", err);
-    res.status(500).send(err.message);
+    ctx.restore();
   }
-});
+};
 
-// ======================================================
-// 🔹 BUSCA POR OP (NOVO MODO)
-// ======================================================
+Chart.register(ChartDataLabels);
+Chart.register(turnoNoturnoPlugin);
 
-app.get("/op/:numero", async (req, res) => {
-  try {
-    const op = req.params.numero;
+// =======================
+// UTILIDADES
+// =======================
 
-    // cabeçalho da OP
-    const cab = await pool.query(`
-      SELECT cliente_nome, data_abertura
-      FROM ordem_de_producao
-      WHERE ordem_producao = $1
-    `, [op]);
+function dataSemFuso(data) {
+  if (!data) return null;
+  return new Date(data.replace("Z", ""));
+}
 
-    if (cab.rowCount === 0) {
-      return res.status(404).json({ error: "OP não encontrada" });
+function formatarData(dateObj) {
+  if (!(dateObj instanceof Date)) return "-";
+  return dateObj.toLocaleString("pt-BR");
+}
+
+// =======================
+// ESTADO GLOBAL
+// =======================
+
+let dadosOP = {};
+let tagAtual = null;
+let componentesCache = {};
+
+// =======================
+// BUSCAR OP
+// =======================
+
+async function buscar() {
+  const codigo = document.getElementById("codigo").value;
+  if (!codigo) return;
+
+  const res = await fetch("/op/" + codigo);
+  const resposta = await res.json();
+
+  dadosOP = resposta.tags;
+
+  document.getElementById("linhaInfo").innerText =
+    `OP: ${resposta.op} | Cliente: ${resposta.cliente_nome}`;
+
+  montarAbasTags();
+}
+
+window.buscar = buscar;
+
+// =======================
+// ABAS DE TAGS
+// =======================
+
+function montarAbasTags() {
+  const container = document.getElementById("abasTags");
+  container.innerHTML = "";
+
+  Object.keys(dadosOP).forEach((tag, index) => {
+    const btn = document.createElement("button");
+    btn.className = "aba-tag";
+    btn.innerText = tag;
+
+    if (index === 0) {
+      btn.classList.add("ativa");
+      carregarTag(tag);
     }
 
-    // busca andamento das TAGs da OP
-    const dados = await pool.query(`
-      SELECT
-        t.tag,
-        a.componente,
-        e.nome_etapa,
-        a.status,
-        a.inicio,
-        a.fim
-      FROM tags t
-      JOIN andamento_pecas a ON a.tag = t.tag
-      JOIN etapas e ON e.id_etapa = a.id_etapa
-      WHERE t.op = $1
-      ORDER BY t.tag, a.componente, a.inicio
-    `, [op]);
+    btn.onclick = () => {
+      document.querySelectorAll(".aba-tag")
+        .forEach(b => b.classList.remove("ativa"));
 
-    const tags = {};
+      btn.classList.add("ativa");
+      carregarTag(tag);
+    };
 
-    dados.rows.forEach(l => {
-
-      const tag = l.tag;
-      const comp = l.componente || "Sem componente";
-
-      if (!tags[tag]) tags[tag] = {};
-      if (!tags[tag][comp]) tags[tag][comp] = [];
-
-      tags[tag][comp].push({
-        nome_etapa: l.nome_etapa,
-        status: l.status,
-        inicio: l.inicio,
-        fim: l.fim
-      });
-
-    });
-
-    res.json({
-      op,
-      cliente_nome: cab.rows[0].cliente_nome,
-      data_abertura: cab.rows[0].data_abertura,
-      tags
-    });
-
-  } catch (err) {
-    console.error("ERRO OP:", err);
-    res.status(500).send(err.message);
-  }
-});
-
-// ======================================================
-// 🔹 ROTA DE LOGIN (OPCIONAL)
-// ======================================================
-
-app.post("/login", (req, res) => {
-  const { user, pass } = req.body;
-
-  if (user === "admin" && pass === "123") {
-    res.json({ ok: true });
-  } else {
-    res.status(401).send("Login inválido");
-  }
-});
+    container.appendChild(btn);
+  });
+}
 
 // =======================
-// INICIA SERVIDOR
+// CARREGAR TAG
 // =======================
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor iniciado na porta ${PORT}`);
-});
+function carregarTag(tag) {
+  tagAtual = tag;
+  componentesCache = dadosOP[tag];
+  montarAbasComponentes(componentesCache);
+}
+
+// =======================
+// ABAS DE COMPONENTES
+// =======================
+
+function montarAbasComponentes(componentes) {
+  const container = document.getElementById("abasComponentes");
+  container.innerHTML = "";
+
+  Object.keys(componentes).forEach((nome, index) => {
+    const btn = document.createElement("button");
+    btn.className = "aba-componente";
+    btn.innerText = nome;
+
+    if (index === 0) {
+      btn.classList.add("ativa");
+      carregarComponente(nome);
+    }
+
+    btn.onclick = () => {
+      document.querySelectorAll(".aba-componente")
+        .forEach(b => b.classList.remove("ativa"));
+
+      btn.classList.add("ativa");
+      carregarComponente(nome);
+    };
+
+    container.appendChild(btn);
+  });
+}
+
+// =======================
+// CARREGAR COMPONENTE
+// =======================
+
+function carregarComponente(nome) {
+  const dados = componentesCache[nome];
+  montarTabela(dados);
+  montarGraficoGantt(dados);
+  montarGraficoDuracao(dados);
+}
+
+// =======================
+// TABELA
+// =======================
+
+function montarTabela(dados) {
+  let html = `
+    <tr>
+      <th>Etapa</th>
+      <th>Status</th>
+      <th>Início</th>
+      <th>Fim</th>
+    </tr>
+  `;
+
+  dados.forEach(d => {
+    html += `
+      <tr>
+        <td>${d.nome_etapa}</td>
+        <td>${d.status}</td>
+        <td>${formatarData(dataSemFuso(d.inicio))}</td>
+        <td>${d.fim ? formatarData(dataSemFuso(d.fim)) : "-"}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("tabela").innerHTML = html;
+}
+
+// =======================
+// GANTT
+// =======================
+
+let chartGantt;
+
+function montarGraficoGantt(dados) {
+
+  if (chartGantt) chartGantt.destroy();
+
+  const etapas = {};
+  const data = [];
+
+  dados.forEach(d => {
+    if (!etapas[d.nome_etapa]) etapas[d.nome_etapa] = [];
+    etapas[d.nome_etapa].push(d);
+  });
+
+  Object.values(etapas).forEach(lista => {
+    lista.sort((a,b)=> new Date(a.inicio) - new Date(b.inicio));
+
+    const primeiro = lista[0];
+    const ultimo = lista[lista.length - 1];
+
+    const inicio = dataSemFuso(primeiro.inicio);
+    const fim = ultimo.fim
+      ? dataSemFuso(ultimo.fim)
+      : dataSemFuso(ultimo.inicio);
+
+    const statusFinal = (ultimo.status || "").toLowerCase();
+    const emAndamento = statusFinal.includes("andamento");
+
+    data.push({
+      x: [inicio, fim],
+      y: primeiro.nome_etapa,
+      backgroundColor: emAndamento ? "#f59e0b" : "#2563eb"
+    });
+  });
+
+  chartGantt = new Chart(
+    document.getElementById("grafico"),
+    {
+      type: "bar",
+      data: {
+        datasets: [{
+          data,
+          backgroundColor: ctx => ctx.raw.backgroundColor,
+          borderRadius: 5,
+          barThickness: 16
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        plugins: {
+          legend: { display: false },
+          turnoNoturno: { enabled: true }
+        },
+        scales: {
+          x: { type: "time" }
+        }
+      }
+    }
+  );
+}
+
+// =======================
+// GRÁFICO DE DURAÇÃO
+// =======================
+
+let chartDuracao;
+
+function montarGraficoDuracao(dados) {
+
+  if (chartDuracao) chartDuracao.destroy();
+
+  const etapas = {};
+  const statusFinal = {};
+
+  dados.forEach(d => {
+    if (!etapas[d.nome_etapa]) {
+      etapas[d.nome_etapa] = 0;
+      statusFinal[d.nome_etapa] = false;
+    }
+
+    const ini = dataSemFuso(d.inicio);
+    const fim = d.fim ? dataSemFuso(d.fim) : ini;
+
+    etapas[d.nome_etapa] += (fim - ini) / 36e5;
+
+    if ((d.status || "").toLowerCase().includes("andamento")) {
+      statusFinal[d.nome_etapa] = true;
+    }
+  });
+
+  const labels = Object.keys(etapas);
+  const valores = labels.map(l => etapas[l].toFixed(2));
+
+  chartDuracao = new Chart(
+    document.getElementById("graficoDuracao"),
+    {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          data: valores,
+          backgroundColor: ctx =>
+            statusFinal[ctx.label] ? "#f59e0b" : "#2563eb"
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        plugins: { legend: { display: false } }
+      }
+    }
+  );
+}
