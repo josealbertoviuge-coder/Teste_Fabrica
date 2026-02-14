@@ -590,9 +590,9 @@ function montarGraficoDuracao(dados) {
   const etapas = Object.keys(acumulado);
   const duracoes = etapas.map(e => acumulado[e]);
 
-  const cores = etapas.map(e =>
-    statusEtapa[e] ? "#f59e0b" : "#2563eb"
-  );
+const cores = etapas.map(e =>
+  statusEtapa[e] ? "#f59e0b" : "#2563eb"
+);
 
   if (chartDuracao) chartDuracao.destroy();
 
@@ -614,12 +614,11 @@ function montarGraficoDuracao(dados) {
     type: "bar",
     data: {
       labels: etapas,
-      datasets: [{
-        label: "Tempo Total por Etapa de Fabricação do Equipamento (h)",
-        data: duracoes,
-        backgroundColor: ctx =>
-          statusEtapa[ctx.label] ? "#f59e0b" : "#2563eb"
-      }]
+datasets: [{
+  label: "Tempo Total da Etapa / Total Step Time (h)",
+  data: duracoes,
+  backgroundColor: cores
+}]
     },
     options: {
       indexAxis: "y",
@@ -709,3 +708,4 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
