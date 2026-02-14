@@ -212,8 +212,8 @@ th,td{
 
   .sidebar{
     width: 60%;
-    min-width: 180px;
-    max-width: 260px;
+    min-width: 220px;
+    max-width: 350px;
     border-right:none;
     border-bottom:1px solid #e5e7eb;
   }
