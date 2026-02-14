@@ -164,52 +164,44 @@ function montarAbasTags() {
 
   const conteudo = document.getElementById("conteudo-componente");
 
-  let primeiraAba = true;
+  let primeira = true;
 
   Object.keys(dadosOP).forEach(tag => {
 
     const btn = document.createElement("button");
-    btn.type = "button";
     btn.className = "aba-tag";
     btn.innerText = tag;
 
-    // 👉 primeira TAG abre automaticamente
-    if (primeiraAba) {
+    if (primeira) {
       btn.classList.add("ativa");
       carregarTag(tag);
-      primeiraAba = false;
+      primeira = false;
     }
 
     btn.onclick = () => {
 
-      // evita recarregar se clicar na ativa
       if (btn.classList.contains("ativa")) return;
 
-      // remove azul das outras
       document
         .querySelectorAll(".aba-tag")
         .forEach(b => b.classList.remove("ativa"));
 
       btn.classList.add("ativa");
 
-      // 🔥 animação suave
+      // animação suave
       conteudo.classList.add("is-hiding");
 
       requestAnimationFrame(() => {
         setTimeout(() => {
-
           carregarTag(tag);
-
           conteudo.classList.remove("is-hiding");
-
-        }, 180); // menor que o transition CSS
+        }, 180);
       });
     };
 
     container.appendChild(btn);
   });
 }
-
 // =======================
 // CARREGAR TAG
 // =======================
@@ -782,6 +774,7 @@ window.addEventListener("load", () => {
     finalizarLoading();
   }
 });
+
 
 
 
