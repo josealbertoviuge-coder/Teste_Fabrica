@@ -1,4 +1,26 @@
 // =======================
+// LOADING BAR
+// =======================
+
+function iniciarLoading() {
+  const bar = document.getElementById("loadingBar");
+  bar.classList.remove("hidden");
+  bar.style.width = "30%";
+
+  setTimeout(() => bar.style.width = "60%", 200);
+}
+
+function finalizarLoading() {
+  const bar = document.getElementById("loadingBar");
+  bar.style.width = "100%";
+
+  setTimeout(() => {
+    bar.classList.add("hidden");
+    bar.style.width = "0%";
+  }, 300);
+}
+
+// =======================
 // PLUGIN: TURNO NOTURNO
 // =======================
 
@@ -89,10 +111,7 @@ async function buscar() {
   const codigo = document.getElementById("codigo").value;
   if (!codigo) return;
 
-  document.getElementById("qrcode").src =
-    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
-    window.location.origin +
-    "/?codigo=" + encodeURIComponent(codigo);
+  iniciarLoading();
 
   const res = await fetch(
     "https://teste-fabrica.onrender.com/op/" +
@@ -107,6 +126,8 @@ async function buscar() {
     `OP: ${resposta.op} | Cliente: ${resposta.cliente_nome}`;
 
   montarAbasTags();
+
+  finalizarLoading();
 }
 
 
@@ -728,10 +749,15 @@ window.addEventListener("load", () => {
   }
 });
 
+window.addEventListener("load", () => {
+  iniciarLoading();
 
+  const codigo = new URLSearchParams(window.location.search).get("codigo");
 
-
-
-
-
-
+  if (codigo) {
+    document.getElementById("codigo").value = codigo;
+    buscar();
+  } else {
+    finalizarLoading();
+  }
+});
