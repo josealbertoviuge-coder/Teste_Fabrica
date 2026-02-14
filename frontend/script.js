@@ -327,3 +327,15 @@ function montarGraficoDuracao(dados) {
     }
   );
 }
+
+// =======================
+// AUTO BUSCA VIA URL
+// =======================
+
+window.addEventListener("load", () => {
+  const codigo = new URLSearchParams(window.location.search).get("codigo");
+  if (codigo) {
+    document.getElementById("codigo").value = codigo;
+    buscar();
+  }
+});
