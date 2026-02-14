@@ -231,3 +231,31 @@ th,td{
   background: white;
   padding: 10px;
 }
+
+.gantt-wrapper{
+  width:100%;
+  overflow-x:auto;
+  overflow-y:auto;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  background:white;
+}
+
+#grafico{
+  display:block;
+  min-width: 100%;
+}
+
+#graficoDuracao{
+  background:white;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  padding:8px;
+}
+
+.layout{
+  max-width:1200px;
+  margin:auto;
+}
