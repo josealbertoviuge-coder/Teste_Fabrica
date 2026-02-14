@@ -135,9 +135,7 @@ async function buscar(codigoManual = null) {
         "/?codigo=" + encodeURIComponent(codigo);
     }
 
-    const res = await fetch(
-      "/op/" + encodeURIComponent(codigo)
-    );
+    const res = await fetch("https://teste-fabrica.onrender.com/op/" + encodeURIComponent(codigo));
 
     if (!res.ok) throw new Error("Erro ao buscar dados");
 
@@ -766,3 +764,4 @@ datasets: [{
 window.addEventListener("load", () => {
   buscar(); // busca automaticamente via URL
 });
+
