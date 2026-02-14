@@ -1,267 +1,214 @@
 body{
   font-family: Arial, sans-serif;
   background:#f2f4f8;
-  padding:40px;
+  margin:0;
 }
 
 /* =======================
-   CONTAINER PRINCIPAL
-   ======================= */
-.container{
-  background:white;
-  padding:30px;
-  max-width:900px;
-  margin:auto;
-  border-radius:10px;
+   LOADING BAR
+======================= */
+#loadingBar{
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  width:0%;
+  background:#2563eb;
+  z-index:9999;
+  opacity:0;
+  transition: width .35s ease, opacity .3s ease;
 }
 
-h2{
+/* =======================
+   TOPO
+======================= */
+.topo-wrapper{
+  display:flex;
+  gap:20px;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+/* coluna QR + logo */
+.qr-logo{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+}
+
+#qrcode{ width:110px; }
+#logo{ width:160px; }
+
+.header-card{
+  background:white;
+  padding:12px 20px;
+  border-radius:10px;
   text-align:center;
 }
 
-input{
-  padding:10px;
-  width:250px;
+/* =======================
+   LAYOUT PRINCIPAL
+======================= */
+.layout{
+  display:flex;
+  max-width:1200px;
+  margin:auto;
 }
 
 /* =======================
-   BOTÃO PADRÃO DO SISTEMA
-   ======================= */
-button{
-  padding:10px 20px;
+   MENU LATERAL
+======================= */
+.sidebar{
+  width:220px;
+  background:white;
+  border-right:1px solid #e5e7eb;
+  padding:15px;
+}
+
+.sidebar-title{
+  font-weight:bold;
+  margin-bottom:10px;
+  color:#374151;
+}
+
+/* lista de TAGs */
+.tag-list{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  max-height:65vh;
+  overflow-y:auto;
+}
+
+/* =======================
+   TAGS (MENU)
+======================= */
+.aba-tag{
+  padding:8px;
+  border-radius:6px;
+  border:1px solid #d1d5db;
+  background:#f9fafb;
+  cursor:pointer;
+  text-align:center;
+  color:#6b7280;
+}
+
+.aba-tag:hover{
+  background:#e5e7eb;
+  color:#374151;
+}
+
+.aba-tag.ativa{
   background:#2563eb;
   color:white;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-}
-
-button:hover{
-  background:#1e40af;
+  border-color:#2563eb;
 }
 
 /* =======================
-   TABELAS
-   ======================= */
+   CONTEÚDO PRINCIPAL
+======================= */
+.main-content{
+  flex:1;
+  padding:20px;
+}
+
+/* abas componentes */
+.abas{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.aba-componente{
+  padding:8px 14px;
+  border-radius:6px;
+  border:1px solid #d1d5db;
+  background:#f9fafb;
+  cursor:pointer;
+  color:#6b7280;
+}
+
+.aba-componente:hover{
+  background:#e5e7eb;
+}
+
+.aba-componente.ativa{
+  background:#2563eb;
+  color:white;
+  border-color:#2563eb;
+}
+
+/* =======================
+   TABELA
+======================= */
+.tabela-wrapper{
+  max-height:280px;
+  overflow:auto;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+}
+
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:20px;
 }
 
 th,td{
   padding:10px;
   border-bottom:1px solid #ddd;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
+  text-align:center;
 }
 
 /* =======================
-   CAMPOS OCULTOS
-   ======================= */
-#codigo,
-#btnBuscar {
-  display: none;
+   GANTT
+======================= */
+.gantt-wrapper{
+  overflow:auto;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
 }
 
 /* =======================
-   TOPO (QR + TÍTULO)
-   ======================= */
-.topo-wrapper {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
+   TRANSIÇÃO CONTEÚDO
+======================= */
+#conteudo-componente{
+  transition:opacity .25s ease, transform .25s ease;
 }
 
-/* coluna QR + logo */
-.qr-logo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-/* QR Code */
-#qrcode {
-  width: 110px;
-  height: 110px;
-}
-
-/* Logo */
-#logo {
-  width: 160px;
-  height: auto;
-  object-fit: contain;
-}
-
-.header-card {
-  background: white;
-  padding: 12px 20px;
-  border-radius: 10px;
-  line-height: 2.0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 110px;
-}
-
-.header-card h2 {
-  margin: 0;
-}
-
-.header-card .linha-info {
-  margin-top: 4px;
-}
-
-#linhaInfo {
-  margin-top: 6px;
-  font-size: 14px;
-  color: #374151;
-  font-weight: 500;
-  text-align: center;
-}
-
-#titulo {
-  margin: 0;
-  font-size: 22px;
-  font-weight: bold;
-  text-align: center;
-}
-
-#tempoTotal {
-  margin-top: 6px;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-/* =======================
-   GANTT — ÁREA VISÍVEL
-   ======================= */
-.gantt-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: auto;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-}
-
-/* CANVAS */
-#grafico {
-  display: block;
-}
-
-/* =======================
-   TABELA COM SCROLL
-   ======================= */
-.tabela-wrapper {
-  max-height: 280px;
-  overflow-y: auto;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-}
-
-/* mantém header visível */
-.tabela-wrapper thead,
-.tabela-wrapper tr:first-child {
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 1;
-}
-
-/* =======================
-   ABAS (TAGS E COMPONENTES)
-   ======================= */
-
-.abas-wrapper {
-  margin: 20px 0;
-  overflow-x: auto;
-}
-
-.abas {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-/* 🔹 Aba padrão */
-.aba-componente,
-.aba-tag {
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  cursor: pointer;
-  font-weight: 500;
-  white-space: nowrap;
-  color: #6b7280;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-/* Hover */
-.aba-componente:hover,
-.aba-tag:hover {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-/* Aba ativa */
-.aba-componente.ativa,
-.aba-tag.ativa {
-  background: #2563eb;
-  color: #ffffff;
-  border-color: #2563eb;
-}
-
-/* =======================
-   TRANSIÇÃO ENTRE ABAS
-   ======================= */
-
-#conteudo-componente {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  will-change: opacity, transform;
-}
-
-#conteudo-componente.is-hiding {
-  opacity: 0;
-  transform: translateY(8px);
+#conteudo-componente.is-hiding{
+  opacity:0;
+  transform:translateY(8px);
 }
 
 /* =======================
    FOOTER
-   ======================= */
-.footer {
-  margin-top: 30px;
-  padding-top: 10px;
-  text-align: center;
-  font-size: 12px;
-  color: #6b7280;
-  border-top: 1px solid #e5e7eb;
+======================= */
+.footer{
+  text-align:center;
+  padding:20px;
+  font-size:12px;
+  color:#6b7280;
 }
 
-.footer strong {
-  color: #374151;
-}
+/* =======================
+   RESPONSIVO MOBILE
+======================= */
+@media (max-width:900px){
 
-/* LOADING BAR */
+  .layout{
+    flex-direction:column;
+  }
 
-#loadingBar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 4px;
-  width: 0%;
-  background: #2563eb;
-  z-index: 9999;
-  opacity: 0;
-  transition: width 0.35s ease, opacity 0.3s ease;
+  .sidebar{
+    width:100%;
+    border-right:none;
+    border-bottom:1px solid #e5e7eb;
+  }
+
+  .tag-list{
+    max-height:35vh;
+  }
 }
