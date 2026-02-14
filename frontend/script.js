@@ -364,8 +364,11 @@ wrapper.style.height = `${alturaViewport}px`;
       ? dataSemFuso(ultimo.fim)
       : agora;
 
-    data.push({ x: [inicio, fim], y: primeiro.nome_etapa });
-    cores.push(concluida ? "#2563eb" : "#f59e0b");
+    data.push({
+  x: [inicio, fim],
+  y: primeiro.nome_etapa,
+  backgroundColor: concluida ? "#2563eb" : "#f59e0b"
+});
   });
 
   function gerarTicks6h(inicio, fim) {
@@ -395,7 +398,7 @@ const ticks6h = gerarTicks6h(minData, maxData);
       datasets: [{
         label: "Linha do Tempo / Timeline",
         data,
-        backgroundColor: cores,
+        backgroundColor: ctx => ctx.raw.backgroundColor,
         borderRadius: 5,
         barThickness: 16
       }]
@@ -589,7 +592,8 @@ canvasDuracao.height = Math.min(
       datasets: [{
         label: "Tempo Total por Etapa de Fabricação do Equipamento (h)",
         data: duracoes,
-        backgroundColor: cores
+        backgroundColor: ctx =>
+  emAndamento[ctx.label] ? "#f59e0b" : "#2563eb"
       }]
     },
 options: {
@@ -683,6 +687,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
