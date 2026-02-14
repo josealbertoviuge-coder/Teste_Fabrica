@@ -118,9 +118,12 @@ app.get("/tag/:codigo", async (req, res) => {
 // 🔹 BUSCA POR OP (NOVO MODO)
 // ======================================================
 
-app.get("/op/:numero", async (req, res) => {
+app.get("/op/*", async (req, res) => {
   try {
-    const op = decodeURIComponent(req.params.numero);
+    // captura tudo após /op/
+    const op = decodeURIComponent(req.params[0]).trim();
+
+    console.log("🔎 OP recebida:", op);
 
     // cabeçalho da OP
     const cab = await pool.query(`
@@ -152,7 +155,6 @@ app.get("/op/:numero", async (req, res) => {
     const tags = {};
 
     dados.rows.forEach(l => {
-
       const tag = l.tag;
       const comp = l.componente || "Sem componente";
 
@@ -165,7 +167,6 @@ app.get("/op/:numero", async (req, res) => {
         inicio: l.inicio,
         fim: l.fim
       });
-
     });
 
     res.json({
@@ -202,4 +203,5 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
