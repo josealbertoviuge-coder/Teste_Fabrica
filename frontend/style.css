@@ -76,7 +76,6 @@ th,td{
   margin-bottom: 20px;
 }
 
-/* coluna QR + logo */
 .qr-logo {
   display: flex;
   flex-direction: column;
@@ -84,13 +83,11 @@ th,td{
   gap: 8px;
 }
 
-/* QR Code */
 #qrcode {
   width: 110px;
   height: 110px;
 }
 
-/* Logo */
 #logo {
   width: 160px;
   height: auto;
@@ -181,7 +178,6 @@ th,td{
   border-radius: 8px;
 }
 
-/* mantém header visível */
 .tabela-wrapper thead,
 .tabela-wrapper tr:first-child {
   position: sticky;
@@ -191,7 +187,7 @@ th,td{
 }
 
 /* =======================
-   ABAS DE COMPONENTES
+   ABAS (BASE PADRÃO)
    ======================= */
 
 .abas-wrapper {
@@ -206,8 +202,8 @@ th,td{
   justify-content: center;
 }
 
-/* 🔹 Aba padrão */
-.aba-componente {
+/* 🔹 ESTILO BASE (reutilizado por TAGs e Componentes) */
+.aba {
   padding: 8px 14px;
   border-radius: 6px;
   border: 1px solid #d1d5db;
@@ -218,17 +214,25 @@ th,td{
   color: #6b7280;
 }
 
-.aba-componente:hover {
+.aba:hover {
   background: #e5e7eb;
   color: #374151;
 }
 
 /* 🔹 Aba ativa */
-.aba-componente.ativa {
+.aba.ativa {
   background: #2563eb;
   color: #ffffff;
   border-color: #2563eb;
 }
+
+/* =======================
+   CLASSES SEMÂNTICAS
+   (não alteram aparência)
+   ======================= */
+
+.aba-componente {}
+.aba-tag {}
 
 /* =======================
    TRANSIÇÃO ENTRE ABAS
@@ -243,4 +247,5 @@ th,td{
 
 #conteudo-componente.is-hiding {
   opacity: 0;
-  transform: translat
+  transform: translateY(8px);
+}
