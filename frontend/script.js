@@ -272,13 +272,12 @@ function montarGraficoGantt(dados) {
   const minData = new Date(Math.min(...datas));
   const maxData = new Date(Math.max(...datas));
 
-  // começa sempre às 00:00 do primeiro dia
   minData.setHours(0, 0, 0, 0);
 
   // =======================
   // TAMANHO HORIZONTAL (SCROLL)
   // =======================
-  const larguraPorDia = 120;
+  const larguraPorDia = 120; // px
   const diasVisiveis = 14;
 
   const diasTotais =
@@ -290,49 +289,64 @@ function montarGraficoGantt(dados) {
   );
 
   // =======================
-  // ETAPAS ÚNICAS
+  // JANELA VISÍVEL
   // =======================
+  const janelaInicialFim = new Date(minData);
+  janelaInicialFim.setDate(janelaInicialFim.getDate() + diasVisiveis);
+
+  // =======================
+  // ETAPAS ÚNICAS (1 LINHA)
+  // =======================
+
   const labels = [...new Set(dados.map(d => d.nome_etapa))];
 
   // =======================
-  // ALTURA DINÂMICA
+  // AJUSTE DE ALTURA (SCROLL)
   // =======================
+
   const alturaPorEtapa = 65;
   const alturaMinima = 280;
 
   const alturaCanvas = labels.length * alturaPorEtapa;
   canvas.height = Math.max(alturaCanvas, alturaMinima);
 
-  const wrapper = canvas.parentElement;
-  const alturaMaxViewport = 800;
-  const paddingVisual = 40;
+  // =======================
+// AJUSTE DA JANELA VISÍVEL
+// =======================
 
-  const alturaViewport = Math.min(
-    canvas.height + paddingVisual,
-    alturaMaxViewport
-  );
+const wrapper = canvas.parentElement;
 
-  wrapper.style.height = `${alturaViewport}px`;
+const alturaMaxViewport = 800;   // limite visual agradável
+const paddingVisual = 40;        // respiro interno
+
+const alturaViewport = Math.min(
+  canvas.height + paddingVisual,
+  alturaMaxViewport
+);
+
+wrapper.style.height = `${alturaViewport}px`;
 
   // =======================
-  // AGRUPAR LANÇAMENTOS POR ETAPA
+  // DATASET
   // =======================
-  const etapasAgrupadas = {};
-
-  dados.forEach(d => {
-    if (!d.inicio) return;
-
-    if (!etapasAgrupadas[d.nome_etapa]) {
-      etapasAgrupadas[d.nome_etapa] = [];
-    }
-
-    etapasAgrupadas[d.nome_etapa].push(d);
-  });
 
   const data = [];
   const cores = [];
 
-  Object.values(etapasAgrupadas).forEach(lista => {
+  // agrupa lançamentos por etapa
+  const etapas = {};
+
+  dados.forEach(d => {
+    if (!d.inicio) return;
+
+    if (!etapas[d.nome_etapa]) {
+      etapas[d.nome_etapa] = [];
+    }
+
+    etapas[d.nome_etapa].push(d);
+  });
+
+  Object.values(etapas).forEach(lista => {
 
     // ordena por início
     lista.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
@@ -342,52 +356,43 @@ function montarGraficoGantt(dados) {
 
     const inicio = dataSemFuso(primeiro.inicio);
 
-    const etapaConcluida =
+    const concluida =
       ultimo.fim && new Date(ultimo.fim) <= agora;
 
-    const fim = etapaConcluida
+    const fim = concluida
       ? dataSemFuso(ultimo.fim)
       : agora;
 
-    data.push({
-      x: [inicio, fim],
-      y: primeiro.nome_etapa
-    });
-
-    cores.push(
-      etapaConcluida ? "#2563eb" : "#f59e0b"
-    );
+    data.push({ x: [inicio, fim], y: primeiro.nome_etapa });
+    cores.push(concluida ? "#2563eb" : "#f59e0b");
   });
 
-  // =======================
-  // TICKS 6H
-  // =======================
   function gerarTicks6h(inicio, fim) {
-    const ticks = [];
-    const cursor = new Date(inicio);
+  const ticks = [];
+  const cursor = new Date(inicio);
 
-    cursor.setMinutes(0, 0, 0);
-    cursor.setHours(Math.floor(cursor.getHours() / 6) * 6);
+  // alinha para a hora cheia mais próxima
+  cursor.setMinutes(0, 0, 0);
 
-    while (cursor <= fim) {
-      ticks.push(new Date(cursor));
-      cursor.setHours(cursor.getHours() + 6);
-    }
+  // ajusta para múltiplo de 6
+  cursor.setHours(Math.floor(cursor.getHours() / 6) * 6);
 
-    return ticks;
+  while (cursor <= fim) {
+    ticks.push(new Date(cursor));
+    cursor.setHours(cursor.getHours() + 6);
   }
 
-  const ticks6h = gerarTicks6h(minData, maxData);
+  return ticks;
+}
 
-  // =======================
-  // CRIA GRÁFICO
-  // =======================
+const ticks6h = gerarTicks6h(minData, maxData);
+  
   chartGantt = new Chart(canvas, {
     type: "bar",
     data: {
       labels,
       datasets: [{
-        label: "Timeline",
+        label: "Linha do Tempo / Timeline",
         data,
         backgroundColor: cores,
         borderRadius: 5,
@@ -400,64 +405,129 @@ function montarGraficoGantt(dados) {
       indexAxis: "y",
 
       plugins: {
-        turnoNoturno: { enabled: true },
-        legend: { display: false }
-      },
 
-      scales: {
-        x: {
-          type: "time",
-          min: minData,
-          max: maxData,
-
-          time: {
-            unit: "hour",
-            stepSize: 3
-          },
-
-          afterBuildTicks: scale => {
-            const ticks = ticks6h.filter(d => d <= scale.max);
-
-            if (ticks.length && ticks[0] > scale.min) {
-              ticks.unshift(new Date(scale.min));
-            }
-
-            scale.ticks = ticks.map(d => ({ value: d }));
-          },
-
-          ticks: {
-            autoSkip: false,
-            font: { weight: "bold" },
-
-            callback: (value, index, ticks) => {
-              const d = new Date(ticks[index].value);
-
-              if (d.getHours() === 0) {
-                return d.toLocaleDateString("pt-BR", {
-                  day: "2-digit",
-                  month: "short"
-                });
-              }
-
-              if (d.getHours() % 6 === 0) {
-                return d.toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit"
-                });
-              }
-
-              return "";
+        // ✅ ATIVA O TURNO NOTURNO SÓ AQUI
+        turnoNoturno: {
+          enabled: true
+        },
+        title: {
+          display: true,
+          text: "Linha do Tempo de Fabricação / Manufacturing Timeline",
+          font: { weight: "bold", size: 16 }
+        },
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const [ini, fim] = ctx.raw.x;
+              return `${formatarDataTabela(ini)} → ${formatarDataTabela(fim)}`;
             }
           }
         },
+        datalabels: { display: false }
+      },
 
-        y: {
-          ticks: {
-            font: { weight: "bold" },
-            backdropColor: "#ffffff",
-            backdropPadding: 4
-          }
-        }
+      scales: {
+x: {
+  type: "time",
+  min: minData,
+  max: maxData,
+
+  time: {
+    unit: "hour",
+    stepSize: 3   // 🔒 base horária estável
+  },
+afterBuildTicks: scale => {
+  scale.ticks = ticks6h
+    .filter(d => d >= scale.min && d <= scale.max)
+    .map(d => ({ value: d }));
+},
+
+ticks: {
+  autoSkip: false,
+  font: { weight: "bold" },
+
+  callback: (value, index, ticks) => {
+    const d = new Date(ticks[index].value);
+
+    if (isNaN(d)) return "";
+
+    // meia-noite → data
+    if (d.getHours() === 0) {
+      return d.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short"
+      });
+    }
+
+    // a cada 6h → hora
+    if (d.getHours() % 6 === 0) {
+      return d.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    // 3h sem label (linha existe)
+    return "";
+  }
+},
+
+grid: {
+  drawTicks: true,
+
+  color: ctx => {
+    const d = new Date(ctx.tick.value);
+
+    // dia
+    if (d.getHours() === 0) return "rgba(0,0,0,0.35)";
+
+    // 6h
+    if (d.getHours() % 6 === 0) return "rgba(0,0,0,0.18)";
+
+    // 3h (⚠️ nunca zero)
+    if (d.getHours() % 3 === 0) return "rgba(0,0,0,0.08)";
+
+    return "rgba(0,0,0,0.08)";
+  },
+
+  lineWidth: ctx => {
+    const d = new Date(ctx.tick.value);
+    if (d.getHours() === 0) return 2;
+    if (d.getHours() % 6 === 0) return 1;
+    return 0.6; // 🔒 nunca 0
+  }
+},
+
+  title: {
+    display: true,
+    text: "Tempo / Time",
+    font: { weight: "bold" }
+  }
+},
+y: {
+  ticks: {
+    font: { weight: "bold" },
+
+    // mantém fundo branco atrás do texto
+    backdropColor: "#ffffff",
+    backdropPadding: 4
+  },
+
+  grid: {
+    drawOnChartArea: true,
+    drawTicks: false,
+
+    color: "rgba(0,0,0,0.15)",
+    lineWidth: 1
+  },
+
+  title: {
+    display: true,
+    text: "Etapas / Steps",
+    font: { weight: "bold" }
+  }
+}
       }
     }
   });
@@ -612,6 +682,7 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
+
 
 
 
