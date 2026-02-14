@@ -545,51 +545,72 @@ y: {
 let chartDuracao;
 
 function montarGraficoDuracao(dados) {
+
   const acumulado = {};
-  const emAndamento = {};
-  const agora = new Date();
+  const statusEtapa = {};
 
-dados.forEach(d => {
-  if (!d.inicio) return;
+  // agrupa lançamentos por etapa
+  const etapasAgrupadas = {};
 
-  const ini = dataSemFuso(d.inicio);
-  const fim = d.fim ? dataSemFuso(d.fim) : ini;
-  const horas = (fim - ini) / 36e5;
+  dados.forEach(d => {
+    if (!d.inicio) return;
 
-  if (!acumulado[d.nome_etapa]) {
-    acumulado[d.nome_etapa] = 0;
-    emAndamento[d.nome_etapa] = false;
-  }
+    if (!etapasAgrupadas[d.nome_etapa]) {
+      etapasAgrupadas[d.nome_etapa] = [];
+    }
 
-  acumulado[d.nome_etapa] += horas;
+    etapasAgrupadas[d.nome_etapa].push(d);
+  });
 
-  if ((d.status || "").toLowerCase().includes("andamento")) {
-    emAndamento[d.nome_etapa] = true;
-  }
-});
+  // calcula duração e status final
+  Object.entries(etapasAgrupadas).forEach(([etapa, lista]) => {
+
+    // ordena por início
+    lista.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
+
+    const ultimo = lista[lista.length - 1];
+
+    let totalHoras = 0;
+
+    lista.forEach(d => {
+      const ini = dataSemFuso(d.inicio);
+      const fim = d.fim
+        ? dataSemFuso(d.fim)
+        : ini;
+
+      totalHoras += (fim - ini) / 36e5;
+    });
+
+    acumulado[etapa] = Number(totalHoras.toFixed(2));
+
+    const statusUltimo = (ultimo.status || "").toLowerCase();
+    statusEtapa[etapa] = statusUltimo.includes("andamento");
+  });
 
   const etapas = Object.keys(acumulado);
-  const duracoes = etapas.map(e => Number(acumulado[e].toFixed(2)));
-  const cores = etapas.map(e => emAndamento[e] ? "#f59e0b" : "#2563eb");
+  const duracoes = etapas.map(e => acumulado[e]);
 
+  const cores = etapas.map(e =>
+    statusEtapa[e] ? "#f59e0b" : "#2563eb"
+  );
 
   if (chartDuracao) chartDuracao.destroy();
 
   const canvasDuracao = document.getElementById("graficoDuracao");
 
-const alturaPorEtapa = 25;
-const alturaMinima = 180;
-const alturaMaxima = 800;
+  const alturaPorEtapa = 25;
+  const alturaMinima = 180;
+  const alturaMaxima = 800;
 
-const alturaCalculada =
-  etapas.length * alturaPorEtapa;
+  const alturaCalculada =
+    etapas.length * alturaPorEtapa;
 
-canvasDuracao.height = Math.min(
-  Math.max(alturaCalculada, alturaMinima),
-  alturaMaxima
-);
+  canvasDuracao.height = Math.min(
+    Math.max(alturaCalculada, alturaMinima),
+    alturaMaxima
+  );
   
-  chartDuracao = new Chart(document.getElementById("graficoDuracao"), {
+  chartDuracao = new Chart(canvasDuracao, {
     type: "bar",
     data: {
       labels: etapas,
@@ -597,62 +618,59 @@ canvasDuracao.height = Math.min(
         label: "Tempo Total por Etapa de Fabricação do Equipamento (h)",
         data: duracoes,
         backgroundColor: ctx =>
-  emAndamento[ctx.label] ? "#f59e0b" : "#2563eb"
+          statusEtapa[ctx.label] ? "#f59e0b" : "#2563eb"
       }]
     },
-options: {
-  indexAxis: "y",
+    options: {
+      indexAxis: "y",
 
-  plugins: {
-    title: {
-      display: true,
-      text: "Duração Total por Etapa / Total Time by Step",
-      font: { weight: "bold", size: 16 }
-    },
+      plugins: {
+        title: {
+          display: true,
+          text: "Duração Total por Etapa / Total Time by Step",
+          font: { weight: "bold", size: 16 }
+        },
 
-    // 🔹 LEGENDA
-    legend: {
-      display: false,
-      labels: {
-        font: { weight: "bold" }
-      }
-    },
+        legend: {
+          display: false,
+          labels: {
+            font: { weight: "bold" }
+          }
+        },
 
-    datalabels: {
-      color: "#000", 
-      formatter: v => `${v} h`,
-      font: { weight: "bold" }
-    }
-  },
-
-  scales: {
-    // 🔹 EIXO X (HORAS)
-    x: {
-      title: {
-        display: true,
-        text: "Horas acumuladas / Cumulated Hours",
-        font: { weight: "bold" }
+        datalabels: {
+          color: "#000",
+          formatter: v => `${v} h`,
+          font: { weight: "bold" }
+        }
       },
-      ticks: {
-        font: { weight: "bold" }
-      }
-    },
 
-    // 🔹 EIXO Y (ETAPAS)
-    y: {
-      categoryPercentage: 0.6, // ↓ espaço da categoria
-      barPercentage: 0.85,      // ↓ ocupação da barra
-      title: {
-        display: true,
-        text: "Etapas / Steps",
-        font: { weight: "bold" }
-      },
-      ticks: {
-        font: { weight: "bold" }
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Horas acumuladas / Cumulated Hours",
+            font: { weight: "bold" }
+          },
+          ticks: {
+            font: { weight: "bold" }
+          }
+        },
+
+        y: {
+          categoryPercentage: 0.6,
+          barPercentage: 0.85,
+          title: {
+            display: true,
+            text: "Etapas / Steps",
+            font: { weight: "bold" }
+          },
+          ticks: {
+            font: { weight: "bold" }
+          }
+        }
       }
     }
-  }
-}
   });
 }
 
@@ -691,28 +709,3 @@ function mostrarTempoTotal(horas) {
       ? `⏱ Tempo total da peça: ${dias}d ${resto}h`
       : `⏱ Tempo total da peça: ${horas.toFixed(1)}h`;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
