@@ -4,18 +4,24 @@
 
 function iniciarLoading() {
   const bar = document.getElementById("loadingBar");
-  bar.classList.remove("hidden");
+  if (!bar) return;
+
+  bar.style.opacity = "1";
   bar.style.width = "30%";
 
-  setTimeout(() => bar.style.width = "60%", 200);
+  setTimeout(() => {
+    bar.style.width = "65%";
+  }, 200);
 }
 
 function finalizarLoading() {
   const bar = document.getElementById("loadingBar");
+  if (!bar) return;
+
   bar.style.width = "100%";
 
   setTimeout(() => {
-    bar.classList.add("hidden");
+    bar.style.opacity = "0";
     bar.style.width = "0%";
   }, 300);
 }
@@ -776,6 +782,7 @@ window.addEventListener("load", () => {
     finalizarLoading();
   }
 });
+
 
 
 
