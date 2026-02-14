@@ -112,12 +112,15 @@ let componentesCache = {};
 // BUSCAR OP
 // =======================
 
-async function buscar() {
-  const campoCodigo = document.getElementById("codigo");
-if (!campoCodigo) return;
+async function buscar(codigoManual = null) {
 
-const codigo = campoCodigo.value;
-if (!codigo) return;
+  let codigo = codigoManual;
+
+  if (!codigo) {
+    const params = new URLSearchParams(window.location.search);
+    codigo = params.get("codigo");
+  }
+
   if (!codigo) return;
 
   iniciarLoading();
@@ -125,16 +128,15 @@ if (!codigo) return;
   try {
 
     const qr = document.getElementById("qrcode");
-if (qr) {
-  qr.src =
-    "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
-    window.location.origin +
-    "/?codigo=" + encodeURIComponent(codigo);
-}
+    if (qr) {
+      qr.src =
+        "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
+        window.location.origin +
+        "/?codigo=" + encodeURIComponent(codigo);
+    }
 
     const res = await fetch(
-      "https://teste-fabrica.onrender.com/op/" +
-      encodeURIComponent(codigo)
+      "/op/" + encodeURIComponent(codigo)
     );
 
     if (!res.ok) throw new Error("Erro ao buscar dados");
@@ -152,7 +154,7 @@ if (qr) {
     console.error("Erro:", erro);
     alert("Erro ao carregar dados da OP.");
   } finally {
-    finalizarLoading(); // 🔥 garante execução
+    finalizarLoading();
   }
 }
 
@@ -762,19 +764,5 @@ datasets: [{
 // =======================
 
 window.addEventListener("load", () => {
-  iniciarLoading();
-
-  const codigo = new URLSearchParams(window.location.search).get("codigo");
-
-  if (codigo) {
-    const campoCodigo = document.getElementById("codigo");
-if (campoCodigo) {
-  campoCodigo.value = codigo;
-}
-    buscar();
-  } else {
-    finalizarLoading();
-  }
+  buscar(); // busca automaticamente via URL
 });
-
-
