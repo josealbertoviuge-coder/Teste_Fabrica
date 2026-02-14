@@ -120,22 +120,48 @@ function montarAbasTags() {
   const container = document.getElementById("abasTags");
   container.innerHTML = "";
 
-  Object.keys(dadosOP).forEach((tag, index) => {
+  const conteudo = document.getElementById("conteudo-componente");
+
+  let primeiraAba = true;
+
+  Object.keys(dadosOP).forEach(tag => {
+
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.className = "aba-tag";
     btn.innerText = tag;
 
-    if (index === 0) {
+    // 👉 primeira TAG abre automaticamente
+    if (primeiraAba) {
       btn.classList.add("ativa");
       carregarTag(tag);
+      primeiraAba = false;
     }
 
     btn.onclick = () => {
-      document.querySelectorAll(".aba-tag")
+
+      // evita recarregar se clicar na ativa
+      if (btn.classList.contains("ativa")) return;
+
+      // remove azul das outras
+      document
+        .querySelectorAll(".aba-tag")
         .forEach(b => b.classList.remove("ativa"));
 
       btn.classList.add("ativa");
-      carregarTag(tag);
+
+      // 🔥 animação suave
+      conteudo.classList.add("is-hiding");
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+
+          carregarTag(tag);
+
+          conteudo.classList.remove("is-hiding");
+
+        }, 180); // menor que o transition CSS
+      });
     };
 
     container.appendChild(btn);
@@ -701,6 +727,7 @@ window.addEventListener("load", () => {
     buscar();
   }
 });
+
 
 
 
