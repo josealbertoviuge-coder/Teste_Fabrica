@@ -32,7 +32,7 @@ async function carregarRelatorio() {
   // ==============================
   document.getElementById("infoOP").innerHTML =
     `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
-     <strong>TAG:</strong> ${tagAtiva}`;
+     <strong>TAG:</strong> ${tagSelecionada || tagAtiva};
      <strong>Cliente:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
 
   document.getElementById("dataRelatorio").innerHTML =
@@ -45,9 +45,16 @@ async function carregarRelatorio() {
   // ==============================
   // LISTA DE ETAPAS
   // ==============================
-  const todasEtapas = Object.values(dados.tags).flatMap(tag =>
+  let todasEtapas = [];
+
+if (tagSelecionada && dados.tags[tagSelecionada]) {
+  todasEtapas = Object.values(dados.tags[tagSelecionada]).flat();
+} else {
+  // fallback: todas
+  todasEtapas = Object.values(dados.tags).flatMap(tag =>
     Object.values(tag).flat()
   );
+}
 
   // ==============================
   // STATUS FINAL
