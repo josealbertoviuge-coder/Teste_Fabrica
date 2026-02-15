@@ -371,27 +371,24 @@ maxDate.setHours(Math.ceil(maxDate.getHours()/12)*12);
       scales:{
 x:{
   type:"time",
-  bounds:"ticks",
   min:minDate,
   max:maxDate,
-  offset:false,
 
   time:{
     unit:"hour",
-    stepSize:12
-  },
-
-  afterBuildTicks: scale => {
-    scale.ticks = ticks12h.map(t => ({ value: t }));
+    stepSize:12,
+    round:"hour"
   },
 
   ticks:{
+    source:"auto",
     autoSkip:false,
     maxRotation:0,
     font:{ weight:"bold" },
 
-    callback:(value,index,ticks)=>{
-      const d = new Date(ticks[index].value);
+    // MOSTRA TEXTO SOMENTE ÀS 12:00
+    callback:(value)=>{
+      const d = new Date(value);
       if(d.getHours() === 12) return "12:00";
       return "";
     }
@@ -402,14 +399,14 @@ x:{
 
     color: ctx=>{
       const h = new Date(ctx.tick.value).getHours();
+
       if(h === 12) return "rgba(0,0,0,0.22)";
       return "rgba(0,0,0,0.08)";
     },
 
     lineWidth: ctx=>{
       const h = new Date(ctx.tick.value).getHours();
-      if(h === 12) return 1.2;
-      return 0.6;
+      return h === 12 ? 1.2 : 0.6;
     }
   },
 
