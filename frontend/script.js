@@ -435,6 +435,11 @@ Object.values(etapas).forEach(lista => {
 
   lista.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
 
+  // ⭐ status REAL da etapa = último registro
+  const ultimo = lista[lista.length - 1];
+  const etapaConcluida =
+    (ultimo.status || "").toLowerCase().includes("concl");
+
   lista.forEach(item => {
 
     if (!item.inicio) return;
@@ -447,10 +452,11 @@ Object.values(etapas).forEach(lista => {
     data.push({
       x: [inicio, fim],
       y: item.nome_etapa,
-      backgroundColor:
-        (item.status || "").toLowerCase().includes("andamento")
-          ? "#f59e0b"
-          : "#2563eb"
+
+      // ⭐ TODOS blocos seguem status da etapa
+      backgroundColor: etapaConcluida
+        ? "#2563eb"   // concluída
+        : "#f59e0b"   // andamento
     });
 
   });
@@ -766,5 +772,6 @@ datasets: [{
 window.addEventListener("load", () => {
   buscar(); // busca automaticamente via URL
 });
+
 
 
