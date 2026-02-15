@@ -313,3 +313,8 @@ th,td{
 .btn-relatorio:hover{
   background:#1d4ed8;
 }
+
+.area-relatorio{
+  text-align:center;
+  margin-top:10px;
+}
