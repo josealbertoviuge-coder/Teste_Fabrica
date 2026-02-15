@@ -291,7 +291,7 @@ function montarGantt(etapas, canvasId){
       indexAxis:"y",
       plugins:{
         legend:{display:false},
-        title:{display:true,text:"Linha do Tempo"}
+        title:{display:true,text:"Linha do Tempo"},
         turnoNoturno: true,
       },
       scales:{
