@@ -305,7 +305,7 @@ maxTime = maxDate.getTime();
       indexAxis:"y",
       plugins:{
         legend:{display:false},
-        title:{display:true,text:"Linha do Tempo"},
+        title:{display:true,text:"Linha do Tempo de Fabricação / Manufacturing Timeline"},
         turnoNoturno: true,
       },
       scales:{
@@ -371,7 +371,7 @@ x: {
 
   title: {
     display: true,
-    text: "Tempo"
+    text: "Tempo / Time"
   }
 },
 
@@ -382,7 +382,7 @@ x: {
             backdropPadding:4
           },
           grid:{ color:"rgba(0,0,0,0.15)" },
-          title:{display:true,text:"Etapas"}
+          title:{display:true,text:"Etapas / Steps"}
         }
       }
     }
@@ -462,15 +462,16 @@ function montarDuracao(etapas, canvasId){
       indexAxis:"y",
       plugins:{
         legend:{display:false},
-        title:{display:true,text:"Duração Total (h)"}
+        title:{display:true,text:"Duração Total por Etapa / Total Time by Step"}
       },
       scales:{
         x:{
           grid:{ color:"rgba(0,0,0,0.15)" },
-          title:{ display:true, text:"Horas" }
+          title:{ display:true, text:"Horas Acumuladas / Cumulated Hours" }
         },
         y:{
-          ticks:{ font:{weight:"bold"} }
+          ticks:{ font:{weight:"bold"} },
+          title:{ display:true, text:"Etapas / Steps" }
         }
       }
     }
