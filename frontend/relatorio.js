@@ -366,7 +366,7 @@ function montarGantt(etapas, canvasId){
       scales:{
 x:{
   type:"time",
-  bounds:"ticks",
+  bounds:"data",
   min:minDate,
   max:maxDate,
 
