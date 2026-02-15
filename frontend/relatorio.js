@@ -8,19 +8,23 @@ const turnoNoturnoPlugin = {
   beforeDatasetsDraw(chart) {
 
     const { ctx, chartArea, scales } = chart;
-    const xScale = scales.x;
+    const xScale = scales?.x;
     if (!xScale) return;
 
     const inicio = xScale.min;
     const fim = xScale.max;
 
+    if (!inicio || !fim) return;
+
     let cursor = new Date(inicio);
     cursor.setHours(19,0,0,0);
 
-    if (cursor > inicio) cursor.setDate(cursor.getDate() - 1);
+    // não volta para o dia anterior
+    if (cursor < inicio) {
+      cursor.setDate(cursor.getDate() + 1);
+    }
 
     ctx.save();
-
     ctx.fillStyle = "rgba(37, 99, 235, 0.08)";
 
     while (cursor < fim) {
@@ -30,15 +34,22 @@ const turnoNoturnoPlugin = {
       fimTurno.setDate(fimTurno.getDate() + 1);
       fimTurno.setHours(7,0,0,0);
 
-      const xInicio = xScale.getPixelForValue(inicioTurno);
-      const xFim = xScale.getPixelForValue(fimTurno);
+      // limita ao início do gráfico
+      const drawStart = Math.max(inicioTurno, new Date(inicio));
+      const drawEnd   = Math.min(fimTurno, new Date(fim));
 
-      ctx.fillRect(
-        xInicio,
-        chartArea.top,
-        xFim - xInicio,
-        chartArea.bottom - chartArea.top
-      );
+      if (drawStart < drawEnd) {
+
+        const xInicio = xScale.getPixelForValue(drawStart);
+        const xFim = xScale.getPixelForValue(drawEnd);
+
+        ctx.fillRect(
+          xInicio,
+          chartArea.top,
+          xFim - xInicio,
+          chartArea.bottom - chartArea.top
+        );
+      }
 
       cursor.setDate(cursor.getDate() + 1);
     }
