@@ -1,7 +1,26 @@
 function abrirRelatorio(){
+
   const params = new URLSearchParams(window.location.search);
   const codigo = params.get("codigo");
-  window.open("/relatorio.html?codigo=" + codigo, "_blank");
+  const tagSelecionada = params.get("tag");
+
+  if (!codigo) {
+    alert("Nenhuma OP carregada.");
+    return;
+  }
+
+  if (!tagAtual) {
+    alert("Nenhuma TAG selecionada.");
+    return;
+  }
+
+  const url =
+    "/relatorio.html?codigo=" +
+    encodeURIComponent(codigo) +
+    "&tag=" +
+    encodeURIComponent(tagAtual);
+
+  window.open(url, "_blank");
 }
 
 // =======================
@@ -845,4 +864,5 @@ setInterval(() => {
   if (chartGantt) chartGantt.update();
   if (chartDuracao) chartDuracao.update();
 }, 300);
+
 
