@@ -327,7 +327,7 @@ x: {
 
 time: {
   unit: "hour",
-  stepSize: 6   // mantém grade detalhada
+  stepSize: 12   // mantém grade detalhada
 },
 
 ticks: {
@@ -335,54 +335,61 @@ ticks: {
   maxRotation: 0,
   font: { weight: "bold" },
 
-callback: (value, index, ticks) => {
+  callback: (value, index, ticks) => {
 
-  const d = new Date(ticks[index].value);
-  if (isNaN(d)) return "";
+    const d = new Date(ticks[index].value);
+    if (isNaN(d)) return "";
 
-  const hora = d.getHours();
+    const h = d.getHours();
 
-  // ⭐ meia-noite → mostra DATA + 00:00
-  if (hora === 0) {
-    return (
-      d.toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "short"
-      }) +
-      "\n00:00"
-    );
+    // ⭐ meia-noite → DATA + 00:00
+    if (h === 0) {
+      return (
+        d.toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "short"
+        }) + "\n00:00"
+      );
+    }
+
+    // ⭐ meio-dia
+    if (h === 12) {
+      return "12:00";
+    }
+
+    return "";
   }
-
-  // ⭐ mostra horas a cada 6h
-  if (hora % 6 === 0) {
-    return d.toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  }
-
-  return "";
-}
 },
 
-  grid: {
-    drawTicks: true,
+grid: {
 
-    color: ctx => {
-      const d = new Date(ctx.tick.value);
+  drawTicks: true,
 
-      if (d.getHours() === 0) return "rgba(0,0,0,0.35)";
-      if (d.getHours() % 6 === 0) return "rgba(0,0,0,0.18)";
-      return "rgba(0,0,0,0.08)";
-    },
+  color: ctx => {
+    const d = new Date(ctx.tick.value);
 
-    lineWidth: ctx => {
-      const d = new Date(ctx.tick.value);
-      if (d.getHours() === 0) return 2;
-      if (d.getHours() % 6 === 0) return 1;
-      return 0.6;
-    }
+    // ⭐ virada do dia
+    if (d.getHours() === 0) return "rgba(0,0,0,0.45)";
+
+    // ⭐ meio-dia
+    if (d.getHours() === 12) return "rgba(0,0,0,0.18)";
+
+    return "rgba(0,0,0,0.08)";
   },
+
+  lineWidth: ctx => {
+    const d = new Date(ctx.tick.value);
+
+    // ⭐ linha mais grossa à meia-noite
+    if (d.getHours() === 0) return 2.2;
+
+    // ⭐ linha média ao meio-dia
+    if (d.getHours() === 12) return 1;
+
+    return 0.6;
+  }
+},
+
 
   title: {
     display: true,
