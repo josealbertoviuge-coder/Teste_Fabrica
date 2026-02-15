@@ -26,10 +26,22 @@ async function carregarRelatorio(){
   );
 
   // status final
-  const ultima = todasEtapas[todasEtapas.length - 1];
-  document.getElementById("statusFinal").innerText =
-    ultima.status;
+let statusFinal = "Concluído";
 
+if (todasEtapas.some(e => e.status === "Em Andamento")) {
+  statusFinal = "Em Andamento";
+}
+
+const statusEl = document.getElementById("statusFinal");
+statusEl.innerText = statusFinal;
+
+// aplica cor automaticamente
+statusEl.className =
+  statusFinal === "Em Andamento"
+    ? "status-andamento"
+    : "status-concluido";
+
+document.getElementById("statusFinal").innerText = statusFinal;
   // tabela
   let html = `
     <tr>
