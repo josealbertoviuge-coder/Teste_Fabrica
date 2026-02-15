@@ -253,10 +253,10 @@ th,td{
 
 .legenda-status{
   display:flex;
-  justify-content:center;
-  gap:22px;
-  margin-top:10px;
-  margin-bottom:10px;
+  flex-direction:column;   /* ⭐ empilha */
+  align-items:center;
+  gap:4px;
+  margin-top:8px;
   font-size:14px;
   font-weight:500;
   color:#374151;
@@ -281,4 +281,11 @@ th,td{
 
 .laranja{
   background:#f59e0b;
+}
+
+/* área central do topo */
+.header-area{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
