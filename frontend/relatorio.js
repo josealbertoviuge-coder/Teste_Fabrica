@@ -182,6 +182,37 @@ function montarSecoesComponentes(componentes) {
 
 //
 // ==============================
+// TABELA
+// ==============================
+//
+
+function montarTabela(etapas, id){
+
+  let html = `
+    <tr>
+      <th>Etapa</th>
+      <th>Status</th>
+      <th>Início</th>
+      <th>Fim</th>
+    </tr>
+  `;
+
+  etapas.forEach(e => {
+    html += `
+      <tr>
+        <td>${e.nome_etapa}</td>
+        <td>${e.status}</td>
+        <td>${e.inicio || "-"}</td>
+        <td>${e.fim || "-"}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById(id).innerHTML = html;
+}
+
+//
+// ==============================
 // GANTT PROFISSIONAL
 // ==============================
 //
