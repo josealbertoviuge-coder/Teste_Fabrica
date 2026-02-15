@@ -335,29 +335,34 @@ ticks: {
   maxRotation: 0,
   font: { weight: "bold" },
 
-  callback: (value, index, ticks) => {
+callback: (value, index, ticks) => {
 
-    const d = new Date(ticks[index].value);
-    if (isNaN(d)) return "";
+  const d = new Date(ticks[index].value);
+  if (isNaN(d)) return "";
 
-    // meia-noite → mostra data
-    if (d.getHours() === 0) {
-      return d.toLocaleDateString("pt-BR", {
+  const hora = d.getHours();
+
+  // ⭐ meia-noite → mostra DATA + 00:00
+  if (hora === 0) {
+    return (
+      d.toLocaleDateString("pt-BR", {
         day: "2-digit",
         month: "short"
-      });
-    }
-
-    // mostra rótulos a cada 6 horas
-    if (d.getHours() % 6 === 0) {
-      return d.toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-    }
-
-    return "";
+      }) +
+      "\n00:00"
+    );
   }
+
+  // ⭐ mostra horas a cada 6h
+  if (hora % 6 === 0) {
+    return d.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  return "";
+}
 },
 
   grid: {
