@@ -11,24 +11,20 @@
 <div class="report">
 
   <!-- CABEÇALHO -->
-  <header class="report-header">
+<header class="report-header">
 
-    <img src="/logo_Carbogas.png" class="logo">
+  <img src="/logo_Carbogas.png" class="logo">
 
-    <div class="header-info">
-      <h1>MTS v1.0 - Manufacturing Tracking System</h1>
-      <h1>Relatório de Fabricação</h1>
-const tags = Object.keys(dados.tags).join(", ");
+  <div class="header-info">
+    <h1>MTS v1.0 - Manufacturing Tracking System</h1>
+    <h1>Relatório de Fabricação</h1>
 
-document.getElementById("infoOP").innerHTML =
-  `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
-   <strong>TAG:</strong> ${tags}`;
-   <strong>Cliente:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
-      <div id="dataRelatorio"></div>
-    </div>
+    <div id="infoOP"></div>
+    <div id="dataRelatorio"></div>
+  </div>
 
-    <img id="qrRelatorio" class="qr">
-  </header>
+  <img id="qrRelatorio" class="qr">
+</header>
 
   <!-- STATUS FINAL -->
   <section class="status-box">
@@ -74,5 +70,6 @@ document.getElementById("infoOP").innerHTML =
 
 </body>
 </html>
+
 
 
