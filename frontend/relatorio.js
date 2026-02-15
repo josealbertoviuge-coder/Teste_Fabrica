@@ -42,7 +42,7 @@ async function carregarRelatorio() {
      <strong>TAG:</strong> ${tagSelecionada || tagAtiva}`;
 
   document.getElementById("dataRelatorio").innerHTML =
-    `<strong>Emitido em:</strong> ${dataBR()}`;
+    `<strong>Data de Emissão / Issued Date:</strong> ${dataBR()}`;
 
   document.getElementById("qrRelatorio").src =
     "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
