@@ -151,18 +151,28 @@ function montarGanttRelatorio(etapas) {
 
 lista.forEach(item => {
 
-  const inicio = item.inicio ? new Date(item.inicio) : null;
-  if (!inicio || isNaN(inicio)) return;
+  if (!item.inicio) return;
+
+  const inicio = new Date(item.inicio);
+
+  if (isNaN(inicio.getTime())) return;
 
   const fim = item.fim ? new Date(item.fim) : agora;
 
+  if (isNaN(fim.getTime())) return;
+
   dados.push({
-    x: [inicio, fim],
+    x: [inicio.getTime(), fim.getTime()], // ⭐ força timestamp numérico
     y: item.nome_etapa,
     backgroundColor: concluida ? "#2563eb" : "#f59e0b"
   });
 
 });
+    // ⭐ calcula limites seguros da escala
+const todosValores = dados.flatMap(d => d.x);
+
+const minTime = Math.min(...todosValores);
+const maxTime = Math.max(...todosValores);
   });
 
   // ⭐ altura fixa proporcional (igual sistema)
@@ -192,11 +202,21 @@ lista.forEach(item => {
         }
       },
       scales: {
-        x: {
-          type: "time",
-          time: { unit: "hour" },
-          title: { display: true, text: "Tempo" }
-        },
+x: {
+  type: "time",
+  min: minTime,
+  max: maxTime,
+  time: {
+    unit: "hour",
+    displayFormats: {
+      hour: "dd/MM HH:mm"
+    }
+  },
+  ticks: {
+    source: "auto"
+  },
+  title: { display: true, text: "Tempo" }
+},
         y: {
           ticks: { font: { weight: "bold" } },
           title: { display: true, text: "Etapas" }
