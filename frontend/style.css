@@ -59,16 +59,14 @@ body{
 
 /* =======================
    MENU LATERAL (TAGs)
-   largura dinâmica baseada no conteúdo
+   largura EXATA baseada na maior TAG
 ======================= */
 .sidebar{
-  width: fit-content;      /* adapta à maior TAG */
-  min-width: 140px;        /* ⭐ reduz largura mínima */
-  max-width: 260px;        /* ⭐ limita largura máxima */
-  flex-shrink: 0;          /* impede encolhimento no flex */
+  width: max-content;   /* ⭐ largura igual ao maior conteúdo */
+  flex-shrink: 0;       /* impede encolhimento no flex */
   background:white;
   border-right:1px solid #e5e7eb;
-  padding:8px 6px;         /* ⭐ reduz espaço lateral */
+  padding:6px 6px;      /* compacto */
 }
 
 .sidebar-title{
@@ -82,7 +80,7 @@ body{
 .tag-list{
   display:flex;
   flex-direction:column;
-  gap:5px;                 /* ⭐ menor espaçamento */
+  gap:5px;
   max-height:65vh;
   overflow-y:auto;
 
@@ -95,15 +93,15 @@ body{
 ======================= */
 .aba-tag{
   display:inline-block;   /* ⭐ impede expansão horizontal */
-  padding:5px 8px;        /* ⭐ compacto */
+  padding:5px 8px;
   border-radius:6px;
   border:1px solid #d1d5db;
   background:#f9fafb;
   cursor:pointer;
   color:#6b7280;
-  white-space:nowrap;
+  white-space:nowrap;     /* define largura pela maior TAG */
   text-align:left;
-  font-size:13px;         /* ⭐ ligeiramente menor */
+  font-size:13px;
 }
 
 .aba-tag:hover{
@@ -233,13 +231,12 @@ th,td{
 /* =======================
    MOBILE
    mantém sidebar lateral
-   limita largura para caber na tela
+   evita quebrar tela com TAG longa
 ======================= */
 @media (max-width:900px){
 
   .sidebar{
-    max-width:60vw; /* ⭐ mais compacto no celular */
-    min-width:120px;
+    max-width:75vw; /* proteção para telas pequenas */
   }
 
   .tag-list{
