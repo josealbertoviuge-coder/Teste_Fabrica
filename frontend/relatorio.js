@@ -16,14 +16,14 @@ async function carregarRelatorio() {
   const res = await fetch("https://teste-fabrica.onrender.com/op/" + codigo);
   const dados = await res.json();
 
+  // ==============================
+  // TAG ATIVA
+  // ==============================
   let tagAtiva = "—";
 
   for (const [nomeTag, etapas] of Object.entries(dados.tags)) {
     const lista = Object.values(etapas).flat();
-
-    if (lista.some(e =>
-      (e.status || "").toLowerCase().includes("andamento")
-    )) {
+    if (lista.some(e => (e.status || "").toLowerCase().includes("andamento"))) {
       tagAtiva = nomeTag;
       break;
     }
@@ -31,6 +31,7 @@ async function carregarRelatorio() {
 
   const tagUsada = tagSelecionada || tagAtiva;
 
+  // cabeçalho
   document.getElementById("infoOP").innerHTML =
     `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
      <strong>Cliente / Client:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
@@ -43,13 +44,11 @@ async function carregarRelatorio() {
     "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
     window.location.origin + "/?codigo=" + codigo;
 
-  let todasEtapas = [];
+  // componentes da TAG
+  const componentes = dados.tags[tagUsada];
 
-  if (tagUsada && dados.tags[tagUsada]) {
-    todasEtapas = Object.values(dados.tags[tagUsada]).flat();
-  }
-
-  // status
+  // status final geral
+  const todasEtapas = Object.values(componentes).flat();
   let statusFinal = "Concluído / Concluded";
 
   if (todasEtapas.some(e =>
@@ -65,7 +64,50 @@ async function carregarRelatorio() {
       ? "status-andamento"
       : "status-concluido";
 
-  // tabela
+  montarSecoesComponentes(componentes);
+}
+
+window.addEventListener("load", carregarRelatorio);
+
+
+
+// ===================================================
+// CRIAR SEÇÕES POR COMPONENTE
+// ===================================================
+
+function montarSecoesComponentes(componentes) {
+
+  const container = document.getElementById("componentesRelatorio");
+  container.innerHTML = "";
+
+  Object.entries(componentes).forEach(([nome, etapas], i) => {
+
+    const bloco = document.createElement("section");
+    bloco.className = "componente-bloco";
+
+    bloco.innerHTML = `
+      <h2>${nome}</h2>
+      <table id="tabela_${i}"></table>
+      <canvas id="gantt_${i}"></canvas>
+      <canvas id="duracao_${i}"></canvas>
+    `;
+
+    container.appendChild(bloco);
+
+    montarTabela(etapas, `tabela_${i}`);
+    montarGantt(etapas, `gantt_${i}`);
+    montarDuracao(etapas, `duracao_${i}`);
+  });
+}
+
+
+
+// ===================================================
+// TABELA
+// ===================================================
+
+function montarTabela(etapas, id){
+
   let html = `
     <tr>
       <th>Etapa</th>
@@ -75,28 +117,19 @@ async function carregarRelatorio() {
     </tr>
   `;
 
-  todasEtapas.forEach(e => {
+  etapas.forEach(e=>{
     html += `
       <tr>
         <td>${e.nome_etapa}</td>
-        <td class="${(e.status || '').toLowerCase().includes('andamento')
-          ? 'status-andamento'
-          : 'status-concluido'}">
-          ${e.status}
-        </td>
+        <td>${e.status}</td>
         <td>${e.inicio || "-"}</td>
         <td>${e.fim || "-"}</td>
       </tr>
     `;
   });
 
-  document.getElementById("tabelaRelatorio").innerHTML = html;
-
-  montarGanttRelatorio(todasEtapas);
-  montarDuracaoRelatorio(todasEtapas);
+  document.getElementById(id).innerHTML = html;
 }
-
-window.addEventListener("load", carregarRelatorio);
 
 
 
@@ -104,101 +137,86 @@ window.addEventListener("load", carregarRelatorio);
 // GANTT
 // ===================================================
 
-let chartGantt;
+function montarGantt(etapas, canvasId){
 
-function montarGanttRelatorio(etapas) {
-
-  if (chartGantt) chartGantt.destroy();
-
-  const canvas = document.getElementById("graficoRelatorio");
-
+  const canvas = document.getElementById(canvasId);
   const agora = new Date();
+
   const agrupadas = {};
   const labels = [];
   const dados = [];
 
-  etapas.forEach(e => {
-    if (!e.inicio) return;
+  etapas.forEach(e=>{
+    if(!e.inicio) return;
 
-    if (!agrupadas[e.nome_etapa]) {
+    if(!agrupadas[e.nome_etapa]){
       agrupadas[e.nome_etapa] = [];
       labels.push(e.nome_etapa);
     }
-
     agrupadas[e.nome_etapa].push(e);
   });
 
-  Object.values(agrupadas).forEach(lista => {
+  Object.values(agrupadas).forEach(lista=>{
 
-    lista.sort((a,b)=> new Date(a.inicio) - new Date(b.inicio));
+    lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
 
-    const ultimo = lista[lista.length - 1];
-    const concluida =
-      (ultimo.status || "").toLowerCase().includes("concl");
+    const ultimo = lista[lista.length-1];
+    const concluida = (ultimo.status || "").toLowerCase().includes("concl");
 
-    lista.forEach(item => {
+    lista.forEach(item=>{
+      if(!item.inicio) return;
 
-      if (!item.inicio) return;
-
-      const inicio = new Date(item.inicio);
-      if (isNaN(inicio.getTime())) return;
+      const ini = new Date(item.inicio);
+      if(isNaN(ini)) return;
 
       const fim = item.fim ? new Date(item.fim) : agora;
-      if (isNaN(fim.getTime())) return;
 
       dados.push({
-        x: [inicio.getTime(), fim.getTime()],
-        y: item.nome_etapa,
+        x:[ini.getTime(), fim.getTime()],
+        y:item.nome_etapa,
         backgroundColor: concluida ? "#2563eb" : "#f59e0b"
       });
-
     });
+
   });
 
-  // 🚨 se não houver dados válidos, não desenha
-  if (!dados.length) return;
+  if(!dados.length) return;
 
-  // ⭐ limites seguros da escala
-  const todosValores = dados.flatMap(d => d.x);
-  const minTime = Math.min(...todosValores);
-  const maxTime = Math.max(...todosValores);
+  const valores = dados.flatMap(d=>d.x);
+  const minTime = Math.min(...valores);
+  const maxTime = Math.max(...valores);
 
-  const alturaPorEtapa = 55;
-  canvas.height = Math.max(labels.length * alturaPorEtapa, 280);
+  canvas.height = Math.max(labels.length*55,280);
 
-  chartGantt = new Chart(canvas, {
-    type: "bar",
-    data: {
+  new Chart(canvas,{
+    type:"bar",
+    data:{
       labels,
-      datasets: [{
-        data: dados,
-        borderRadius: 5,
-        barThickness: 16,
-        backgroundColor: ctx => ctx.raw.backgroundColor
+      datasets:[{
+        data:dados,
+        backgroundColor:ctx=>ctx.raw.backgroundColor,
+        borderRadius:5,
+        barThickness:16
       }]
     },
-    options: {
-      responsive: false,
-      maintainAspectRatio: false,
-      indexAxis: "y",
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: "Linha do Tempo de Fabricação"
-        }
+    options:{
+      responsive:false,
+      maintainAspectRatio:false,
+      indexAxis:"y",
+      plugins:{
+        legend:{display:false},
+        title:{display:true,text:"Linha do Tempo"}
       },
-      scales: {
-        x: {
-          type: "time",
-          min: minTime,
-          max: maxTime,
-          time: { unit: "hour" },
-          title: { display: true, text: "Tempo" }
+      scales:{
+        x:{
+          type:"time",
+          min:minTime,
+          max:maxTime,
+          time:{unit:"hour"},
+          title:{display:true,text:"Tempo"}
         },
-        y: {
-          ticks: { font: { weight: "bold" } },
-          title: { display: true, text: "Etapas" }
+        y:{
+          title:{display:true,text:"Etapas"}
         }
       }
     }
@@ -211,84 +229,65 @@ function montarGanttRelatorio(etapas) {
 // DURAÇÃO
 // ===================================================
 
-let chartDuracao;
+function montarDuracao(etapas, canvasId){
 
-function montarDuracaoRelatorio(etapas) {
+  const canvas = document.getElementById(canvasId);
+  const total={};
+  const status={};
 
-  if (chartDuracao) chartDuracao.destroy();
+  const agrupadas={};
 
-  const acumulado = {};
-  const statusEtapa = {};
-  const agrupadas = {};
-
-  etapas.forEach(e => {
-    if (!e.inicio) return;
-
-    if (!agrupadas[e.nome_etapa]) {
-      agrupadas[e.nome_etapa] = [];
-    }
-
+  etapas.forEach(e=>{
+    if(!e.inicio) return;
+    if(!agrupadas[e.nome_etapa]) agrupadas[e.nome_etapa]=[];
     agrupadas[e.nome_etapa].push(e);
   });
 
-  Object.entries(agrupadas).forEach(([etapa, lista]) => {
+  Object.entries(agrupadas).forEach(([etapa,lista])=>{
 
     lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
+    const ultimo = lista[lista.length-1];
 
-    const ultimo = lista[lista.length - 1];
+    let soma=0;
 
-    let total = 0;
-
-    lista.forEach(d => {
-      if (!d.inicio) return;
-
-      const ini = new Date(d.inicio);
-      if (isNaN(ini)) return;
-
-      const fim = d.fim ? new Date(d.fim) : ini;
-      total += (fim - ini) / 36e5;
+    lista.forEach(d=>{
+      if(!d.inicio) return;
+      const ini=new Date(d.inicio);
+      if(isNaN(ini)) return;
+      const fim=d.fim?new Date(d.fim):ini;
+      soma+=(fim-ini)/36e5;
     });
 
-    acumulado[etapa] = Number(total.toFixed(2));
-
-    statusEtapa[etapa] =
-      !(ultimo.status || "").toLowerCase().includes("concl");
+    total[etapa]=Number(soma.toFixed(2));
+    status[etapa]=!(ultimo.status||"").toLowerCase().includes("concl");
   });
 
-  const labels = Object.keys(acumulado);
-  const valores = Object.values(acumulado);
+  const labels=Object.keys(total);
+  const valores=Object.values(total);
 
-  if (!labels.length) return;
+  if(!labels.length) return;
 
-  const canvas = document.getElementById("graficoDuracaoRelatorio");
-  canvas.height = Math.max(labels.length * 30, 180);
+  canvas.height=Math.max(labels.length*30,180);
 
-  chartDuracao = new Chart(canvas, {
-    type: "bar",
-    data: {
+  new Chart(canvas,{
+    type:"bar",
+    data:{
       labels,
-      datasets: [{
-        data: valores,
-        backgroundColor: ctx => {
-          const etapa = labels[ctx.dataIndex];
-          return statusEtapa[etapa] ? "#f59e0b" : "#2563eb";
+      datasets:[{
+        data:valores,
+        backgroundColor:ctx=>{
+          const etapa=labels[ctx.dataIndex];
+          return status[etapa] ? "#f59e0b" : "#2563eb";
         }
       }]
     },
-    options: {
-      responsive: false,
-      maintainAspectRatio: false,
-      indexAxis: "y",
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: "Duração Total por Etapa (h)"
-        }
-      },
-      scales: {
-        x: { title: { display: true, text: "Horas" } },
-        y: { title: { display: true, text: "Etapas" } }
+    options:{
+      responsive:false,
+      maintainAspectRatio:false,
+      indexAxis:"y",
+      plugins:{
+        legend:{display:false},
+        title:{display:true,text:"Duração Total (h)"}
       }
     }
   });
