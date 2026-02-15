@@ -98,3 +98,7 @@ canvas{
   color: #2e7d32;
   font-weight: bold;
 }
+
+#logo {
+  width: 180px;
+}
