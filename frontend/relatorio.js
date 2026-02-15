@@ -6,7 +6,7 @@ async function carregarRelatorio() {
 
   const params = new URLSearchParams(window.location.search);
   const codigo = params.get("codigo");
-  const tagSelecionada = params.get("tag"); // ⭐ importante
+  const tagSelecionada = params.get("tag");
 
   if (!codigo) {
     alert("Código da OP não informado.");
@@ -17,21 +17,22 @@ async function carregarRelatorio() {
   const dados = await res.json();
 
   // ==============================
-  // DESCOBRIR TAG ATIVA (fallback)
+  // TAG ATIVA (fallback)
   // ==============================
   let tagAtiva = "—";
 
   for (const [nomeTag, etapas] of Object.entries(dados.tags)) {
-
     const lista = Object.values(etapas).flat();
 
     if (lista.some(e =>
-      (e.status || "").toLowerCase().trim() === "em andamento"
+      (e.status || "").toLowerCase().includes("andamento")
     )) {
       tagAtiva = nomeTag;
       break;
     }
   }
+
+  const tagUsada = tagSelecionada || tagAtiva;
 
   // ==============================
   // CABEÇALHO
@@ -39,7 +40,7 @@ async function carregarRelatorio() {
   document.getElementById("infoOP").innerHTML =
     `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
      <strong>Cliente / Client:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
-     <strong>TAG:</strong> ${tagSelecionada || tagAtiva}`;
+     <strong>TAG:</strong> ${tagUsada}`;
 
   document.getElementById("dataRelatorio").innerHTML =
     `<strong>Data de Emissão / Issued Date:</strong> ${dataBR()}`;
@@ -49,16 +50,12 @@ async function carregarRelatorio() {
     window.location.origin + "/?codigo=" + codigo;
 
   // ==============================
-  // LISTA DE ETAPAS
+  // ETAPAS DA TAG
   // ==============================
   let todasEtapas = [];
 
-  if (tagSelecionada && dados.tags[tagSelecionada]) {
-    todasEtapas = Object.values(dados.tags[tagSelecionada]).flat();
-  } else {
-    todasEtapas = Object.values(dados.tags).flatMap(tag =>
-      Object.values(tag).flat()
-    );
+  if (tagUsada && dados.tags[tagUsada]) {
+    todasEtapas = Object.values(dados.tags[tagUsada]).flat();
   }
 
   // ==============================
@@ -67,16 +64,15 @@ async function carregarRelatorio() {
   let statusFinal = "Concluído / Concluded";
 
   if (todasEtapas.some(e =>
-    (e.status || "").toLowerCase().trim() === "em andamento"
+    (e.status || "").toLowerCase().includes("andamento")
   )) {
     statusFinal = "Em Andamento / In Progress";
   }
 
   const statusEl = document.getElementById("statusFinal");
   statusEl.innerText = statusFinal;
-
   statusEl.className =
-    statusFinal === "Em Andamento / In Progress"
+    statusFinal.includes("Andamento")
       ? "status-andamento"
       : "status-concluido";
 
@@ -96,8 +92,8 @@ async function carregarRelatorio() {
     html += `
       <tr>
         <td>${e.nome_etapa}</td>
-        <td class="${(e.status || '').toLowerCase().includes('andamento') 
-          ? 'status-andamento' 
+        <td class="${(e.status || '').toLowerCase().includes('andamento')
+          ? 'status-andamento'
           : 'status-concluido'}">
           ${e.status}
         </td>
@@ -109,11 +105,17 @@ async function carregarRelatorio() {
 
   document.getElementById("tabelaRelatorio").innerHTML = html;
 
-montarGanttRelatorio(todasEtapas);
-montarDuracaoRelatorio(todasEtapas);
+  // gráficos
+  montarGanttRelatorio(todasEtapas);
+  montarDuracaoRelatorio(todasEtapas);
 }
 
 carregarRelatorio();
+
+
+// ===================================================
+// GANTT IGUAL AO SISTEMA (SEM SCROLL / SEM LOOP)
+// ===================================================
 
 let chartGantt;
 
@@ -124,11 +126,9 @@ function montarGanttRelatorio(etapas) {
   const canvas = document.getElementById("graficoRelatorio");
 
   const agora = new Date();
-
-  const dados = [];
-  const labels = [];
-
   const agrupadas = {};
+  const labels = [];
+  const dados = [];
 
   etapas.forEach(e => {
     if (!e.inicio) return;
@@ -143,10 +143,9 @@ function montarGanttRelatorio(etapas) {
 
   Object.values(agrupadas).forEach(lista => {
 
-    lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
+    lista.sort((a,b)=> new Date(a.inicio) - new Date(b.inicio));
 
     const ultimo = lista[lista.length - 1];
-
     const concluida =
       (ultimo.status || "").toLowerCase().includes("concl");
 
@@ -164,6 +163,10 @@ function montarGanttRelatorio(etapas) {
     });
   });
 
+  // ⭐ altura fixa proporcional (igual sistema)
+  const alturaPorEtapa = 55;
+  canvas.height = Math.max(labels.length * alturaPorEtapa, 280);
+
   chartGantt = new Chart(canvas, {
     type: "bar",
     data: {
@@ -176,37 +179,35 @@ function montarGanttRelatorio(etapas) {
       }]
     },
     options: {
-      responsive: true,
+      responsive: false,
       maintainAspectRatio: false,
       indexAxis: "y",
-
       plugins: {
-        piscarAndamento: true,
         legend: { display: false },
         title: {
           display: true,
           text: "Linha do Tempo de Fabricação"
         }
       },
-
       scales: {
         x: {
           type: "time",
-          title: {
-            display: true,
-            text: "Tempo"
-          }
+          time: { unit: "hour" },
+          title: { display: true, text: "Tempo" }
         },
         y: {
-          title: {
-            display: true,
-            text: "Etapas"
-          }
+          ticks: { font: { weight: "bold" } },
+          title: { display: true, text: "Etapas" }
         }
       }
     }
   });
 }
+
+
+// ===================================================
+// GRÁFICO DE DURAÇÃO (IGUAL AO SISTEMA)
+// ===================================================
 
 let chartDuracao;
 
@@ -254,6 +255,8 @@ function montarDuracaoRelatorio(etapas) {
 
   const canvas = document.getElementById("graficoDuracaoRelatorio");
 
+  canvas.height = Math.max(labels.length * 30, 180);
+
   chartDuracao = new Chart(canvas, {
     type: "bar",
     data: {
@@ -267,9 +270,10 @@ function montarDuracaoRelatorio(etapas) {
       }]
     },
     options: {
+      responsive: false,
+      maintainAspectRatio: false,
       indexAxis: "y",
       plugins: {
-        piscarAndamento: true,
         legend: { display: false },
         title: {
           display: true,
@@ -283,4 +287,3 @@ function montarDuracaoRelatorio(etapas) {
     }
   });
 }
-
