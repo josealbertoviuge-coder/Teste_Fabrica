@@ -743,7 +743,19 @@ const cores = etapas.map(e =>
 datasets: [{
   label: "Tempo Total da Etapa / Total Step Time (h)",
   data: duracoes,
-  backgroundColor: cores
+backgroundColor: ctx => {
+
+  const etapa = ctx.label;
+  const valor = ctx.raw;
+
+  const andamento = statusEtapa[etapa];
+
+  if (!andamento) return "#2563eb";
+
+  const pulse = 0.65 + Math.sin(Date.now() / 300) * 0.25;
+
+  return `rgba(245,158,11,${pulse})`;
+}
 }]
     },
     options: {
@@ -812,6 +824,7 @@ setInterval(() => {
   if (chartGantt) chartGantt.update();
   if (chartDuracao) chartDuracao.update();
 }, 300);
+
 
 
 
