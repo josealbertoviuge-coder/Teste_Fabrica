@@ -18,7 +18,12 @@
     <div class="header-info">
       <h1>MTS v1.0 - Manufacturing Tracking System</h1>
       <h1>Relatório de Fabricação</h1>
-      <div id="infoOP"></div>
+const tags = Object.keys(dados.tags).join(", ");
+
+document.getElementById("infoOP").innerHTML =
+  `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
+   <strong>TAG:</strong> ${tags}`;
+   <strong>Cliente:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
       <div id="dataRelatorio"></div>
     </div>
 
@@ -69,4 +74,5 @@
 
 </body>
 </html>
+
 
