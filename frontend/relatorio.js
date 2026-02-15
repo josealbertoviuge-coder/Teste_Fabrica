@@ -231,15 +231,24 @@ function montarGantt(etapas, canvasId){
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
 
+  // ⭐ destrói gráfico anterior (evita herança)
   if (ganttCharts[canvasId]) {
     ganttCharts[canvasId].destroy();
+    delete ganttCharts[canvasId];
   }
+
+  // ⭐ limpa canvas completamente
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const agora = new Date();
   const agrupadas = {};
   const labels = [];
   const dados = [];
 
+  // ===============================
+  // AGRUPAR ETAPAS
+  // ===============================
   etapas.forEach(e=>{
     if(!e.inicio) return;
 
@@ -251,6 +260,9 @@ function montarGantt(etapas, canvasId){
     agrupadas[e.nome_etapa].push(e);
   });
 
+  // ===============================
+  // GERAR BLOCOS DO GANTT
+  // ===============================
   Object.values(agrupadas).forEach(lista=>{
 
     lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
@@ -277,28 +289,53 @@ function montarGantt(etapas, canvasId){
 
   if(!dados.length) return;
 
+  // ===============================
+  // CALCULAR RANGE DO COMPONENTE
+  // ===============================
   const valores = dados.flatMap(d=>d.x);
-let minTime = Math.min(...valores);
-let maxTime = Math.max(...valores);
 
-// ⭐ cria datas reais
-const minDate = new Date(minTime);
-const maxDate = new Date(maxTime);
+  let minTime = Math.min(...valores);
+  let maxTime = Math.max(...valores);
 
-// ⭐ força início do primeiro dia (00:00)
-minDate.setHours(0, 0, 0, 0);
+  const minDate = new Date(minTime);
+  const maxDate = new Date(maxTime);
 
-// ⭐ força final do último dia (23:59)
-maxDate.setHours(23, 59, 59, 999);
+  // ⭐ início do dia
+  minDate.setHours(0,0,0,0);
 
-// ⭐ volta para timestamp
-minTime = minDate.getTime();
-maxTime = maxDate.getTime();
+  // ⭐ fim do dia
+  maxDate.setHours(23,59,59,999);
 
-  const ticksTempo = gerarTicksTempo(minTime, maxTime);
+  minTime = minDate.getTime();
+  maxTime = maxDate.getTime();
 
+  // ===============================
+  // GERAR TICKS FIXOS 12H
+  // ===============================
+  function gerarTicks12h(inicio, fim){
+    const ticks = [];
+    const cursor = new Date(inicio);
+
+    cursor.setHours(0,0,0,0);
+
+    while(cursor <= fim){
+      ticks.push(new Date(cursor));
+      cursor.setHours(cursor.getHours()+12);
+    }
+
+    return ticks;
+  }
+
+  const ticks12h = gerarTicks12h(minTime, maxTime);
+
+  // ===============================
+  // ALTURA PROPORCIONAL
+  // ===============================
   canvas.height = Math.max(labels.length * 55, 280);
 
+  // ===============================
+  // CRIAR GRÁFICO
+  // ===============================
   ganttCharts[canvasId] = new Chart(canvas,{
     type:"bar",
     data:{
@@ -314,88 +351,79 @@ maxTime = maxDate.getTime();
       responsive:false,
       maintainAspectRatio:false,
       indexAxis:"y",
+
       plugins:{
-        legend:{display:false},
-        title:{display:true,text:"Linha do Tempo de Fabricação / Manufacturing Timeline"},
         turnoNoturno: true,
+        legend:{display:false},
+        title:{
+          display:true,
+          text:"Linha do Tempo de Fabricação / Manufacturing Timeline"
+        }
       },
+
       scales:{
-x: {
-  type: "time",
-  min: minTime,
-  max: maxTime,
+        x:{
+          type:"time",
+          min:minTime,
+          max:maxTime,
 
-time: {
-  unit: "hour",
-  stepSize: 12   // mantém grade detalhada
-},
+          afterBuildTicks: scale => {
+            scale.ticks = ticks12h.map(d => ({ value: d }));
+          },
 
-ticks: {
-  autoSkip: false,
-  maxRotation: 0,
-  font: { weight: "bold" },
+          ticks:{
+            autoSkip:false,
+            maxRotation:0,
+            font:{ weight:"bold" },
 
-  callback: (value, index, ticks) => {
+            callback:(value,index,ticks)=>{
+              const d = new Date(ticks[index].value);
+              const h = d.getHours();
 
-    const d = new Date(ticks[index].value);
-    if (isNaN(d)) return "";
+              // ⭐ DATA + 00:00
+              if(h === 0){
+                return (
+                  d.toLocaleDateString("pt-BR", {
+                    day:"2-digit",
+                    month:"short"
+                  }) + "\n00:00"
+                );
+              }
 
-    const h = d.getHours();
+              // ⭐ 12:00
+              if(h === 12){
+                return "12:00";
+              }
 
-    // ⭐ meia-noite → DATA + 00:00
-    if (h === 0) {
-      return (
-        d.toLocaleDateString("pt-BR", {
-          day: "2-digit",
-          month: "short"
-        }) + "\n00:00"
-      );
-    }
+              return "";
+            }
+          },
 
-    // ⭐ meio-dia
-    if (h === 12) {
-      return "12:00";
-    }
+          grid:{
+            drawTicks:true,
 
-    return "";
-  }
-},
+            color: ctx=>{
+              const d = new Date(ctx.tick.value);
 
-grid: {
+              if(d.getHours() === 0) return "rgba(0,0,0,0.45)";
+              if(d.getHours() === 12) return "rgba(0,0,0,0.18)";
+              return "rgba(0,0,0,0.08)";
+            },
 
-  drawTicks: true,
+            lineWidth: ctx=>{
+              const d = new Date(ctx.tick.value);
 
-  color: ctx => {
-    const d = new Date(ctx.tick.value);
+              if(d.getHours() === 0) return 2.2;  // ⭐ dia
+              if(d.getHours() === 12) return 1;   // ⭐ meio-dia
+              return 0.6;
+            }
+          },
 
-    // ⭐ virada do dia
-    if (d.getHours() === 0) return "rgba(0,0,0,0.45)";
-
-    // ⭐ meio-dia
-    if (d.getHours() === 12) return "rgba(0,0,0,0.18)";
-
-    return "rgba(0,0,0,0.08)";
-  },
-
-  lineWidth: ctx => {
-    const d = new Date(ctx.tick.value);
-
-    // ⭐ linha mais grossa à meia-noite
-    if (d.getHours() === 0) return 2.2;
-
-    // ⭐ linha média ao meio-dia
-    if (d.getHours() === 12) return 1;
-
-    return 0.6;
-  }
-},
-
-
-  title: {
-    display: true,
-    text: "Tempo / Time"
-  }
-},
+          title:{
+            display:true,
+            text:"Tempo / Time"
+          }
+        },
 
         y:{
           ticks:{
@@ -404,7 +432,10 @@ grid: {
             backdropPadding:4
           },
           grid:{ color:"rgba(0,0,0,0.15)" },
-          title:{display:true,text:"Etapas / Steps"}
+          title:{
+            display:true,
+            text:"Etapas / Steps"
+          }
         }
       }
     }
