@@ -88,3 +88,13 @@ canvas{
     margin:0;
   }
 }
+
+.status-andamento {
+  color: #b58900;
+  font-weight: bold;
+}
+
+.status-concluido {
+  color: #2e7d32;
+  font-weight: bold;
+}
