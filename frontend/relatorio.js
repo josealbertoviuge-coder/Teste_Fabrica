@@ -19,7 +19,6 @@ const turnoNoturnoPlugin = {
     let cursor = new Date(inicio);
     cursor.setHours(19,0,0,0);
 
-    // não volta para o dia anterior
     if (cursor < inicio) {
       cursor.setDate(cursor.getDate() + 1);
     }
@@ -34,7 +33,6 @@ const turnoNoturnoPlugin = {
       fimTurno.setDate(fimTurno.getDate() + 1);
       fimTurno.setHours(7,0,0,0);
 
-      // limita ao início do gráfico
       const drawStart = Math.max(inicioTurno, new Date(inicio));
       const drawEnd   = Math.min(fimTurno, new Date(fim));
 
@@ -68,7 +66,7 @@ window.addEventListener("load", carregarRelatorio);
 
 //
 // =======================================================
-// GERADOR DE TICKS (12h / dia)
+// GERADOR DE TICKS (12h alinhados)
 // =======================================================
 //
 
@@ -77,11 +75,14 @@ function gerarTicks12h(inicio, fim) {
   const ticks = [];
   const cursor = new Date(inicio);
 
-  // força começar exatamente às 00:00
-  cursor.setHours(0,0,0,0);
+  // zera minutos e segundos
+  cursor.setMinutes(0,0,0);
+
+  // força múltiplos de 12h (00 ou 12)
+  cursor.setHours(Math.floor(cursor.getHours()/12)*12);
 
   while (cursor <= fim) {
-    ticks.push(new Date(cursor.getTime()));
+    ticks.push(cursor.getTime());
     cursor.setHours(cursor.getHours() + 12);
   }
 
@@ -116,7 +117,6 @@ async function carregarRelatorio() {
   const tagUsada = tagSelecionada || tagAtiva;
   const componentes = dados.tags[tagUsada];
 
-  // CABEÇALHO
   document.getElementById("infoOP").innerHTML =
     `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
      <strong>Cliente / Client:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
@@ -129,7 +129,6 @@ async function carregarRelatorio() {
     "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
     window.location.origin + "/?codigo=" + codigo;
 
-  // STATUS FINAL GERAL
   const todasEtapas = Object.values(componentes).flat();
 
   let statusFinal = "Concluído / Concluded";
@@ -149,8 +148,6 @@ async function carregarRelatorio() {
 
   montarSecoesComponentes(componentes);
 }
-
-
 
 //
 // ==============================
@@ -183,44 +180,9 @@ function montarSecoesComponentes(componentes) {
   });
 }
 
-
-
 //
 // ==============================
-// TABELA
-// ==============================
-//
-
-function montarTabela(etapas, id){
-
-  let html = `
-    <tr>
-      <th>Etapa</th>
-      <th>Status</th>
-      <th>Início</th>
-      <th>Fim</th>
-    </tr>
-  `;
-
-  etapas.forEach(e => {
-    html += `
-      <tr>
-        <td>${e.nome_etapa}</td>
-        <td>${e.status}</td>
-        <td>${e.inicio || "-"}</td>
-        <td>${e.fim || "-"}</td>
-      </tr>
-    `;
-  });
-
-  document.getElementById(id).innerHTML = html;
-}
-
-
-
-//
-// ==============================
-// GANTT COM TICKS PROFISSIONAIS
+// GANTT PROFISSIONAL
 // ==============================
 //
 
@@ -231,13 +193,11 @@ function montarGantt(etapas, canvasId){
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
 
-  // ⭐ destrói gráfico anterior (evita herança)
   if (ganttCharts[canvasId]) {
     ganttCharts[canvasId].destroy();
     delete ganttCharts[canvasId];
   }
 
-  // ⭐ limpa canvas
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -246,9 +206,6 @@ function montarGantt(etapas, canvasId){
   const labels = [];
   const dados = [];
 
-  // ===============================
-  // AGRUPAR ETAPAS
-  // ===============================
   etapas.forEach(e=>{
     if(!e.inicio) return;
 
@@ -260,9 +217,6 @@ function montarGantt(etapas, canvasId){
     agrupadas[e.nome_etapa].push(e);
   });
 
-  // ===============================
-  // GERAR BLOCOS
-  // ===============================
   Object.values(agrupadas).forEach(lista=>{
 
     lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
@@ -271,11 +225,7 @@ function montarGantt(etapas, canvasId){
     const concluida = (ultimo.status || "").toLowerCase().includes("concl");
 
     lista.forEach(item=>{
-      if(!item.inicio) return;
-
       const ini = new Date(item.inicio);
-      if(isNaN(ini)) return;
-
       const fim = item.fim ? new Date(item.fim) : agora;
 
       dados.push({
@@ -289,9 +239,6 @@ function montarGantt(etapas, canvasId){
 
   if(!dados.length) return;
 
-  // ===============================
-  // RANGE DO COMPONENTE
-  // ===============================
   const valores = dados.flatMap(d=>d.x);
 
   const minDate = new Date(Math.min(...valores));
@@ -300,28 +247,10 @@ function montarGantt(etapas, canvasId){
   minDate.setHours(0,0,0,0);
   maxDate.setHours(23,59,59,999);
 
-  const minTime = minDate.getTime();
-  const maxTime = maxDate.getTime();
+  const ticks12h = gerarTicks12h(minDate, maxDate);
 
-  // ===============================
-  // TICKS FIXOS 12H (ANTI-PULO)
-  // ===============================
-  const ticks12h = [];
-  const cursor = new Date(minTime);
-
-  while(cursor <= maxDate){
-    ticks12h.push(cursor.getTime());
-    cursor.setHours(cursor.getHours()+12);
-  }
-
-  // ===============================
-  // ALTURA
-  // ===============================
   canvas.height = Math.max(labels.length * 55, 280);
 
-  // ===============================
-  // CRIAR GRÁFICO
-  // ===============================
   ganttCharts[canvasId] = new Chart(canvas,{
     type:"bar",
     data:{
@@ -350,12 +279,14 @@ function montarGantt(etapas, canvasId){
       scales:{
         x:{
           type:"time",
-          bounds:"ticks",   // ⭐ evita corte nas extremidades
-          min:minTime,
-          max:maxTime,
+          bounds:"ticks",
+          min:minDate,
+          max:maxDate,
 
           afterBuildTicks: scale => {
-            scale.ticks = ticks12h.map(t => ({ value: t }));
+            scale.ticks = ticks12h
+              .filter(t => t >= scale.min && t <= scale.max)
+              .map(t => ({ value: t }));
           },
 
           ticks:{
@@ -365,10 +296,8 @@ function montarGantt(etapas, canvasId){
 
             callback:(value,index,ticks)=>{
               const d = new Date(ticks[index].value);
-              const h = d.getHours();
 
-              // ⭐ virada do dia
-              if(h === 0){
+              if(d.getHours() === 0 && d.getMinutes() === 0){
                 return (
                   d.toLocaleDateString("pt-BR", {
                     day:"2-digit",
@@ -377,8 +306,7 @@ function montarGantt(etapas, canvasId){
                 );
               }
 
-              // ⭐ meio-dia
-              if(h === 12) return "12:00";
+              if(d.getHours() === 12) return "12:00";
 
               return "";
             }
@@ -390,7 +318,7 @@ function montarGantt(etapas, canvasId){
             color: ctx=>{
               const d = new Date(ctx.tick.value);
 
-              if(d.getHours() === 0) return "rgba(0,0,0,0.6)";
+              if(d.getHours() === 0 && d.getMinutes() === 0) return "rgba(0,0,0,0.45)";
               if(d.getHours() === 12) return "rgba(0,0,0,0.18)";
               return "rgba(0,0,0,0.08)";
             },
@@ -398,7 +326,7 @@ function montarGantt(etapas, canvasId){
             lineWidth: ctx=>{
               const d = new Date(ctx.tick.value);
 
-              if(d.getHours() === 0) return 2.6;   // ⭐ destaque do dia
+              if(d.getHours() === 0 && d.getMinutes() === 0) return 2.6;
               if(d.getHours() === 12) return 1;
               return 0.6;
             }
@@ -411,104 +339,12 @@ function montarGantt(etapas, canvasId){
         },
 
         y:{
-          ticks:{
-            font:{weight:"bold"},
-            backdropColor:"#fff",
-            backdropPadding:4
-          },
+          ticks:{ font:{weight:"bold"} },
           grid:{ color:"rgba(0,0,0,0.15)" },
           title:{
             display:true,
             text:"Etapas / Steps"
           }
-        }
-      }
-    }
-  });
-}
-
-
-//
-// ==============================
-// DURAÇÃO
-// ==============================
-//
-
-const durCharts = {};
-
-function montarDuracao(etapas, canvasId){
-
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-
-  if (durCharts[canvasId]) {
-    durCharts[canvasId].destroy();
-  }
-
-  const total = {};
-  const status = {};
-  const agrupadas = {};
-
-  etapas.forEach(e=>{
-    if(!e.inicio) return;
-    if(!agrupadas[e.nome_etapa]) agrupadas[e.nome_etapa]=[];
-    agrupadas[e.nome_etapa].push(e);
-  });
-
-  Object.entries(agrupadas).forEach(([etapa,lista])=>{
-
-    lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
-    const ultimo = lista[lista.length-1];
-
-    let soma = 0;
-
-    lista.forEach(d=>{
-      if(!d.inicio) return;
-      const ini = new Date(d.inicio);
-      if(isNaN(ini)) return;
-      const fim = d.fim ? new Date(d.fim) : ini;
-      soma += (fim - ini) / 36e5;
-    });
-
-    total[etapa] = Number(soma.toFixed(2));
-    status[etapa] = !(ultimo.status || "").toLowerCase().includes("concl");
-  });
-
-  const labels = Object.keys(total);
-  const valores = Object.values(total);
-
-  if(!labels.length) return;
-
-  canvas.height = Math.max(labels.length * 30, 180);
-
-  durCharts[canvasId] = new Chart(canvas,{
-    type:"bar",
-    data:{
-      labels,
-      datasets:[{
-        data:valores,
-        backgroundColor:ctx=>{
-          const etapa = labels[ctx.dataIndex];
-          return status[etapa] ? "#f59e0b" : "#2563eb";
-        }
-      }]
-    },
-    options:{
-      responsive:false,
-      maintainAspectRatio:false,
-      indexAxis:"y",
-      plugins:{
-        legend:{display:false},
-        title:{display:true,text:"Duração Total por Etapa / Total Time by Step"}
-      },
-      scales:{
-        x:{
-          grid:{ color:"rgba(0,0,0,0.15)" },
-          title:{ display:true, text:"Horas Acumuladas / Cumulated Hours" }
-        },
-        y:{
-          ticks:{ font:{weight:"bold"} },
-          title:{ display:true, text:"Etapas / Steps" }
         }
       }
     }
