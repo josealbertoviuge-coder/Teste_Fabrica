@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Relatório de Fabricação / Manufacturing Report</title>
@@ -10,43 +10,58 @@
 
 <div class="report">
 
-<header class="report-header">
-  <img src="/logo_Carbogas.png" class="logo">
+  <!-- ================= HEADER ================= -->
+  <header class="report-header">
 
-  <div class="header-info">
-    <h1>MTS v1.0 - Manufacturing Tracking System</h1>
-    <h1>Relatório de Fabricação / Manufacturing Report</h1>
-    <div id="infoOP"></div>
-    <div id="dataRelatorio"></div>
-  </div>
+    <img src="/logo_Carbogas.png" class="logo">
 
-  <img id="qrRelatorio" class="qr">
-</header>
+    <div class="header-info">
+      <h1>MTS v1.0 - Manufacturing Tracking System</h1>
+      <h1>Relatório de Fabricação / Manufacturing Report</h1>
 
-<section class="status-box">
-  <strong>Status Final / Final Status:</strong>
-  <span id="statusFinal"></span>
-</section>
+      <div id="infoOP"></div>
+      <div id="dataRelatorio"></div>
+    </div>
 
-<!-- ⭐ COMPONENTES GERADOS DINAMICAMENTE -->
-<div id="componentesRelatorio"></div>
+    <img id="qrRelatorio" class="qr">
 
-<section class="assinaturas">
-  <div>
-    ___________________________<br>
-    Responsável Produção
-  </div>
+  </header>
 
-  <div>
-    ___________________________<br>
-    Controle da Qualidade
-  </div>
-</section>
+  <!-- ================= STATUS ================= -->
+  <section class="status-box">
+    <strong>Status Final / Final Status:</strong>
+    <span id="statusFinal"></span>
+  </section>
+
+  <!-- ================= COMPONENTES DINÂMICOS ================= -->
+  <!-- Cada componente (Flange A, Tambor etc.) será inserido aqui -->
+  <div id="componentesRelatorio"></div>
+
+  <!-- ================= ASSINATURAS ================= -->
+  <section class="assinaturas">
+    <div>
+      ___________________________<br>
+      Responsável Produção
+    </div>
+
+    <div>
+      ___________________________<br>
+      Controle da Qualidade
+    </div>
+  </section>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+<!-- ================= SCRIPTS ================= -->
+
+<!-- 1️⃣ Chart.js (deve vir primeiro) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
+<!-- 2️⃣ Adapter de datas compatível -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+
+<!-- 3️⃣ Seu script -->
 <script src="/relatorio.js"></script>
 
 </body>
