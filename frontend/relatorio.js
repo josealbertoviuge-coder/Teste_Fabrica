@@ -1,4 +1,45 @@
 // ============================
+// LINHAS DE VIRADA DE DIA (GARANTE TODAS)
+// ============================
+
+const linhasDiaPlugin = {
+  id: "linhasDia",
+
+  afterDraw(chart) {
+
+    const { ctx, chartArea, scales } = chart;
+    const xScale = scales.x;
+    if (!xScale) return;
+
+    const inicio = new Date(xScale.min);
+    const fim = new Date(xScale.max);
+
+    // começa à meia-noite
+    inicio.setHours(0,0,0,0);
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(0,0,0,0.45)";
+    ctx.lineWidth = 2;
+
+    while (inicio <= fim) {
+
+      const x = xScale.getPixelForValue(inicio);
+
+      ctx.beginPath();
+      ctx.moveTo(x, chartArea.top);
+      ctx.lineTo(x, chartArea.bottom);
+      ctx.stroke();
+
+      inicio.setDate(inicio.getDate() + 1);
+    }
+
+    ctx.restore();
+  }
+};
+
+Chart.register(linhasDiaPlugin);
+
+// ============================
 // TURNO NOTURNO (19h → 07h)
 // ============================
 
