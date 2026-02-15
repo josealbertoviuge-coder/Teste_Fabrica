@@ -83,8 +83,47 @@ const turnoNoturnoPlugin = {
   }
 };
 
+// =======================
+// PLUGIN: PISCAR ETAPAS EM ANDAMENTO
+// =======================
+
+const piscarAndamentoPlugin = {
+  id: "piscarAndamento",
+
+  beforeDatasetsDraw(chart, args, pluginOptions) {
+
+    const ctx = chart.ctx;
+    const now = Date.now();
+
+    chart.data.datasets.forEach((dataset, datasetIndex) => {
+
+      const meta = chart.getDatasetMeta(datasetIndex);
+
+      meta.data.forEach((bar, i) => {
+
+        const raw = dataset.data[i];
+
+        // só anima barras em andamento (laranja)
+        if (raw.backgroundColor !== "#f59e0b") return;
+
+        const pulse =
+          0.6 + Math.sin(now / 300) * 0.25;
+
+        ctx.save();
+        ctx.globalAlpha = pulse;
+        bar.draw(ctx);
+        ctx.restore();
+
+      });
+
+    });
+
+  }
+};
+
 Chart.register(ChartDataLabels);
 Chart.register(turnoNoturnoPlugin);
+Chart.register(piscarAndamentoPlugin);
 
 // =======================
 // UTILIDADES
@@ -507,6 +546,7 @@ const ticks6h = gerarTicks6h(minData, maxData);
         turnoNoturno: {
           enabled: true
         },
+        piscarAndamento: true,
         title: {
           display: true,
           text: "Linha do Tempo de Fabricação / Manufacturing Timeline",
@@ -716,6 +756,7 @@ datasets: [{
       indexAxis: "y",
 
       plugins: {
+        piscarAndamento: true,
         title: {
           display: true,
           text: "Duração Total por Etapa / Total Time by Step",
@@ -772,6 +813,7 @@ datasets: [{
 window.addEventListener("load", () => {
   buscar(); // busca automaticamente via URL
 });
+
 
 
 
