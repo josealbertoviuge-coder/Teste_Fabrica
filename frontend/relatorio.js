@@ -2,6 +2,8 @@ function dataBR() {
   return new Date().toLocaleString("pt-BR");
 }
 
+window.addEventListener("load", carregarRelatorio);
+
 async function carregarRelatorio() {
 
   const params = new URLSearchParams(window.location.search);
@@ -17,7 +19,7 @@ async function carregarRelatorio() {
   const dados = await res.json();
 
   // ==============================
-  // TAG ATIVA
+  // TAG ATIVA (fallback)
   // ==============================
   let tagAtiva = "—";
 
@@ -30,8 +32,11 @@ async function carregarRelatorio() {
   }
 
   const tagUsada = tagSelecionada || tagAtiva;
+  const componentes = dados.tags[tagUsada];
 
-  // cabeçalho
+  // ==============================
+  // CABEÇALHO
+  // ==============================
   document.getElementById("infoOP").innerHTML =
     `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
      <strong>Cliente / Client:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
@@ -44,11 +49,11 @@ async function carregarRelatorio() {
     "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
     window.location.origin + "/?codigo=" + codigo;
 
-  // componentes da TAG
-  const componentes = dados.tags[tagUsada];
-
-  // status final geral
+  // ==============================
+  // STATUS FINAL GERAL
+  // ==============================
   const todasEtapas = Object.values(componentes).flat();
+
   let statusFinal = "Concluído / Concluded";
 
   if (todasEtapas.some(e =>
@@ -67,26 +72,26 @@ async function carregarRelatorio() {
   montarSecoesComponentes(componentes);
 }
 
-window.addEventListener("load", carregarRelatorio);
 
 
-
-// ===================================================
+//
+// ==============================
 // CRIAR SEÇÕES POR COMPONENTE
-// ===================================================
+// ==============================
+//
 
 function montarSecoesComponentes(componentes) {
 
   const container = document.getElementById("componentesRelatorio");
   container.innerHTML = "";
 
-  Object.entries(componentes).forEach(([nome, etapas], i) => {
+  Object.entries(componentes).forEach(([nomeComp, etapas], i) => {
 
     const bloco = document.createElement("section");
     bloco.className = "componente-bloco";
 
     bloco.innerHTML = `
-      <h2>${nome}</h2>
+      <h2>${nomeComp}</h2>
       <table id="tabela_${i}"></table>
       <canvas id="gantt_${i}"></canvas>
       <canvas id="duracao_${i}"></canvas>
@@ -102,9 +107,11 @@ function montarSecoesComponentes(componentes) {
 
 
 
-// ===================================================
-// TABELA
-// ===================================================
+//
+// ==============================
+// TABELA POR COMPONENTE
+// ==============================
+//
 
 function montarTabela(etapas, id){
 
@@ -117,7 +124,7 @@ function montarTabela(etapas, id){
     </tr>
   `;
 
-  etapas.forEach(e=>{
+  etapas.forEach(e => {
     html += `
       <tr>
         <td>${e.nome_etapa}</td>
@@ -133,15 +140,24 @@ function montarTabela(etapas, id){
 
 
 
-// ===================================================
-// GANTT
-// ===================================================
+//
+// ==============================
+// GANTT (SUPORTE MÚLTIPLOS)
+// ==============================
+//
+
+const ganttCharts = {};
 
 function montarGantt(etapas, canvasId){
 
   const canvas = document.getElementById(canvasId);
-  const agora = new Date();
+  if (!canvas) return;
 
+  if (ganttCharts[canvasId]) {
+    ganttCharts[canvasId].destroy();
+  }
+
+  const agora = new Date();
   const agrupadas = {};
   const labels = [];
   const dados = [];
@@ -150,9 +166,10 @@ function montarGantt(etapas, canvasId){
     if(!e.inicio) return;
 
     if(!agrupadas[e.nome_etapa]){
-      agrupadas[e.nome_etapa] = [];
+      agrupadas[e.nome_etapa]=[];
       labels.push(e.nome_etapa);
     }
+
     agrupadas[e.nome_etapa].push(e);
   });
 
@@ -186,9 +203,9 @@ function montarGantt(etapas, canvasId){
   const minTime = Math.min(...valores);
   const maxTime = Math.max(...valores);
 
-  canvas.height = Math.max(labels.length*55,280);
+  canvas.height = Math.max(labels.length * 55, 280);
 
-  new Chart(canvas,{
+  ganttCharts[canvasId] = new Chart(canvas,{
     type:"bar",
     data:{
       labels,
@@ -225,17 +242,26 @@ function montarGantt(etapas, canvasId){
 
 
 
-// ===================================================
-// DURAÇÃO
-// ===================================================
+//
+// ==============================
+// DURAÇÃO (SUPORTE MÚLTIPLOS)
+// ==============================
+//
+
+const durCharts = {};
 
 function montarDuracao(etapas, canvasId){
 
   const canvas = document.getElementById(canvasId);
-  const total={};
-  const status={};
+  if (!canvas) return;
 
-  const agrupadas={};
+  if (durCharts[canvasId]) {
+    durCharts[canvasId].destroy();
+  }
+
+  const total = {};
+  const status = {};
+  const agrupadas = {};
 
   etapas.forEach(e=>{
     if(!e.inicio) return;
@@ -248,35 +274,35 @@ function montarDuracao(etapas, canvasId){
     lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
     const ultimo = lista[lista.length-1];
 
-    let soma=0;
+    let soma = 0;
 
     lista.forEach(d=>{
       if(!d.inicio) return;
-      const ini=new Date(d.inicio);
+      const ini = new Date(d.inicio);
       if(isNaN(ini)) return;
-      const fim=d.fim?new Date(d.fim):ini;
-      soma+=(fim-ini)/36e5;
+      const fim = d.fim ? new Date(d.fim) : ini;
+      soma += (fim - ini) / 36e5;
     });
 
-    total[etapa]=Number(soma.toFixed(2));
-    status[etapa]=!(ultimo.status||"").toLowerCase().includes("concl");
+    total[etapa] = Number(soma.toFixed(2));
+    status[etapa] = !(ultimo.status || "").toLowerCase().includes("concl");
   });
 
-  const labels=Object.keys(total);
-  const valores=Object.values(total);
+  const labels = Object.keys(total);
+  const valores = Object.values(total);
 
   if(!labels.length) return;
 
-  canvas.height=Math.max(labels.length*30,180);
+  canvas.height = Math.max(labels.length * 30, 180);
 
-  new Chart(canvas,{
+  durCharts[canvasId] = new Chart(canvas,{
     type:"bar",
     data:{
       labels,
       datasets:[{
         data:valores,
         backgroundColor:ctx=>{
-          const etapa=labels[ctx.dataIndex];
+          const etapa = labels[ctx.dataIndex];
           return status[etapa] ? "#f59e0b" : "#2563eb";
         }
       }]
