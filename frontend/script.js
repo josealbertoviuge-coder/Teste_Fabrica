@@ -90,9 +90,8 @@ const turnoNoturnoPlugin = {
 const piscarAndamentoPlugin = {
   id: "piscarAndamento",
 
-  beforeDatasetsDraw(chart, args, pluginOptions) {
+  beforeDatasetsDraw(chart) {
 
-    const ctx = chart.ctx;
     const now = Date.now();
 
     chart.data.datasets.forEach((dataset, datasetIndex) => {
@@ -103,16 +102,11 @@ const piscarAndamentoPlugin = {
 
         const raw = dataset.data[i];
 
-        // só anima barras em andamento (laranja)
         if (raw.backgroundColor !== "#f59e0b") return;
 
-        const pulse =
-          0.6 + Math.sin(now / 300) * 0.25;
+        const pulse = 0.65 + Math.sin(now / 300) * 0.25;
 
-        ctx.save();
-        ctx.globalAlpha = pulse;
-        bar.draw(ctx);
-        ctx.restore();
+        bar.options.backgroundColor = `rgba(245,158,11,${pulse})`;
 
       });
 
@@ -716,7 +710,7 @@ function montarGraficoDuracao(dados) {
     acumulado[etapa] = Number(totalHoras.toFixed(2));
 
     const statusUltimo = (ultimo.status || "").toLowerCase();
-    statusEtapa[etapa] = statusUltimo.includes("andamento");
+statusEtapa[etapa] = !statusUltimo.includes("concl");
   });
 
   const etapas = Object.keys(acumulado);
@@ -814,6 +808,10 @@ window.addEventListener("load", () => {
   buscar(); // busca automaticamente via URL
 });
 
+setInterval(() => {
+  if (chartGantt) chartGantt.update();
+  if (chartDuracao) chartDuracao.update();
+}, 300);
 
 
 
