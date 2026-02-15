@@ -319,6 +319,8 @@ th,td{
   margin-top:10px;
 }
 
-.btn-relatorio{
-  border:3px solid red !important;
+button{
+  display:block !important;
+  position:relative !important;
+  z-index:9999 !important;
 }
