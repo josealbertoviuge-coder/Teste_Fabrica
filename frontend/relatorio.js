@@ -369,50 +369,57 @@ function montarGantt(etapas, canvasId){
       },
 
       scales:{
-        x:{
-          type:"time",
-          bounds:"ticks",
-          min:minDate,
-          max:maxDate,
+x:{
+  type:"time",
+  bounds:"data",
+  min:minDate,
+  max:maxDate,
 
-          afterBuildTicks: scale => {
-            scale.ticks = ticks12h.map(t => ({ value: t }));
-          },
+  time:{
+    unit:"hour",
+    stepSize:12,
+    displayFormats:{
+      hour:"HH:mm"
+    }
+  },
 
-          ticks:{
-            autoSkip:false,
-            padding:8,
-            maxRotation:0,
-            font:{ weight:"bold" },
-            callback:(value)=>{
-              const d = new Date(value);
-              if(d.getHours() === 12) return "12:00";
-              return "";
-            }
-          },
+  afterBuildTicks: scale => {
+    scale.ticks = ticks12h.map(t => ({ value: t }));
+  },
 
-          grid:{
-            drawTicks:true,
-            color: ctx=>{
-              const h = new Date(ctx.tick.value).getHours();
-              if(h === 12) return "rgba(0,0,0,0.28)";
-              if(h === 0) return "rgba(0,0,0,0.12)";
-              return "rgba(0,0,0,0.08)";
-            },
-            lineWidth: ctx=>{
-              const h = new Date(ctx.tick.value).getHours();
-              if(h === 12) return 1.2;
-              if(h === 0) return 0.8;
-              return 0.6;
-            }
-          },
+  ticks:{
+    autoSkip:false,
+    padding:8,
+    maxRotation:0,
+    font:{ weight:"bold" },
+    callback:(value)=>{
+      const d = new Date(value);
+      if(d.getHours() === 12) return "12:00";
+      return "";
+    }
+  },
 
-          title:{
-            display:true,
-            text:"Tempo / Time"
-          }
-        },
+  grid:{
+    drawTicks:true,
+    color: ctx=>{
+      const h = new Date(ctx.tick.value).getHours();
+      if(h === 12) return "rgba(0,0,0,0.28)";
+      if(h === 0) return "rgba(0,0,0,0.12)";
+      return "rgba(0,0,0,0.08)";
+    },
+    lineWidth: ctx=>{
+      const h = new Date(ctx.tick.value).getHours();
+      if(h === 12) return 1.2;
+      if(h === 0) return 0.8;
+      return 0.6;
+    }
+  },
 
+  title:{
+    display:true,
+    text:"Tempo / Time"
+  }
+},
         y:{
           ticks:{ font:{weight:"bold"} },
           grid:{ color:"rgba(0,0,0,0.15)" },
