@@ -122,17 +122,24 @@ window.addEventListener("load", carregarRelatorio);
 function gerarTicks12h(inicio, fim) {
 
   const ticks = [];
-  const cursor = new Date(inicio);
 
-  // zera minutos e segundos
-  cursor.setMinutes(0,0,0);
+  const dia = new Date(inicio);
+  dia.setHours(0,0,0,0);
 
-  // força múltiplos de 12h (00 ou 12)
-  cursor.setHours(Math.floor(cursor.getHours()/12)*12);
+  const ultimo = new Date(fim);
+  ultimo.setHours(0,0,0,0);
 
-  while (cursor <= fim) {
-    ticks.push(cursor.getTime());
-    cursor.setHours(cursor.getHours() + 12);
+  while (dia <= ultimo) {
+
+    // meia-noite
+    ticks.push(new Date(dia).getTime());
+
+    // meio-dia garantido
+    const meioDia = new Date(dia);
+    meioDia.setHours(12,0,0,0);
+    ticks.push(meioDia.getTime());
+
+    dia.setDate(dia.getDate() + 1);
   }
 
   return ticks;
