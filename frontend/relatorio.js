@@ -371,35 +371,28 @@ maxDate.setHours(Math.ceil(maxDate.getHours()/12)*12);
       scales:{
 x:{
   type:"time",
-  bounds:"data",
+  bounds:"ticks",
   min:minDate,
   max:maxDate,
+  offset:false,
 
-  // 🔒 força linhas a cada 12h
   time:{
     unit:"hour",
     stepSize:12
   },
 
-afterBuildTicks: scale => {
-  scale.ticks = ticks12h
-    .filter(t => t >= scale.min - 43200000 && t <= scale.max + 43200000)
-    .map(t => ({ value: t }));
-},
+  afterBuildTicks: scale => {
+    scale.ticks = ticks12h.map(t => ({ value: t }));
+  },
 
   ticks:{
     autoSkip:false,
     maxRotation:0,
     font:{ weight:"bold" },
 
-    // 🎯 MOSTRA TEXTO SOMENTE ÀS 12:00
     callback:(value,index,ticks)=>{
       const d = new Date(ticks[index].value);
-
-      if(d.getHours() === 12){
-        return "12:00";
-      }
-
+      if(d.getHours() === 12) return "12:00";
       return "";
     }
   },
@@ -408,21 +401,14 @@ afterBuildTicks: scale => {
     drawTicks:true,
 
     color: ctx=>{
-      const d = new Date(ctx.tick.value);
-
-      // linha leve à meia-noite (plugin já destaca)
-      if(d.getHours() === 0) return "rgba(0,0,0,0.10)";
-
-      // linha visível às 12h
-      if(d.getHours() === 12) return "rgba(0,0,0,0.22)";
-
+      const h = new Date(ctx.tick.value).getHours();
+      if(h === 12) return "rgba(0,0,0,0.22)";
       return "rgba(0,0,0,0.08)";
     },
 
     lineWidth: ctx=>{
-      const d = new Date(ctx.tick.value);
-
-      if(d.getHours() === 12) return 1.2;
+      const h = new Date(ctx.tick.value).getHours();
+      if(h === 12) return 1.2;
       return 0.6;
     }
   },
