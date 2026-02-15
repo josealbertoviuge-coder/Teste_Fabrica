@@ -16,9 +16,6 @@ async function carregarRelatorio() {
   const res = await fetch("https://teste-fabrica.onrender.com/op/" + codigo);
   const dados = await res.json();
 
-  // ==============================
-  // TAG ATIVA (fallback)
-  // ==============================
   let tagAtiva = "—";
 
   for (const [nomeTag, etapas] of Object.entries(dados.tags)) {
@@ -34,9 +31,6 @@ async function carregarRelatorio() {
 
   const tagUsada = tagSelecionada || tagAtiva;
 
-  // ==============================
-  // CABEÇALHO
-  // ==============================
   document.getElementById("infoOP").innerHTML =
     `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
      <strong>Cliente / Client:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
@@ -49,18 +43,13 @@ async function carregarRelatorio() {
     "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
     window.location.origin + "/?codigo=" + codigo;
 
-  // ==============================
-  // ETAPAS DA TAG
-  // ==============================
   let todasEtapas = [];
 
   if (tagUsada && dados.tags[tagUsada]) {
     todasEtapas = Object.values(dados.tags[tagUsada]).flat();
   }
 
-  // ==============================
-  // STATUS FINAL
-  // ==============================
+  // status
   let statusFinal = "Concluído / Concluded";
 
   if (todasEtapas.some(e =>
@@ -76,9 +65,7 @@ async function carregarRelatorio() {
       ? "status-andamento"
       : "status-concluido";
 
-  // ==============================
-  // TABELA
-  // ==============================
+  // tabela
   let html = `
     <tr>
       <th>Etapa</th>
@@ -105,16 +92,16 @@ async function carregarRelatorio() {
 
   document.getElementById("tabelaRelatorio").innerHTML = html;
 
-  // gráficos
   montarGanttRelatorio(todasEtapas);
   montarDuracaoRelatorio(todasEtapas);
 }
 
-carregarRelatorio();
+window.addEventListener("load", carregarRelatorio);
+
 
 
 // ===================================================
-// GANTT IGUAL AO SISTEMA (SEM SCROLL / SEM LOOP)
+// GANTT
 // ===================================================
 
 let chartGantt;
@@ -149,33 +136,33 @@ function montarGanttRelatorio(etapas) {
     const concluida =
       (ultimo.status || "").toLowerCase().includes("concl");
 
-lista.forEach(item => {
+    lista.forEach(item => {
 
-  if (!item.inicio) return;
+      if (!item.inicio) return;
 
-  const inicio = new Date(item.inicio);
+      const inicio = new Date(item.inicio);
+      if (isNaN(inicio.getTime())) return;
 
-  if (isNaN(inicio.getTime())) return;
+      const fim = item.fim ? new Date(item.fim) : agora;
+      if (isNaN(fim.getTime())) return;
 
-  const fim = item.fim ? new Date(item.fim) : agora;
+      dados.push({
+        x: [inicio.getTime(), fim.getTime()],
+        y: item.nome_etapa,
+        backgroundColor: concluida ? "#2563eb" : "#f59e0b"
+      });
 
-  if (isNaN(fim.getTime())) return;
-
-  dados.push({
-    x: [inicio.getTime(), fim.getTime()], // ⭐ força timestamp numérico
-    y: item.nome_etapa,
-    backgroundColor: concluida ? "#2563eb" : "#f59e0b"
+    });
   });
 
-});
-    // ⭐ calcula limites seguros da escala
-const todosValores = dados.flatMap(d => d.x);
+  // 🚨 se não houver dados válidos, não desenha
+  if (!dados.length) return;
 
-const minTime = Math.min(...todosValores);
-const maxTime = Math.max(...todosValores);
-  });
+  // ⭐ limites seguros da escala
+  const todosValores = dados.flatMap(d => d.x);
+  const minTime = Math.min(...todosValores);
+  const maxTime = Math.max(...todosValores);
 
-  // ⭐ altura fixa proporcional (igual sistema)
   const alturaPorEtapa = 55;
   canvas.height = Math.max(labels.length * alturaPorEtapa, 280);
 
@@ -202,21 +189,13 @@ const maxTime = Math.max(...todosValores);
         }
       },
       scales: {
-x: {
-  type: "time",
-  min: minTime,
-  max: maxTime,
-  time: {
-    unit: "hour",
-    displayFormats: {
-      hour: "dd/MM HH:mm"
-    }
-  },
-  ticks: {
-    source: "auto"
-  },
-  title: { display: true, text: "Tempo" }
-},
+        x: {
+          type: "time",
+          min: minTime,
+          max: maxTime,
+          time: { unit: "hour" },
+          title: { display: true, text: "Tempo" }
+        },
         y: {
           ticks: { font: { weight: "bold" } },
           title: { display: true, text: "Etapas" }
@@ -227,8 +206,9 @@ x: {
 }
 
 
+
 // ===================================================
-// GRÁFICO DE DURAÇÃO (IGUAL AO SISTEMA)
+// DURAÇÃO
 // ===================================================
 
 let chartDuracao;
@@ -239,7 +219,6 @@ function montarDuracaoRelatorio(etapas) {
 
   const acumulado = {};
   const statusEtapa = {};
-
   const agrupadas = {};
 
   etapas.forEach(e => {
@@ -261,9 +240,11 @@ function montarDuracaoRelatorio(etapas) {
     let total = 0;
 
     lista.forEach(d => {
-if (!d.inicio) return;
-const ini = new Date(d.inicio);
-if (isNaN(ini)) return;
+      if (!d.inicio) return;
+
+      const ini = new Date(d.inicio);
+      if (isNaN(ini)) return;
+
       const fim = d.fim ? new Date(d.fim) : ini;
       total += (fim - ini) / 36e5;
     });
@@ -277,8 +258,9 @@ if (isNaN(ini)) return;
   const labels = Object.keys(acumulado);
   const valores = Object.values(acumulado);
 
-  const canvas = document.getElementById("graficoDuracaoRelatorio");
+  if (!labels.length) return;
 
+  const canvas = document.getElementById("graficoDuracaoRelatorio");
   canvas.height = Math.max(labels.length * 30, 180);
 
   chartDuracao = new Chart(canvas, {
