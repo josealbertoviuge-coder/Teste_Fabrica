@@ -68,7 +68,7 @@ body{
   flex-shrink: 0;          /* impede encolhimento no flex */
   background:white;
   border-right:1px solid #e5e7eb;
-  padding:15px;
+  padding:10px 8px;
 }
 
 .sidebar-title{
@@ -91,7 +91,7 @@ body{
    TAGS (MENU)
 ======================= */
 .aba-tag{
-  padding:8px;
+  padding:6px 10px;
   border-radius:6px;
   border:1px solid #d1d5db;
   background:#f9fafb;
