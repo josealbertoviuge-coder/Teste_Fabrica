@@ -245,3 +245,38 @@ th,td{
   }
 
 }
+
+/* =======================
+   LEGENDA STATUS
+======================= */
+
+.legenda-status{
+  display:flex;
+  gap:18px;
+  justify-content:center;
+  margin-top:8px;
+  font-size:14px;
+  font-weight:500;
+  color:#374151;
+}
+
+.legenda-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.cor{
+  width:14px;
+  height:14px;
+  border-radius:3px;
+  display:inline-block;
+}
+
+.azul{
+  background:#2563eb;
+}
+
+.laranja{
+  background:#f59e0b;
+}
