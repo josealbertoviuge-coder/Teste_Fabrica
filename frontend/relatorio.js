@@ -4,6 +4,28 @@ function dataBR() {
 
 window.addEventListener("load", carregarRelatorio);
 
+//
+// =======================================================
+// GERADOR DE TICKS (3h / 6h / dia)
+// =======================================================
+//
+
+function gerarTicksTempo(inicio, fim) {
+
+  const ticks = [];
+  const cursor = new Date(inicio);
+
+  cursor.setMinutes(0,0,0);
+  cursor.setHours(Math.floor(cursor.getHours()/3)*3);
+
+  while(cursor <= fim){
+    ticks.push(new Date(cursor));
+    cursor.setHours(cursor.getHours()+3);
+  }
+
+  return ticks;
+}
+
 async function carregarRelatorio() {
 
   const params = new URLSearchParams(window.location.search);
@@ -18,9 +40,7 @@ async function carregarRelatorio() {
   const res = await fetch("https://teste-fabrica.onrender.com/op/" + codigo);
   const dados = await res.json();
 
-  // ==============================
-  // TAG ATIVA (fallback)
-  // ==============================
+  // TAG ATIVA
   let tagAtiva = "—";
 
   for (const [nomeTag, etapas] of Object.entries(dados.tags)) {
@@ -34,9 +54,7 @@ async function carregarRelatorio() {
   const tagUsada = tagSelecionada || tagAtiva;
   const componentes = dados.tags[tagUsada];
 
-  // ==============================
   // CABEÇALHO
-  // ==============================
   document.getElementById("infoOP").innerHTML =
     `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
      <strong>Cliente / Client:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
@@ -49,9 +67,7 @@ async function carregarRelatorio() {
     "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
     window.location.origin + "/?codigo=" + codigo;
 
-  // ==============================
   // STATUS FINAL GERAL
-  // ==============================
   const todasEtapas = Object.values(componentes).flat();
 
   let statusFinal = "Concluído / Concluded";
@@ -76,7 +92,7 @@ async function carregarRelatorio() {
 
 //
 // ==============================
-// CRIAR SEÇÕES POR COMPONENTE
+// SEÇÕES POR COMPONENTE
 // ==============================
 //
 
@@ -109,7 +125,7 @@ function montarSecoesComponentes(componentes) {
 
 //
 // ==============================
-// TABELA POR COMPONENTE
+// TABELA
 // ==============================
 //
 
@@ -142,7 +158,7 @@ function montarTabela(etapas, id){
 
 //
 // ==============================
-// GANTT (SUPORTE MÚLTIPLOS)
+// GANTT COM TICKS PROFISSIONAIS
 // ==============================
 //
 
@@ -203,6 +219,8 @@ function montarGantt(etapas, canvasId){
   const minTime = Math.min(...valores);
   const maxTime = Math.max(...valores);
 
+  const ticksTempo = gerarTicksTempo(minTime, maxTime);
+
   canvas.height = Math.max(labels.length * 55, 280);
 
   ganttCharts[canvasId] = new Chart(canvas,{
@@ -229,10 +247,54 @@ function montarGantt(etapas, canvasId){
           type:"time",
           min:minTime,
           max:maxTime,
-          time:{unit:"hour"},
+
+          afterBuildTicks: scale => {
+            scale.ticks = ticksTempo.map(d => ({ value: d }));
+          },
+
+          ticks:{
+            autoSkip:false,
+            font:{weight:"bold"},
+            callback:(value,index,ticks)=>{
+              const d = new Date(ticks[index].value);
+
+              if(d.getHours()===0){
+                return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
+              }
+
+              if(d.getHours()%6===0){
+                return d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+              }
+
+              return "";
+            }
+          },
+
+          grid:{
+            color: ctx=>{
+              const d = new Date(ctx.tick.value);
+              if(d.getHours()===0) return "rgba(0,0,0,0.35)";
+              if(d.getHours()%6===0) return "rgba(0,0,0,0.18)";
+              return "rgba(0,0,0,0.08)";
+            },
+            lineWidth: ctx=>{
+              const d = new Date(ctx.tick.value);
+              if(d.getHours()===0) return 2;
+              if(d.getHours()%6===0) return 1;
+              return 0.6;
+            }
+          },
+
           title:{display:true,text:"Tempo"}
         },
+
         y:{
+          ticks:{
+            font:{weight:"bold"},
+            backdropColor:"#fff",
+            backdropPadding:4
+          },
+          grid:{ color:"rgba(0,0,0,0.15)" },
           title:{display:true,text:"Etapas"}
         }
       }
@@ -244,7 +306,7 @@ function montarGantt(etapas, canvasId){
 
 //
 // ==============================
-// DURAÇÃO (SUPORTE MÚLTIPLOS)
+// DURAÇÃO
 // ==============================
 //
 
@@ -314,6 +376,15 @@ function montarDuracao(etapas, canvasId){
       plugins:{
         legend:{display:false},
         title:{display:true,text:"Duração Total (h)"}
+      },
+      scales:{
+        x:{
+          grid:{ color:"rgba(0,0,0,0.15)" },
+          title:{ display:true, text:"Horas" }
+        },
+        y:{
+          ticks:{ font:{weight:"bold"} }
+        }
       }
     }
   });
