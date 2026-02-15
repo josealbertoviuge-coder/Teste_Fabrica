@@ -149,18 +149,20 @@ function montarGanttRelatorio(etapas) {
     const concluida =
       (ultimo.status || "").toLowerCase().includes("concl");
 
-    lista.forEach(item => {
+lista.forEach(item => {
 
-      const inicio = new Date(item.inicio);
-      const fim = item.fim ? new Date(item.fim) : agora;
+  const inicio = item.inicio ? new Date(item.inicio) : null;
+  if (!inicio || isNaN(inicio)) return;
 
-      dados.push({
-        x: [inicio, fim],
-        y: item.nome_etapa,
-        backgroundColor: concluida ? "#2563eb" : "#f59e0b"
-      });
+  const fim = item.fim ? new Date(item.fim) : agora;
 
-    });
+  dados.push({
+    x: [inicio, fim],
+    y: item.nome_etapa,
+    backgroundColor: concluida ? "#2563eb" : "#f59e0b"
+  });
+
+});
   });
 
   // ⭐ altura fixa proporcional (igual sistema)
@@ -239,7 +241,9 @@ function montarDuracaoRelatorio(etapas) {
     let total = 0;
 
     lista.forEach(d => {
-      const ini = new Date(d.inicio);
+if (!d.inicio) return;
+const ini = new Date(d.inicio);
+if (isNaN(ini)) return;
       const fim = d.fim ? new Date(d.fim) : ini;
       total += (fim - ini) / 36e5;
     });
