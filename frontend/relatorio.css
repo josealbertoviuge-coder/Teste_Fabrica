@@ -102,3 +102,7 @@ canvas{
 #logo {
   width: 180px;
 }
+
+canvas {
+  page-break-inside: avoid;
+}
