@@ -85,20 +85,24 @@ body{
   gap:6px;
   max-height:65vh;
   overflow-y:auto;
+
+  align-items:flex-start; /* ⭐ impede stretch dos botões */
 }
 
 /* =======================
    TAGS (MENU)
+   largura baseada no texto real
 ======================= */
 .aba-tag{
+  display:inline-block;   /* ⭐ impede expansão horizontal */
   padding:6px 10px;
   border-radius:6px;
   border:1px solid #d1d5db;
   background:#f9fafb;
   cursor:pointer;
-  text-align:center;
   color:#6b7280;
-  white-space: nowrap;   /* define largura pela maior TAG */
+  white-space:nowrap;
+  text-align:left;
 }
 
 .aba-tag:hover{
