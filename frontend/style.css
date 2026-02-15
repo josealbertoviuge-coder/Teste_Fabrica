@@ -318,3 +318,7 @@ th,td{
   text-align:center;
   margin-top:10px;
 }
+
+.btn-relatorio{
+  border:3px solid red !important;
+}
