@@ -106,3 +106,11 @@ canvas{
 canvas {
   page-break-inside: avoid;
 }
+
+#graficoRelatorio{
+  height: 350px;
+}
+
+#graficoDuracaoRelatorio{
+  height: 300px;
+}
