@@ -63,12 +63,12 @@ body{
 ======================= */
 .sidebar{
   width: fit-content;      /* adapta à maior TAG */
-  min-width: 180px;        /* nunca fica apertado */
-  max-width: 320px;        /* evita exagero */
+  min-width: 140px;        /* ⭐ reduz largura mínima */
+  max-width: 260px;        /* ⭐ limita largura máxima */
   flex-shrink: 0;          /* impede encolhimento no flex */
   background:white;
   border-right:1px solid #e5e7eb;
-  padding:10px 8px;
+  padding:8px 6px;         /* ⭐ reduz espaço lateral */
 }
 
 .sidebar-title{
@@ -82,7 +82,7 @@ body{
 .tag-list{
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:5px;                 /* ⭐ menor espaçamento */
   max-height:65vh;
   overflow-y:auto;
 
@@ -95,7 +95,7 @@ body{
 ======================= */
 .aba-tag{
   display:inline-block;   /* ⭐ impede expansão horizontal */
-  padding:6px 10px;
+  padding:5px 8px;        /* ⭐ compacto */
   border-radius:6px;
   border:1px solid #d1d5db;
   background:#f9fafb;
@@ -103,6 +103,7 @@ body{
   color:#6b7280;
   white-space:nowrap;
   text-align:left;
+  font-size:13px;         /* ⭐ ligeiramente menor */
 }
 
 .aba-tag:hover{
@@ -237,7 +238,8 @@ th,td{
 @media (max-width:900px){
 
   .sidebar{
-    max-width:70vw; /* evita ocupar tela inteira */
+    max-width:60vw; /* ⭐ mais compacto no celular */
+    min-width:120px;
   }
 
   .tag-list{
