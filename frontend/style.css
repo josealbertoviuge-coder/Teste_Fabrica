@@ -25,9 +25,10 @@ body{
 .topo-wrapper{
   display:flex;
   gap:20px;
-  align-items:center;
+/*  align-items:center; */
   justify-content:center;
   padding:20px;
+  align-items:flex-start;  /* ⭐ evita cortar conteúdo */
 }
 
 /* coluna QR + logo */
@@ -288,6 +289,8 @@ th,td{
   display:flex;
   flex-direction:column;
   align-items:center;
+  gap:8px;          /* ⭐ espaço entre legenda e botão */
+  min-width:220px;  /* ⭐ impede compressão */
 }
 
 /* =======================
@@ -304,6 +307,7 @@ th,td{
   font-size:14px;
   font-weight:600;
   cursor:pointer;
+  flex-shrink:0;
 }
 
 .btn-relatorio:hover{
