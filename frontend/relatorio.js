@@ -14,7 +14,6 @@ const linhasDiaPlugin = {
     const inicio = new Date(xScale.min);
     const fim = new Date(xScale.max);
 
-    // começa à meia-noite
     inicio.setHours(0,0,0,0);
 
     ctx.save();
@@ -23,7 +22,7 @@ const linhasDiaPlugin = {
 
     while (inicio <= fim) {
 
-      const x = xScale.getPixelForValue(inicio);
+      const x = Math.round(xScale.getPixelForValue(inicio)) + 0.5;
 
       ctx.beginPath();
       ctx.moveTo(x, chartArea.top);
