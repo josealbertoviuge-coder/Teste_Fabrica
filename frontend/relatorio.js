@@ -64,19 +64,19 @@ async function carregarRelatorio() {
   // ==============================
   // STATUS FINAL
   // ==============================
-  let statusFinal = "Concluído";
+  let statusFinal = "Concluído / Concluded";
 
   if (todasEtapas.some(e =>
     (e.status || "").toLowerCase().trim() === "em andamento"
   )) {
-    statusFinal = "Em Andamento";
+    statusFinal = "Em Andamento / In Progress";
   }
 
   const statusEl = document.getElementById("statusFinal");
   statusEl.innerText = statusFinal;
 
   statusEl.className =
-    statusFinal === "Em Andamento"
+    statusFinal === "Em Andamento / In Progress"
       ? "status-andamento"
       : "status-concluido";
 
