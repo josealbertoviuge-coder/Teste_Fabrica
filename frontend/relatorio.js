@@ -325,41 +325,40 @@ x: {
   min: minTime,
   max: maxTime,
 
-  time: {
-    unit: "hour",
-    stepSize: 3   // 🔒 força intervalos de 3h
-  },
+time: {
+  unit: "hour",
+  stepSize: 6   // mantém grade detalhada
+},
 
-  ticks: {
-    autoSkip: false,
-    font: { weight: "bold" },
+ticks: {
+  autoSkip: false,
+  maxRotation: 0,
+  font: { weight: "bold" },
 
-    callback: (value, index, ticks) => {
+  callback: (value, index, ticks) => {
 
-      const d = new Date(ticks[index].value);
+    const d = new Date(ticks[index].value);
+    if (isNaN(d)) return "";
 
-      if (isNaN(d)) return "";
-
-      // meia-noite → mostra data
-      if (d.getHours() === 0) {
-        return d.toLocaleDateString("pt-BR", {
-          day: "2-digit",
-          month: "short"
-        });
-      }
-
-      // múltiplos de 6h → mostra hora
-      if (d.getHours() % 6 === 0) {
-        return d.toLocaleTimeString("pt-BR", {
-          hour: "2-digit",
-          minute: "2-digit"
-        });
-      }
-
-      // linhas intermediárias (3h) sem texto
-      return "";
+    // meia-noite → mostra data
+    if (d.getHours() === 0) {
+      return d.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short"
+      });
     }
-  },
+
+    // mostra rótulos a cada 6 horas
+    if (d.getHours() % 6 === 0) {
+      return d.toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    return "";
+  }
+},
 
   grid: {
     drawTicks: true,
