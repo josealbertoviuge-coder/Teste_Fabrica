@@ -1,9 +1,9 @@
 // ============================
-// LINHAS DE VIRADA DE DIA (PRECISAS)
+// LINHAS VERTICAIS 12H (GARANTIDAS)
 // ============================
 
-const linhasDiaPlugin = {
-  id: "linhasDia",
+const linhas12hPlugin = {
+  id: "linhas12h",
 
   afterDatasetsDraw(chart) {
 
@@ -11,41 +11,54 @@ const linhasDiaPlugin = {
     const xScale = scales.x;
     if (!xScale) return;
 
-    let dia = new Date(xScale.min);
+    let cursor = new Date(xScale.min);
     const fim = new Date(xScale.max);
 
-    // começa exatamente na meia-noite visível
-    dia.setHours(0,0,0,0);
-    if (dia < xScale.min) dia.setDate(dia.getDate() + 1);
+    cursor.setMinutes(0,0,0);
+    cursor.setHours(Math.floor(cursor.getHours()/12)*12);
 
     ctx.save();
-    ctx.strokeStyle = "rgba(0,0,0,0.45)";
-    ctx.lineWidth = 2;
 
-    while (dia <= fim) {
+    while (cursor <= fim) {
 
-      const rawX = xScale.getPixelForValue(dia);
+      const rawX = xScale.getPixelForValue(cursor);
 
-      // evita desenhar fora da área
       if (rawX >= chartArea.left && rawX <= chartArea.right) {
 
-        // alinhamento perfeito de pixel
         const x = Math.round(rawX) + 0.5;
+        const hora = cursor.getHours();
 
         ctx.beginPath();
         ctx.moveTo(x, chartArea.top);
         ctx.lineTo(x, chartArea.bottom);
+
+        if (hora === 12) {
+          ctx.strokeStyle = "rgba(0,0,0,0.30)";
+          ctx.lineWidth = 1.3;
+        } else {
+          ctx.strokeStyle = "rgba(0,0,0,0.08)";
+          ctx.lineWidth = 0.6;
+        }
+
         ctx.stroke();
+
+        if (hora === 12) {
+          ctx.fillStyle = "#000";
+          ctx.font = "bold 10px Arial";
+          ctx.textAlign = "center";
+          ctx.fillText("12:00", x, chartArea.bottom + 14);
+        }
       }
 
-      dia.setDate(dia.getDate() + 1);
+      cursor.setHours(cursor.getHours() + 12);
     }
 
     ctx.restore();
   }
 };
 
-Chart.register(linhasDiaPlugin);
+Chart.register(linhas12hPlugin);
+
 
 // ============================
 // TURNO NOTURNO (19h → 07h)
@@ -57,20 +70,16 @@ const turnoNoturnoPlugin = {
   beforeDatasetsDraw(chart) {
 
     const { ctx, chartArea, scales } = chart;
-    const xScale = scales?.x;
+    const xScale = scales.x;
     if (!xScale) return;
 
     const inicio = xScale.min;
     const fim = xScale.max;
 
-    if (!inicio || !fim) return;
-
     let cursor = new Date(inicio);
     cursor.setHours(19,0,0,0);
 
-    if (cursor < inicio) {
-      cursor.setDate(cursor.getDate() + 1);
-    }
+    if (cursor < inicio) cursor.setDate(cursor.getDate() + 1);
 
     ctx.save();
     ctx.fillStyle = "rgba(37, 99, 235, 0.08)";
@@ -82,21 +91,15 @@ const turnoNoturnoPlugin = {
       fimTurno.setDate(fimTurno.getDate() + 1);
       fimTurno.setHours(7,0,0,0);
 
-      const drawStart = Math.max(inicioTurno, new Date(inicio));
-      const drawEnd   = Math.min(fimTurno, new Date(fim));
+      const xInicio = xScale.getPixelForValue(inicioTurno);
+      const xFim = xScale.getPixelForValue(fimTurno);
 
-      if (drawStart < drawEnd) {
-
-        const xInicio = xScale.getPixelForValue(drawStart);
-        const xFim = xScale.getPixelForValue(drawEnd);
-
-        ctx.fillRect(
-          xInicio,
-          chartArea.top,
-          xFim - xInicio,
-          chartArea.bottom - chartArea.top
-        );
-      }
+      ctx.fillRect(
+        xInicio,
+        chartArea.top,
+        xFim - xInicio,
+        chartArea.bottom - chartArea.top
+      );
 
       cursor.setDate(cursor.getDate() + 1);
     }
@@ -107,43 +110,17 @@ const turnoNoturnoPlugin = {
 
 Chart.register(turnoNoturnoPlugin);
 
+
 function dataBR() {
   return new Date().toLocaleString("pt-BR");
 }
 
 window.addEventListener("load", carregarRelatorio);
 
-//
-// =======================================================
-// GERADOR DE TICKS (12h alinhados)
-// =======================================================
-//
 
-function gerarTicks12h(inicio, fim) {
-
-  const ticks = [];
-
-  const dia = new Date(inicio);
-  dia.setHours(0,0,0,0);
-
-  const ultimo = new Date(fim);
-  ultimo.setHours(0,0,0,0);
-
-  while (dia <= ultimo) {
-
-    // meia-noite
-    ticks.push(new Date(dia).getTime());
-
-    // meio-dia garantido
-    const meioDia = new Date(dia);
-    meioDia.setHours(12,0,0,0);
-    ticks.push(meioDia.getTime());
-
-    dia.setDate(dia.getDate() + 1);
-  }
-
-  return ticks;
-}
+// ==============================
+// CARREGAR RELATÓRIO
+// ==============================
 
 async function carregarRelatorio() {
 
@@ -159,7 +136,6 @@ async function carregarRelatorio() {
   const res = await fetch("https://teste-fabrica.onrender.com/op/" + codigo);
   const dados = await res.json();
 
-  // TAG ATIVA
   let tagAtiva = "—";
 
   for (const [nomeTag, etapas] of Object.entries(dados.tags)) {
@@ -179,37 +155,19 @@ async function carregarRelatorio() {
      <strong>TAG:</strong> ${tagUsada}`;
 
   document.getElementById("dataRelatorio").innerHTML =
-    `<strong>Data de Emissão / Issued Date:</strong> ${dataBR()}`;
+    `<strong>Data:</strong> ${dataBR()}`;
 
   document.getElementById("qrRelatorio").src =
     "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
     window.location.origin + "/?codigo=" + codigo;
 
-  const todasEtapas = Object.values(componentes).flat();
-
-  let statusFinal = "Concluído / Concluded";
-
-  if (todasEtapas.some(e =>
-    (e.status || "").toLowerCase().includes("andamento")
-  )) {
-    statusFinal = "Em Andamento / In Progress";
-  }
-
-  const statusEl = document.getElementById("statusFinal");
-  statusEl.innerText = statusFinal;
-  statusEl.className =
-    statusFinal.includes("Andamento")
-      ? "status-andamento"
-      : "status-concluido";
-
   montarSecoesComponentes(componentes);
 }
 
-//
+
 // ==============================
 // SEÇÕES POR COMPONENTE
 // ==============================
-//
 
 function montarSecoesComponentes(componentes) {
 
@@ -236,11 +194,10 @@ function montarSecoesComponentes(componentes) {
   });
 }
 
-//
+
 // ==============================
 // TABELA
 // ==============================
-//
 
 function montarTabela(etapas, id){
 
@@ -267,11 +224,10 @@ function montarTabela(etapas, id){
   document.getElementById(id).innerHTML = html;
 }
 
-//
+
 // ==============================
-// GANTT PROFISSIONAL
+// GANTT
 // ==============================
-//
 
 const ganttCharts = {};
 
@@ -285,61 +241,41 @@ function montarGantt(etapas, canvasId){
     delete ganttCharts[canvasId];
   }
 
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   const agora = new Date();
-  const agrupadas = {};
   const labels = [];
-  const dados = [];
+  const dados = {};
 
   etapas.forEach(e=>{
     if(!e.inicio) return;
 
-    if(!agrupadas[e.nome_etapa]){
-      agrupadas[e.nome_etapa]=[];
+    if(!dados[e.nome_etapa]){
+      dados[e.nome_etapa]=[];
       labels.push(e.nome_etapa);
     }
 
-    agrupadas[e.nome_etapa].push(e);
-  });
+    const ini = new Date(e.inicio);
+    const fim = e.fim ? new Date(e.fim) : agora;
 
-  Object.values(agrupadas).forEach(lista=>{
-
-    lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
-
-    const ultimo = lista[lista.length-1];
-    const concluida = (ultimo.status || "").toLowerCase().includes("concl");
-
-    lista.forEach(item=>{
-      const ini = new Date(item.inicio);
-      const fim = item.fim ? new Date(item.fim) : agora;
-
-      dados.push({
-        x:[ini.getTime(), fim.getTime()],
-        y:item.nome_etapa,
-        backgroundColor: concluida ? "#2563eb" : "#f59e0b"
-      });
+    dados[e.nome_etapa].push({
+      x:[ini,fim],
+      y:e.nome_etapa
     });
-
   });
 
-  if(!dados.length) return;
+  const dataset = Object.values(dados).flat();
 
-  const valores = dados.flatMap(d=>d.x);
+  if(!dataset.length) return;
 
-  const minDate = new Date(Math.min(...valores));
-  const maxDate = new Date(Math.max(...valores));
+  const datas = dataset.flatMap(d=>d.x);
 
-// alinhar início ao múltiplo inferior de 12h
-minDate.setMinutes(0,0,0);
-minDate.setHours(Math.floor(minDate.getHours()/12)*12);
+  const minDate = new Date(Math.min(...datas));
+  const maxDate = new Date(Math.max(...datas));
 
-// alinhar fim ao múltiplo superior de 12h
-maxDate.setMinutes(0,0,0);
-maxDate.setHours(Math.ceil(maxDate.getHours()/12)*12);
+  minDate.setMinutes(0,0,0);
+  minDate.setHours(Math.floor(minDate.getHours()/12)*12);
 
-  const ticks12h = gerarTicks12h(minDate, maxDate);
+  maxDate.setMinutes(0,0,0);
+  maxDate.setHours(Math.ceil(maxDate.getHours()/12)*12);
 
   canvas.height = Math.max(labels.length * 55, 280);
 
@@ -348,91 +284,40 @@ maxDate.setHours(Math.ceil(maxDate.getHours()/12)*12);
     data:{
       labels,
       datasets:[{
-        data:dados,
-        backgroundColor:ctx=>ctx.raw.backgroundColor,
+        data:dataset,
         borderRadius:5,
         barThickness:16
       }]
     },
     options:{
       responsive:false,
-      maintainAspectRatio:false,
       indexAxis:"y",
 
       plugins:{
-        turnoNoturno: true,
-        legend:{display:false},
-        title:{
-          display:true,
-          text:"Linha do Tempo de Fabricação / Manufacturing Timeline"
-        }
+        turnoNoturno:true,
+        legend:{display:false}
       },
 
       scales:{
-x:{
-  type:"time",
-  min:minDate,
-  max:maxDate,
-
-  time:{
-    unit:"hour",
-    stepSize:12,
-    round:"hour"
-  },
-
-  ticks:{
-    source:"auto",
-    autoSkip:false,
-    maxRotation:0,
-    font:{ weight:"bold" },
-
-    // MOSTRA TEXTO SOMENTE ÀS 12:00
-    callback:(value)=>{
-      const d = new Date(value);
-      if(d.getHours() === 12) return "12:00";
-      return "";
-    }
-  },
-
-  grid:{
-    drawTicks:true,
-
-    color: ctx=>{
-      const h = new Date(ctx.tick.value).getHours();
-
-      if(h === 12) return "rgba(0,0,0,0.22)";
-      return "rgba(0,0,0,0.08)";
-    },
-
-    lineWidth: ctx=>{
-      const h = new Date(ctx.tick.value).getHours();
-      return h === 12 ? 1.2 : 0.6;
-    }
-  },
-
-  title:{
-    display:true,
-    text:"Tempo / Time"
-  }
-},
+        x:{
+          type:"time",
+          min:minDate,
+          max:maxDate,
+          ticks:{ display:false },
+          grid:{ display:false }
+        },
         y:{
-          ticks:{ font:{weight:"bold"} },
-          grid:{ color:"rgba(0,0,0,0.15)" },
-          title:{
-            display:true,
-            text:"Etapas / Steps"
-          }
+          ticks:{ font:{weight:"bold"} }
         }
       }
     }
   });
 }
 
-//
+
 // ==============================
-// DURAÇÃO POR ETAPA
+// GRÁFICO DE DURAÇÃO
 // ==============================
-//
 
 const durCharts = {};
 
@@ -441,35 +326,15 @@ function montarDuracao(etapas, canvasId){
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
 
-  if (durCharts[canvasId]) {
-    durCharts[canvasId].destroy();
-  }
-
   const total = {};
-  const status = {};
-  const agrupadas = {};
 
   etapas.forEach(e=>{
-    if(!e.inicio) return;
-    if(!agrupadas[e.nome_etapa]) agrupadas[e.nome_etapa]=[];
-    agrupadas[e.nome_etapa].push(e);
-  });
+    if(!e.inicio || !e.fim) return;
 
-  Object.entries(agrupadas).forEach(([etapa,lista])=>{
+    const ini = new Date(e.inicio);
+    const fim = new Date(e.fim);
 
-    lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
-    const ultimo = lista[lista.length-1];
-
-    let soma = 0;
-
-    lista.forEach(d=>{
-      const ini = new Date(d.inicio);
-      const fim = d.fim ? new Date(d.fim) : ini;
-      soma += (fim - ini) / 36e5;
-    });
-
-    total[etapa] = Number(soma.toFixed(2));
-    status[etapa] = !(ultimo.status || "").toLowerCase().includes("concl");
+    total[e.nome_etapa] = (total[e.nome_etapa] || 0) + (fim-ini)/36e5;
   });
 
   const labels = Object.keys(total);
@@ -483,41 +348,11 @@ function montarDuracao(etapas, canvasId){
     type:"bar",
     data:{
       labels,
-      datasets:[{
-        data:valores,
-        backgroundColor:ctx=>{
-          const etapa = labels[ctx.dataIndex];
-          return status[etapa] ? "#f59e0b" : "#2563eb";
-        }
-      }]
+      datasets:[{ data:valores }]
     },
     options:{
-      responsive:false,
-      maintainAspectRatio:false,
       indexAxis:"y",
-      plugins:{
-        legend:{display:false},
-        title:{
-          display:true,
-          text:"Duração Total por Etapa / Total Time by Step"
-        }
-      },
-      scales:{
-        x:{
-          grid:{ color:"rgba(0,0,0,0.15)" },
-          title:{
-            display:true,
-            text:"Horas Acumuladas / Cumulated Hours"
-          }
-        },
-        y:{
-          ticks:{ font:{weight:"bold"} },
-          title:{
-            display:true,
-            text:"Etapas / Steps"
-          }
-        }
-      }
+      plugins:{ legend:{display:false} }
     }
   });
 }
