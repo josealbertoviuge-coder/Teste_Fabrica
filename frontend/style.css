@@ -58,10 +58,14 @@ body{
 }
 
 /* =======================
-   MENU LATERAL
+   MENU LATERAL (TAGs)
+   largura dinâmica baseada no conteúdo
 ======================= */
 .sidebar{
-  width:220px;
+  width: fit-content;      /* adapta à maior TAG */
+  min-width: 180px;        /* nunca fica apertado */
+  max-width: 320px;        /* evita exagero */
+  flex-shrink: 0;          /* impede encolhimento no flex */
   background:white;
   border-right:1px solid #e5e7eb;
   padding:15px;
@@ -71,6 +75,7 @@ body{
   font-weight:bold;
   margin-bottom:10px;
   color:#374151;
+  text-align:center;
 }
 
 /* lista de TAGs */
@@ -93,6 +98,7 @@ body{
   cursor:pointer;
   text-align:center;
   color:#6b7280;
+  white-space: nowrap;   /* define largura pela maior TAG */
 }
 
 .aba-tag:hover{
@@ -111,6 +117,7 @@ body{
 ======================= */
 .main-content{
   flex:1;
+  min-width:0; /* evita overflow no layout flex */
   padding:20px;
   background:white;
   border-radius:10px;
@@ -169,6 +176,7 @@ th,td{
 
 /* =======================
    GANTT
+   scroll horizontal automático
 ======================= */
 .gantt-wrapper{
   width:100%;
@@ -177,6 +185,22 @@ th,td{
   border:1px solid #e5e7eb;
   border-radius:8px;
   background:white;
+  padding:10px;
+}
+
+/* canvas não deve encolher */
+#grafico{
+  display:block;
+}
+
+/* =======================
+   GRÁFICO DE DURAÇÃO
+======================= */
+#graficoDuracao{
+  background:white;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  padding:8px;
 }
 
 /* =======================
@@ -202,46 +226,18 @@ th,td{
 }
 
 /* =======================
-   RESPONSIVO MOBILE
+   MOBILE
+   mantém sidebar lateral
+   limita largura para caber na tela
 ======================= */
 @media (max-width:900px){
 
   .sidebar{
-    width: 60%;
-    min-width: 220px;
-    max-width: 350px;
-    border-right:none;
-    border-bottom:1px solid #e5e7eb;
+    max-width:70vw; /* evita ocupar tela inteira */
   }
-
 
   .tag-list{
     max-height:35vh;
   }
-}
 
-/* =======================
-   FUNDO CENTRAL DO CONTEÚDO
-======================= */
-
-.gantt-wrapper,
-#graficoDuracao {
-  max-width: 100%;
-  background: white;
-  padding: 10px;
-}
-
-#grafico{
-  display:block;
-}
-
-#graficoDuracao{
-  background:white;
-  border:1px solid #e5e7eb;
-  border-radius:8px;
-  padding:8px;
-}
-
-.sidebar-title{
-  text-align: center;
 }
