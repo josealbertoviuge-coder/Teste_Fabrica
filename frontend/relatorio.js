@@ -381,3 +381,97 @@ function montarGantt(etapas, canvasId){
     }
   });
 }
+
+//
+// ==============================
+// DURAÇÃO POR ETAPA
+// ==============================
+//
+
+const durCharts = {};
+
+function montarDuracao(etapas, canvasId){
+
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  if (durCharts[canvasId]) {
+    durCharts[canvasId].destroy();
+  }
+
+  const total = {};
+  const status = {};
+  const agrupadas = {};
+
+  etapas.forEach(e=>{
+    if(!e.inicio) return;
+    if(!agrupadas[e.nome_etapa]) agrupadas[e.nome_etapa]=[];
+    agrupadas[e.nome_etapa].push(e);
+  });
+
+  Object.entries(agrupadas).forEach(([etapa,lista])=>{
+
+    lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
+    const ultimo = lista[lista.length-1];
+
+    let soma = 0;
+
+    lista.forEach(d=>{
+      const ini = new Date(d.inicio);
+      const fim = d.fim ? new Date(d.fim) : ini;
+      soma += (fim - ini) / 36e5;
+    });
+
+    total[etapa] = Number(soma.toFixed(2));
+    status[etapa] = !(ultimo.status || "").toLowerCase().includes("concl");
+  });
+
+  const labels = Object.keys(total);
+  const valores = Object.values(total);
+
+  if(!labels.length) return;
+
+  canvas.height = Math.max(labels.length * 30, 180);
+
+  durCharts[canvasId] = new Chart(canvas,{
+    type:"bar",
+    data:{
+      labels,
+      datasets:[{
+        data:valores,
+        backgroundColor:ctx=>{
+          const etapa = labels[ctx.dataIndex];
+          return status[etapa] ? "#f59e0b" : "#2563eb";
+        }
+      }]
+    },
+    options:{
+      responsive:false,
+      maintainAspectRatio:false,
+      indexAxis:"y",
+      plugins:{
+        legend:{display:false},
+        title:{
+          display:true,
+          text:"Duração Total por Etapa / Total Time by Step"
+        }
+      },
+      scales:{
+        x:{
+          grid:{ color:"rgba(0,0,0,0.15)" },
+          title:{
+            display:true,
+            text:"Horas Acumuladas / Cumulated Hours"
+          }
+        },
+        y:{
+          ticks:{ font:{weight:"bold"} },
+          title:{
+            display:true,
+            text:"Etapas / Steps"
+          }
+        }
+      }
+    }
+  });
+}
