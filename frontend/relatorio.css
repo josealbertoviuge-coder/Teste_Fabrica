@@ -114,3 +114,18 @@ canvas {
 #graficoDuracaoRelatorio{
   height: 300px;
 }
+
+.componente-bloco{
+  margin-top:40px;
+  page-break-inside: avoid;
+}
+
+.componente-bloco h2{
+  border-bottom:2px solid #000;
+  padding-bottom:4px;
+  margin-bottom:10px;
+}
+
+.componente-bloco canvas{
+  margin-top:10px;
+}
