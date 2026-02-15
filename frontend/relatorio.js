@@ -10,9 +10,22 @@ async function carregarRelatorio(){
   const res = await fetch("https://teste-fabrica.onrender.com/op/" + codigo);
   const dados = await res.json();
 
-  document.getElementById("infoOP").innerHTML =
-    `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp; 
-     <strong>Cliente:</strong> ${dados.cliente_nome}`;
+  // descobrir TAG ativa
+let tagAtiva = "—";
+
+for (const [nomeTag, etapas] of Object.entries(dados.tags)) {
+  const lista = Object.values(etapas).flat();
+
+  if (lista.some(e => e.status === "Em Andamento")) {
+    tagAtiva = nomeTag;
+    break;
+  }
+}
+
+document.getElementById("infoOP").innerHTML =
+  `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp; 
+   <strong>Cliente:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
+   <strong>TAG Ativa:</strong> ${tagAtiva}`;
 
   document.getElementById("dataRelatorio").innerHTML =
     `<strong>Emitido em:</strong> ${dataBR()}`;
