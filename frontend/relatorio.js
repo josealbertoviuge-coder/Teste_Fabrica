@@ -376,11 +376,11 @@ x:{
     stepSize:12
   },
 
-  afterBuildTicks: scale => {
-    scale.ticks = ticks12h
-      .filter(t => t >= scale.min && t <= scale.max)
-      .map(t => ({ value: t }));
-  },
+afterBuildTicks: scale => {
+  scale.ticks = ticks12h
+    .filter(t => t >= scale.min - 43200000 && t <= scale.max + 43200000)
+    .map(t => ({ value: t }));
+},
 
   ticks:{
     autoSkip:false,
