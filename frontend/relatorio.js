@@ -109,93 +109,178 @@ async function carregarRelatorio() {
 
   document.getElementById("tabelaRelatorio").innerHTML = html;
 
-  montarGantt(todasEtapas);
-montarDuracao(todasEtapas);
+montarGanttRelatorio(todasEtapas);
+montarDuracaoRelatorio(todasEtapas);
 }
 
 carregarRelatorio();
 
-function montarGantt(etapas) {
+let chartGantt;
+
+function montarGanttRelatorio(etapas) {
+
+  if (chartGantt) chartGantt.destroy();
 
   const canvas = document.getElementById("graficoRelatorio");
 
-  const dados = etapas
-    .filter(e => e.inicio)
-    .map(e => ({
-      x: [
-        new Date(e.inicio),
-        e.fim ? new Date(e.fim) : new Date()
-      ],
-      y: e.nome_etapa,
-      backgroundColor:
-        (e.status || "").toLowerCase().includes("andamento")
-          ? "#f59e0b"
-          : "#2563eb"
-    }));
+  const agora = new Date();
 
-  new Chart(canvas, {
-    type: "bar",
-    data: {
-      datasets: [{
-        data: dados,
-        borderRadius: 4,
-        barThickness: 14,
-        backgroundColor: ctx => ctx.raw.backgroundColor
-      }]
-    },
-    options: {
-      indexAxis: "y",
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: "Linha do Tempo"
-        }
-      },
-      scales: {
-        x: { type: "time" }
-      }
-    }
-  });
-}
+  const dados = [];
+  const labels = [];
 
-function montarDuracao(etapas) {
-
-  const total = {};
+  const agrupadas = {};
 
   etapas.forEach(e => {
     if (!e.inicio) return;
 
-    const ini = new Date(e.inicio);
-    const fim = e.fim ? new Date(e.fim) : new Date();
+    if (!agrupadas[e.nome_etapa]) {
+      agrupadas[e.nome_etapa] = [];
+      labels.push(e.nome_etapa);
+    }
 
-    const horas = (fim - ini) / 36e5;
-
-    total[e.nome_etapa] = (total[e.nome_etapa] || 0) + horas;
+    agrupadas[e.nome_etapa].push(e);
   });
 
-  const labels = Object.keys(total);
-  const valores = Object.values(total);
+  Object.values(agrupadas).forEach(lista => {
 
-  const canvas = document.getElementById("graficoDuracaoRelatorio");
+    lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
 
-  new Chart(canvas, {
+    const ultimo = lista[lista.length - 1];
+
+    const concluida =
+      (ultimo.status || "").toLowerCase().includes("concl");
+
+    lista.forEach(item => {
+
+      const inicio = new Date(item.inicio);
+      const fim = item.fim ? new Date(item.fim) : agora;
+
+      dados.push({
+        x: [inicio, fim],
+        y: item.nome_etapa,
+        backgroundColor: concluida ? "#2563eb" : "#f59e0b"
+      });
+
+    });
+  });
+
+  chartGantt = new Chart(canvas, {
     type: "bar",
     data: {
       labels,
       datasets: [{
-        data: valores
+        data: dados,
+        borderRadius: 5,
+        barThickness: 16,
+        backgroundColor: ctx => ctx.raw.backgroundColor
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       indexAxis: "y",
+
       plugins: {
+        piscarAndamento: true,
         legend: { display: false },
         title: {
           display: true,
-          text: "Duração por Etapa (horas)"
+          text: "Linha do Tempo de Fabricação"
+        }
+      },
+
+      scales: {
+        x: {
+          type: "time",
+          title: {
+            display: true,
+            text: "Tempo"
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Etapas"
+          }
         }
       }
     }
   });
 }
+
+let chartDuracao;
+
+function montarDuracaoRelatorio(etapas) {
+
+  if (chartDuracao) chartDuracao.destroy();
+
+  const acumulado = {};
+  const statusEtapa = {};
+
+  const agrupadas = {};
+
+  etapas.forEach(e => {
+    if (!e.inicio) return;
+
+    if (!agrupadas[e.nome_etapa]) {
+      agrupadas[e.nome_etapa] = [];
+    }
+
+    agrupadas[e.nome_etapa].push(e);
+  });
+
+  Object.entries(agrupadas).forEach(([etapa, lista]) => {
+
+    lista.sort((a,b)=> new Date(a.inicio)-new Date(b.inicio));
+
+    const ultimo = lista[lista.length - 1];
+
+    let total = 0;
+
+    lista.forEach(d => {
+      const ini = new Date(d.inicio);
+      const fim = d.fim ? new Date(d.fim) : ini;
+      total += (fim - ini) / 36e5;
+    });
+
+    acumulado[etapa] = Number(total.toFixed(2));
+
+    statusEtapa[etapa] =
+      !(ultimo.status || "").toLowerCase().includes("concl");
+  });
+
+  const labels = Object.keys(acumulado);
+  const valores = Object.values(acumulado);
+
+  const canvas = document.getElementById("graficoDuracaoRelatorio");
+
+  chartDuracao = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: valores,
+        backgroundColor: ctx => {
+          const etapa = labels[ctx.dataIndex];
+          return statusEtapa[etapa] ? "#f59e0b" : "#2563eb";
+        }
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      plugins: {
+        piscarAndamento: true,
+        legend: { display: false },
+        title: {
+          display: true,
+          text: "Duração Total por Etapa (h)"
+        }
+      },
+      scales: {
+        x: { title: { display: true, text: "Horas" } },
+        y: { title: { display: true, text: "Etapas" } }
+      }
+    }
+  });
+}
+
