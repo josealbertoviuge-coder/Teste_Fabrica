@@ -357,67 +357,69 @@ function montarGantt(etapas, canvasId){
       },
 
       scales:{
-        x:{
-          type:"time",
-          bounds:"ticks",
-          min:minDate,
-          max:maxDate,
+x:{
+  type:"time",
+  bounds:"ticks",
+  min:minDate,
+  max:maxDate,
 
-          afterBuildTicks: scale => {
-            scale.ticks = ticks12h
-              .filter(t => t >= scale.min && t <= scale.max)
-              .map(t => ({ value: t }));
-          },
+  // 🔒 força linhas a cada 12h
+  time:{
+    unit:"hour",
+    stepSize:12
+  },
 
-          ticks:{
-            autoSkip:false,
-            maxRotation:0,
-            font:{ weight:"bold" },
+  afterBuildTicks: scale => {
+    scale.ticks = ticks12h
+      .filter(t => t >= scale.min && t <= scale.max)
+      .map(t => ({ value: t }));
+  },
 
-            callback:(value,index,ticks)=>{
-              const d = new Date(ticks[index].value);
+  ticks:{
+    autoSkip:false,
+    maxRotation:0,
+    font:{ weight:"bold" },
 
-              if(d.getHours() === 0 && d.getMinutes() === 0){
-                return (
-                  d.toLocaleDateString("pt-BR", {
-                    day:"2-digit",
-                    month:"short"
-                  }) + "\n00:00"
-                );
-              }
+    // 🎯 MOSTRA TEXTO SOMENTE ÀS 12:00
+    callback:(value,index,ticks)=>{
+      const d = new Date(ticks[index].value);
 
-              if(d.getHours() === 12) return "12:00";
+      if(d.getHours() === 12){
+        return "12:00";
+      }
 
-              return "";
-            }
-          },
+      return "";
+    }
+  },
 
-          grid:{
-            drawTicks:true,
+  grid:{
+    drawTicks:true,
 
-            color: ctx=>{
-              const d = new Date(ctx.tick.value);
+    color: ctx=>{
+      const d = new Date(ctx.tick.value);
 
-              if(d.getHours() === 0 && d.getMinutes() === 0) return "rgba(0,0,0,0.08)";
-              if(d.getHours() === 12) return "rgba(0,0,0,0.18)";
-              return "rgba(0,0,0,0.08)";
-            },
+      // linha leve à meia-noite (plugin já destaca)
+      if(d.getHours() === 0) return "rgba(0,0,0,0.10)";
 
-            lineWidth: ctx=>{
-              const d = new Date(ctx.tick.value);
+      // linha visível às 12h
+      if(d.getHours() === 12) return "rgba(0,0,0,0.22)";
 
-              if(d.getHours() === 0 && d.getMinutes() === 0) return 0.6;
-              if(d.getHours() === 12) return 1;
-              return 0.6;
-            }
-          },
+      return "rgba(0,0,0,0.08)";
+    },
 
-          title:{
-            display:true,
-            text:"Tempo / Time"
-          }
-        },
+    lineWidth: ctx=>{
+      const d = new Date(ctx.tick.value);
 
+      if(d.getHours() === 12) return 1.2;
+      return 0.6;
+    }
+  },
+
+  title:{
+    display:true,
+    text:"Tempo / Time"
+  }
+},
         y:{
           ticks:{ font:{weight:"bold"} },
           grid:{ color:"rgba(0,0,0,0.15)" },
