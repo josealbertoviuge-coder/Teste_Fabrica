@@ -68,21 +68,21 @@ window.addEventListener("load", carregarRelatorio);
 
 //
 // =======================================================
-// GERADOR DE TICKS (3h / 6h / dia)
+// GERADOR DE TICKS (12h / dia)
 // =======================================================
 //
 
-function gerarTicksTempo(inicio, fim) {
+function gerarTicks12h(inicio, fim) {
 
   const ticks = [];
   const cursor = new Date(inicio);
 
-  cursor.setMinutes(0,0,0);
-  cursor.setHours(Math.floor(cursor.getHours()/3)*3);
+  // força começar exatamente às 00:00
+  cursor.setHours(0,0,0,0);
 
-  while(cursor <= fim){
-    ticks.push(new Date(cursor));
-    cursor.setHours(cursor.getHours()+3);
+  while (cursor <= fim) {
+    ticks.push(new Date(cursor.getTime()));
+    cursor.setHours(cursor.getHours() + 12);
   }
 
   return ticks;
