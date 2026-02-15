@@ -433,28 +433,30 @@ wrapper.style.height = `${alturaViewport}px`;
 
 Object.values(etapas).forEach(lista => {
 
-  // ordena por início
   lista.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
 
-  const primeiro = lista[0];
-  const ultimo = lista[lista.length - 1];
+  lista.forEach(item => {
 
-  const statusUltimo = (ultimo.status || "").toLowerCase();
-  const concluida = !statusUltimo.includes("andamento");
+    if (!item.inicio) return;
 
-  const inicio = dataSemFuso(primeiro.inicio);
+    const inicio = dataSemFuso(item.inicio);
+    const fim = item.fim
+      ? dataSemFuso(item.fim)
+      : inicio;
 
-  // usa sempre o fim registrado
-  const fim = ultimo.fim
-    ? dataSemFuso(ultimo.fim)
-    : dataSemFuso(ultimo.inicio);
+    data.push({
+      x: [inicio, fim],
+      y: item.nome_etapa,
+      backgroundColor:
+        (item.status || "").toLowerCase().includes("andamento")
+          ? "#f59e0b"
+          : "#2563eb"
+    });
 
-  data.push({
-    x: [inicio, fim],
-    y: primeiro.nome_etapa,
-    backgroundColor: concluida ? "#2563eb" : "#f59e0b"
   });
+
 });
+
 
   function gerarTicks6h(inicio, fim) {
   const ticks = [];
@@ -764,4 +766,5 @@ datasets: [{
 window.addEventListener("load", () => {
   buscar(); // busca automaticamente via URL
 });
+
 
