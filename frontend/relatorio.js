@@ -1,3 +1,54 @@
+// ============================
+// TURNO NOTURNO (19h → 07h)
+// ============================
+
+const turnoNoturnoPlugin = {
+  id: "turnoNoturno",
+
+  beforeDatasetsDraw(chart) {
+
+    const { ctx, chartArea, scales } = chart;
+    const xScale = scales.x;
+    if (!xScale) return;
+
+    const inicio = xScale.min;
+    const fim = xScale.max;
+
+    let cursor = new Date(inicio);
+    cursor.setHours(19,0,0,0);
+
+    if (cursor > inicio) cursor.setDate(cursor.getDate() - 1);
+
+    ctx.save();
+
+    ctx.fillStyle = "rgba(37, 99, 235, 0.08)";
+
+    while (cursor < fim) {
+
+      const inicioTurno = new Date(cursor);
+      const fimTurno = new Date(cursor);
+      fimTurno.setDate(fimTurno.getDate() + 1);
+      fimTurno.setHours(7,0,0,0);
+
+      const xInicio = xScale.getPixelForValue(inicioTurno);
+      const xFim = xScale.getPixelForValue(fimTurno);
+
+      ctx.fillRect(
+        xInicio,
+        chartArea.top,
+        xFim - xInicio,
+        chartArea.bottom - chartArea.top
+      );
+
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    ctx.restore();
+  }
+};
+
+Chart.register(turnoNoturnoPlugin);
+
 function dataBR() {
   return new Date().toLocaleString("pt-BR");
 }
@@ -241,52 +292,74 @@ function montarGantt(etapas, canvasId){
       plugins:{
         legend:{display:false},
         title:{display:true,text:"Linha do Tempo"}
+        turnoNoturno: true,
       },
       scales:{
-        x:{
-          type:"time",
-          min:minTime,
-          max:maxTime,
+x: {
+  type: "time",
+  min: minTime,
+  max: maxTime,
 
-          afterBuildTicks: scale => {
-            scale.ticks = ticksTempo.map(d => ({ value: d }));
-          },
+  time: {
+    unit: "hour",
+    stepSize: 3   // 🔒 força intervalos de 3h
+  },
 
-          ticks:{
-            autoSkip:false,
-            font:{weight:"bold"},
-            callback:(value,index,ticks)=>{
-              const d = new Date(ticks[index].value);
+  ticks: {
+    autoSkip: false,
+    font: { weight: "bold" },
 
-              if(d.getHours()===0){
-                return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});
-              }
+    callback: (value, index, ticks) => {
 
-              if(d.getHours()%6===0){
-                return d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
-              }
+      const d = new Date(ticks[index].value);
 
-              return "";
-            }
-          },
+      if (isNaN(d)) return "";
 
-          grid:{
-            color: ctx=>{
-              const d = new Date(ctx.tick.value);
-              if(d.getHours()===0) return "rgba(0,0,0,0.35)";
-              if(d.getHours()%6===0) return "rgba(0,0,0,0.18)";
-              return "rgba(0,0,0,0.08)";
-            },
-            lineWidth: ctx=>{
-              const d = new Date(ctx.tick.value);
-              if(d.getHours()===0) return 2;
-              if(d.getHours()%6===0) return 1;
-              return 0.6;
-            }
-          },
+      // meia-noite → mostra data
+      if (d.getHours() === 0) {
+        return d.toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "short"
+        });
+      }
 
-          title:{display:true,text:"Tempo"}
-        },
+      // múltiplos de 6h → mostra hora
+      if (d.getHours() % 6 === 0) {
+        return d.toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      }
+
+      // linhas intermediárias (3h) sem texto
+      return "";
+    }
+  },
+
+  grid: {
+    drawTicks: true,
+
+    color: ctx => {
+      const d = new Date(ctx.tick.value);
+
+      if (d.getHours() === 0) return "rgba(0,0,0,0.35)";
+      if (d.getHours() % 6 === 0) return "rgba(0,0,0,0.18)";
+      return "rgba(0,0,0,0.08)";
+    },
+
+    lineWidth: ctx => {
+      const d = new Date(ctx.tick.value);
+      if (d.getHours() === 0) return 2;
+      if (d.getHours() % 6 === 0) return 1;
+      return 0.6;
+    }
+  },
+
+  title: {
+    display: true,
+    text: "Tempo"
+  }
+},
 
         y:{
           ticks:{
