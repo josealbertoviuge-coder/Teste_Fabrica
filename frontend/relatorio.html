@@ -1,1 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Relatório de Fabricação</title>
+  <link rel="stylesheet" href="/relatorio.css">
+</head>
 
+<body>
+
+<div class="report">
+
+  <!-- CABEÇALHO -->
+  <header class="report-header">
+
+    <img src="/logo_Carbogas.png" class="logo">
+
+    <div class="header-info">
+      <h1>RELATÓRIO DE PRODUÇÃO</h1>
+      <div id="infoOP"></div>
+      <div id="dataRelatorio"></div>
+    </div>
+
+    <img id="qrRelatorio" class="qr">
+  </header>
+
+  <!-- STATUS FINAL -->
+  <section class="status-box">
+    <div><strong>Status Final:</strong> <span id="statusFinal"></span></div>
+  </section>
+
+  <!-- TABELA -->
+  <section>
+    <h2>Histórico de Etapas</h2>
+    <table id="tabelaRelatorio"></table>
+  </section>
+
+  <!-- GANTT -->
+  <section>
+    <h2>Linha do Tempo</h2>
+    <canvas id="graficoRelatorio"></canvas>
+  </section>
+
+  <!-- DURAÇÃO -->
+  <section>
+    <h2>Duração por Etapa</h2>
+    <canvas id="graficoDuracaoRelatorio"></canvas>
+  </section>
+
+  <!-- ASSINATURAS -->
+  <section class="assinaturas">
+    <div>
+      ___________________________<br>
+      Responsável Produção
+    </div>
+
+    <div>
+      ___________________________<br>
+      Controle da Qualidade
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script src="/relatorio.js"></script>
+
+</body>
+</html>
