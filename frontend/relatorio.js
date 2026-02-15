@@ -237,7 +237,7 @@ function montarGantt(etapas, canvasId){
     delete ganttCharts[canvasId];
   }
 
-  // ⭐ limpa canvas completamente
+  // ⭐ limpa canvas
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -261,7 +261,7 @@ function montarGantt(etapas, canvasId){
   });
 
   // ===============================
-  // GERAR BLOCOS DO GANTT
+  // GERAR BLOCOS
   // ===============================
   Object.values(agrupadas).forEach(lista=>{
 
@@ -290,46 +290,32 @@ function montarGantt(etapas, canvasId){
   if(!dados.length) return;
 
   // ===============================
-  // CALCULAR RANGE DO COMPONENTE
+  // RANGE DO COMPONENTE
   // ===============================
   const valores = dados.flatMap(d=>d.x);
 
-  let minTime = Math.min(...valores);
-  let maxTime = Math.max(...valores);
+  const minDate = new Date(Math.min(...valores));
+  const maxDate = new Date(Math.max(...valores));
 
-  const minDate = new Date(minTime);
-  const maxDate = new Date(maxTime);
-
-  // ⭐ início do dia
   minDate.setHours(0,0,0,0);
-
-  // ⭐ fim do dia
   maxDate.setHours(23,59,59,999);
 
-  minTime = minDate.getTime();
-  maxTime = maxDate.getTime();
+  const minTime = minDate.getTime();
+  const maxTime = maxDate.getTime();
 
   // ===============================
-  // GERAR TICKS FIXOS 12H
+  // TICKS FIXOS 12H (ANTI-PULO)
   // ===============================
-  function gerarTicks12h(inicio, fim){
-    const ticks = [];
-    const cursor = new Date(inicio);
+  const ticks12h = [];
+  const cursor = new Date(minTime);
 
-    cursor.setHours(0,0,0,0);
-
-    while(cursor <= fim){
-      ticks.push(new Date(cursor));
-      cursor.setHours(cursor.getHours()+12);
-    }
-
-    return ticks;
+  while(cursor <= maxDate){
+    ticks12h.push(cursor.getTime());
+    cursor.setHours(cursor.getHours()+12);
   }
 
-  const ticks12h = gerarTicks12h(minTime, maxTime);
-
   // ===============================
-  // ALTURA PROPORCIONAL
+  // ALTURA
   // ===============================
   canvas.height = Math.max(labels.length * 55, 280);
 
@@ -364,11 +350,12 @@ function montarGantt(etapas, canvasId){
       scales:{
         x:{
           type:"time",
+          bounds:"ticks",   // ⭐ evita corte nas extremidades
           min:minTime,
           max:maxTime,
 
           afterBuildTicks: scale => {
-            scale.ticks = ticks12h.map(d => ({ value: d }));
+            scale.ticks = ticks12h.map(t => ({ value: t }));
           },
 
           ticks:{
@@ -380,7 +367,7 @@ function montarGantt(etapas, canvasId){
               const d = new Date(ticks[index].value);
               const h = d.getHours();
 
-              // ⭐ DATA + 00:00
+              // ⭐ virada do dia
               if(h === 0){
                 return (
                   d.toLocaleDateString("pt-BR", {
@@ -390,10 +377,8 @@ function montarGantt(etapas, canvasId){
                 );
               }
 
-              // ⭐ 12:00
-              if(h === 12){
-                return "12:00";
-              }
+              // ⭐ meio-dia
+              if(h === 12) return "12:00";
 
               return "";
             }
@@ -405,7 +390,7 @@ function montarGantt(etapas, canvasId){
             color: ctx=>{
               const d = new Date(ctx.tick.value);
 
-              if(d.getHours() === 0) return "rgba(0,0,0,0.45)";
+              if(d.getHours() === 0) return "rgba(0,0,0,0.6)";
               if(d.getHours() === 12) return "rgba(0,0,0,0.18)";
               return "rgba(0,0,0,0.08)";
             },
@@ -413,8 +398,8 @@ function montarGantt(etapas, canvasId){
             lineWidth: ctx=>{
               const d = new Date(ctx.tick.value);
 
-              if(d.getHours() === 0) return 2.2;  // ⭐ dia
-              if(d.getHours() === 12) return 1;   // ⭐ meio-dia
+              if(d.getHours() === 0) return 2.6;   // ⭐ destaque do dia
+              if(d.getHours() === 12) return 1;
               return 0.6;
             }
           },
@@ -441,7 +426,6 @@ function montarGantt(etapas, canvasId){
     }
   });
 }
-
 
 
 //
