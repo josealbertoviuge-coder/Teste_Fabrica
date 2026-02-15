@@ -2,7 +2,7 @@ function dataBR() {
   return new Date().toLocaleString("pt-BR");
 }
 
-async function carregarRelatorio(){
+async function carregarRelatorio() {
 
   const params = new URLSearchParams(window.location.search);
   const codigo = params.get("codigo");
@@ -10,22 +10,30 @@ async function carregarRelatorio(){
   const res = await fetch("https://teste-fabrica.onrender.com/op/" + codigo);
   const dados = await res.json();
 
-  // descobrir TAG ativa
-let tagAtiva = "—";
+  // ==============================
+  // DESCOBRIR TAG ATIVA
+  // ==============================
+  let tagAtiva = "—";
 
-for (const [nomeTag, etapas] of Object.entries(dados.tags)) {
-  const lista = Object.values(etapas).flat();
+  for (const [nomeTag, etapas] of Object.entries(dados.tags)) {
 
-  if (lista.some(e => e.status === "Em Andamento")) {
-    tagAtiva = nomeTag;
-    break;
+    const lista = Object.values(etapas).flat();
+
+    if (lista.some(e =>
+      (e.status || "").toLowerCase().trim() === "em andamento"
+    )) {
+      tagAtiva = nomeTag;
+      break;
+    }
   }
-}
 
-document.getElementById("infoOP").innerHTML =
-  `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp; 
-   <strong>Cliente:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
-   <strong>TAG Ativa:</strong> ${tagAtiva}`;
+  // ==============================
+  // CABEÇALHO
+  // ==============================
+  document.getElementById("infoOP").innerHTML =
+    `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
+     <strong>Cliente:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
+     <strong>TAG Ativa:</strong> ${tagAtiva}`;
 
   document.getElementById("dataRelatorio").innerHTML =
     `<strong>Emitido em:</strong> ${dataBR()}`;
@@ -34,28 +42,35 @@ document.getElementById("infoOP").innerHTML =
     "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
     window.location.origin + "/?codigo=" + codigo;
 
+  // ==============================
+  // LISTA DE ETAPAS
+  // ==============================
   const todasEtapas = Object.values(dados.tags).flatMap(tag =>
     Object.values(tag).flat()
   );
 
-  // status final
-let statusFinal = "Concluído";
+  // ==============================
+  // STATUS FINAL
+  // ==============================
+  let statusFinal = "Concluído";
 
-if (todasEtapas.some(e => e.status === "Em Andamento")) {
-  statusFinal = "Em Andamento";
-}
+  if (todasEtapas.some(e =>
+    (e.status || "").toLowerCase().trim() === "em andamento"
+  )) {
+    statusFinal = "Em Andamento";
+  }
 
-const statusEl = document.getElementById("statusFinal");
-statusEl.innerText = statusFinal;
+  const statusEl = document.getElementById("statusFinal");
+  statusEl.innerText = statusFinal;
 
-// aplica cor automaticamente
-statusEl.className =
-  statusFinal === "Em Andamento"
-    ? "status-andamento"
-    : "status-concluido";
+  statusEl.className =
+    statusFinal === "Em Andamento"
+      ? "status-andamento"
+      : "status-concluido";
 
-document.getElementById("statusFinal").innerText = statusFinal;
-  // tabela
+  // ==============================
+  // TABELA
+  // ==============================
   let html = `
     <tr>
       <th>Etapa</th>
@@ -69,7 +84,11 @@ document.getElementById("statusFinal").innerText = statusFinal;
     html += `
       <tr>
         <td>${e.nome_etapa}</td>
-        <td>${e.status}</td>
+        <td class="${(e.status || '').toLowerCase().includes('andamento') 
+          ? 'status-andamento' 
+          : 'status-concluido'}">
+          ${e.status}
+        </td>
         <td>${e.inicio || "-"}</td>
         <td>${e.fim || "-"}</td>
       </tr>
@@ -77,7 +96,10 @@ document.getElementById("statusFinal").innerText = statusFinal;
   });
 
   document.getElementById("tabelaRelatorio").innerHTML = html;
-
 }
 
+// executa ao carregar
 carregarRelatorio();
+
+// se navegar entre OPs sem recarregar a página
+window.addEventListener("popstate", carregarRelatorio);
