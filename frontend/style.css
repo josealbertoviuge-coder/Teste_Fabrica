@@ -55,6 +55,7 @@ body{
   display:flex;
   max-width:1200px;
   margin:auto;
+  align-items: stretch;
 }
 
 /* =======================
