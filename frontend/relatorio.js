@@ -1,35 +1,44 @@
 // ============================
-// LINHAS DE VIRADA DE DIA (GARANTE TODAS)
+// LINHAS DE VIRADA DE DIA (PRECISAS)
 // ============================
 
 const linhasDiaPlugin = {
   id: "linhasDia",
 
-  afterDraw(chart) {
+  afterDatasetsDraw(chart) {
 
     const { ctx, chartArea, scales } = chart;
     const xScale = scales.x;
     if (!xScale) return;
 
-    const inicio = new Date(xScale.min);
+    let dia = new Date(xScale.min);
     const fim = new Date(xScale.max);
 
-    inicio.setHours(0,0,0,0);
+    // começa exatamente na meia-noite visível
+    dia.setHours(0,0,0,0);
+    if (dia < xScale.min) dia.setDate(dia.getDate() + 1);
 
     ctx.save();
     ctx.strokeStyle = "rgba(0,0,0,0.45)";
     ctx.lineWidth = 2;
 
-    while (inicio <= fim) {
+    while (dia <= fim) {
 
-      const x = Math.round(xScale.getPixelForValue(inicio)) + 0.5;
+      const rawX = xScale.getPixelForValue(dia);
 
-      ctx.beginPath();
-      ctx.moveTo(x, chartArea.top);
-      ctx.lineTo(x, chartArea.bottom);
-      ctx.stroke();
+      // evita desenhar fora da área
+      if (rawX >= chartArea.left && rawX <= chartArea.right) {
 
-      inicio.setDate(inicio.getDate() + 1);
+        // alinhamento perfeito de pixel
+        const x = Math.round(rawX) + 0.5;
+
+        ctx.beginPath();
+        ctx.moveTo(x, chartArea.top);
+        ctx.lineTo(x, chartArea.bottom);
+        ctx.stroke();
+      }
+
+      dia.setDate(dia.getDate() + 1);
     }
 
     ctx.restore();
@@ -389,7 +398,7 @@ function montarGantt(etapas, canvasId){
             color: ctx=>{
               const d = new Date(ctx.tick.value);
 
-              if(d.getHours() === 0 && d.getMinutes() === 0) return "rgba(0,0,0,0.45)";
+              if(d.getHours() === 0 && d.getMinutes() === 0) return "rgba(0,0,0,0.08)";
               if(d.getHours() === 12) return "rgba(0,0,0,0.18)";
               return "rgba(0,0,0,0.08)";
             },
@@ -397,7 +406,7 @@ function montarGantt(etapas, canvasId){
             lineWidth: ctx=>{
               const d = new Date(ctx.tick.value);
 
-              if(d.getHours() === 0 && d.getMinutes() === 0) return 2.6;
+              if(d.getHours() === 0 && d.getMinutes() === 0) return 0.6;
               if(d.getHours() === 12) return 1;
               return 0.6;
             }
