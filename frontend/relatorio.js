@@ -38,7 +38,7 @@ async function carregarRelatorio() {
   // ==============================
   document.getElementById("infoOP").innerHTML =
     `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
-     <strong>Cliente:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
+     <strong>Cliente / Client:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
      <strong>TAG:</strong> ${tagSelecionada || tagAtiva}`;
 
   document.getElementById("dataRelatorio").innerHTML =
