@@ -217,7 +217,37 @@ function montarSecoesComponentes(componentes) {
   const container = document.getElementById("componentesRelatorio");
   container.innerHTML = "";
 
-  Object.entries(componentes).forEach(([nomeComp, etapas], i) => {
+  // 🎯 ordem desejada para impressão
+  const ordemPreferida = [
+    "Flange A",
+    "Flange B",
+    "Tambor",
+    "Berco de Apoio",
+    "Conjunto Montado"
+  ];
+
+  // 🔽 ordenar componentes
+  const componentesOrdenados = Object.entries(componentes)
+    .sort(([nomeA], [nomeB]) => {
+
+      const posA = ordemPreferida.indexOf(nomeA);
+      const posB = ordemPreferida.indexOf(nomeB);
+
+      // ambos estão na lista preferida
+      if (posA !== -1 && posB !== -1) return posA - posB;
+
+      // apenas A está
+      if (posA !== -1) return -1;
+
+      // apenas B está
+      if (posB !== -1) return 1;
+
+      // nenhum está → ordem alfabética (ignora acentos)
+      return nomeA.localeCompare(nomeB, 'pt-BR', { sensitivity: 'base' });
+    });
+
+  // 🔽 renderização
+  componentesOrdenados.forEach(([nomeComp, etapas], i) => {
 
     const bloco = document.createElement("section");
     bloco.className = "componente-bloco";
