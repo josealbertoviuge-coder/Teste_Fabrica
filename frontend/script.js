@@ -778,11 +778,24 @@ datasets: [{
           }
         },
 
-        datalabels: {
-          color: "#000",
-          formatter: v => `${v} h`,
-          font: { weight: "bold" }
-        }
+datalabels: {
+  color: ctx => {
+
+    const i = ctx.dataIndex;
+    const etapa = etapas[i];
+
+    const emAndamento = statusEtapa[etapa];
+
+    if (!emAndamento) {
+      return "#facc15";   // amarelo para concluídas
+    }
+
+    return "#000";        // preto para andamento
+  },
+
+  formatter: v => `${v} h`,
+  font: { weight: "bold" }
+}
       },
 
       scales: {
@@ -826,6 +839,7 @@ setInterval(() => {
   if (chartGantt) chartGantt.update();
   if (chartDuracao) chartDuracao.update();
 }, 300);
+
 
 
 
