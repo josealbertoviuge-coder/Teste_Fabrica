@@ -10,15 +10,12 @@
 
 <div class="report">
 
-  <!-- CABEÇALHO -->
 <header class="report-header">
-
   <img src="/logo_Carbogas.png" class="logo">
 
   <div class="header-info">
     <h1>MTS v1.0 - Manufacturing Tracking System</h1>
     <h1>Relatório de Fabricação / Manufacturing Report</h1>
-
     <div id="infoOP"></div>
     <div id="dataRelatorio"></div>
   </div>
@@ -26,52 +23,31 @@
   <img id="qrRelatorio" class="qr">
 </header>
 
-  <!-- STATUS FINAL -->
-  <section class="status-box">
-    <div><strong>Status Final / Final Status:</strong> <span id="statusFinal"></span></div>
-  </section>
+<section class="status-box">
+  <strong>Status Final / Final Status:</strong>
+  <span id="statusFinal"></span>
+</section>
 
-  <!-- TABELA -->
-  <section>
-    <h2>Registro de Etapas / Steps Records</h2>
-    <table id="tabelaRelatorio"></table>
-  </section>
+<!-- ⭐ COMPONENTES GERADOS DINAMICAMENTE -->
+<div id="componentesRelatorio"></div>
 
-  <!-- GANTT -->
-  <section>
-    <h2>Linha do Tempo</h2>
-    <canvas id="graficoRelatorio"></canvas>
-  </section>
+<section class="assinaturas">
+  <div>
+    ___________________________<br>
+    Responsável Produção
+  </div>
 
-  <!-- DURAÇÃO -->
-  <section>
-    <h2>Duração por Etapa</h2>
-    <canvas id="graficoDuracaoRelatorio"></canvas>
-  </section>
-
-  <!-- ASSINATURAS -->
-  <section class="assinaturas">
-    <div>
-      ___________________________<br>
-      Responsável Produção
-    </div>
-
-    <div>
-      ___________________________<br>
-      Controle da Qualidade
-    </div>
-  </section>
+  <div>
+    ___________________________<br>
+    Controle da Qualidade
+  </div>
+</section>
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="/relatorio.js"></script>
 
 </body>
 </html>
-
-
-
-
-
