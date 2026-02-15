@@ -6,12 +6,18 @@ async function carregarRelatorio() {
 
   const params = new URLSearchParams(window.location.search);
   const codigo = params.get("codigo");
+  const tagSelecionada = params.get("tag"); // ⭐ importante
+
+  if (!codigo) {
+    alert("Código da OP não informado.");
+    return;
+  }
 
   const res = await fetch("https://teste-fabrica.onrender.com/op/" + codigo);
   const dados = await res.json();
 
   // ==============================
-  // DESCOBRIR TAG ATIVA
+  // DESCOBRIR TAG ATIVA (fallback)
   // ==============================
   let tagAtiva = "—";
 
@@ -32,8 +38,8 @@ async function carregarRelatorio() {
   // ==============================
   document.getElementById("infoOP").innerHTML =
     `<strong>OP:</strong> ${dados.op} &nbsp;&nbsp;
-     <strong>TAG:</strong> ${tagSelecionada || tagAtiva};
      <strong>Cliente:</strong> ${dados.cliente_nome} &nbsp;&nbsp;
+     <strong>TAG:</strong> ${tagSelecionada || tagAtiva}`;
 
   document.getElementById("dataRelatorio").innerHTML =
     `<strong>Emitido em:</strong> ${dataBR()}`;
@@ -47,14 +53,13 @@ async function carregarRelatorio() {
   // ==============================
   let todasEtapas = [];
 
-if (tagSelecionada && dados.tags[tagSelecionada]) {
-  todasEtapas = Object.values(dados.tags[tagSelecionada]).flat();
-} else {
-  // fallback: todas
-  todasEtapas = Object.values(dados.tags).flatMap(tag =>
-    Object.values(tag).flat()
-  );
-}
+  if (tagSelecionada && dados.tags[tagSelecionada]) {
+    todasEtapas = Object.values(dados.tags[tagSelecionada]).flat();
+  } else {
+    todasEtapas = Object.values(dados.tags).flatMap(tag =>
+      Object.values(tag).flat()
+    );
+  }
 
   // ==============================
   // STATUS FINAL
@@ -105,8 +110,4 @@ if (tagSelecionada && dados.tags[tagSelecionada]) {
   document.getElementById("tabelaRelatorio").innerHTML = html;
 }
 
-// executa ao carregar
 carregarRelatorio();
-
-// se navegar entre OPs sem recarregar a página
-window.addEventListener("popstate", carregarRelatorio);
