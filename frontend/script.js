@@ -1,3 +1,9 @@
+function abrirRelatorio(){
+  const params = new URLSearchParams(window.location.search);
+  const codigo = params.get("codigo");
+  window.open("/relatorio.html?codigo=" + codigo, "_blank");
+}
+
 // =======================
 // LOADING BAR
 // =======================
@@ -839,10 +845,4 @@ setInterval(() => {
   if (chartGantt) chartGantt.update();
   if (chartDuracao) chartDuracao.update();
 }, 300);
-
-
-
-
-
-
 
