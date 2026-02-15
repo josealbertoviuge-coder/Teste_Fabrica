@@ -177,7 +177,7 @@ async function buscar(codigoManual = null) {
     dadosOP = resposta.tags || {};
 
     document.getElementById("linhaInfo").innerText =
-      `OP: ${resposta.op} | Cliente: ${resposta.cliente_nome}`;
+      `OP: ${resposta.op} | Cliente / Client: ${resposta.cliente_nome}`;
 
     montarAbasTags();
 
@@ -826,6 +826,7 @@ setInterval(() => {
   if (chartGantt) chartGantt.update();
   if (chartDuracao) chartDuracao.update();
 }, 300);
+
 
 
 
