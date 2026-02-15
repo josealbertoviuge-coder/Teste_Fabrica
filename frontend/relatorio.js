@@ -267,8 +267,22 @@ function montarGantt(etapas, canvasId){
   if(!dados.length) return;
 
   const valores = dados.flatMap(d=>d.x);
-  const minTime = Math.min(...valores);
-  const maxTime = Math.max(...valores);
+let minTime = Math.min(...valores);
+let maxTime = Math.max(...valores);
+
+// ⭐ cria datas reais
+const minDate = new Date(minTime);
+const maxDate = new Date(maxTime);
+
+// ⭐ força início do primeiro dia (00:00)
+minDate.setHours(0, 0, 0, 0);
+
+// ⭐ força final do último dia (23:59)
+maxDate.setHours(23, 59, 59, 999);
+
+// ⭐ volta para timestamp
+minTime = minDate.getTime();
+maxTime = maxDate.getTime();
 
   const ticksTempo = gerarTicksTempo(minTime, maxTime);
 
