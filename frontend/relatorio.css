@@ -96,6 +96,18 @@ canvas{
   .page-break {
     page-break-after: always;
   }
+    @page {
+    margin: 20mm;
+  }
+
+  body::after {
+    content: "Página " counter(page) " de " counter(pages);
+    position: fixed;
+    bottom: 10mm;
+    right: 20mm;
+    font-size: 10px;
+    color: #444;
+  }
 }
 
 .status-andamento {
