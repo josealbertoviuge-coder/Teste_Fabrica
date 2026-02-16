@@ -110,6 +110,22 @@ function dataBR() {
   return new Date().toLocaleString("pt-BR");
 }
 
+function formatarDataBR(dataISO) {
+  if (!dataISO) return "-";
+
+  const d = new Date(dataISO);
+
+  if (isNaN(d)) return "-";
+
+  return d.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
 window.addEventListener("load", carregarRelatorio);
 
 //
@@ -275,8 +291,8 @@ function montarTabela(etapas, id){
       <tr>
         <td>${e.nome_etapa}</td>
         <td>${e.status}</td>
-        <td>${e.inicio || "-"}</td>
-        <td>${e.fim || "-"}</td>
+<td>${formatarDataBR(e.inicio)}</td>
+<td>${formatarDataBR(e.fim)}</td>
       </tr>
     `;
   });
