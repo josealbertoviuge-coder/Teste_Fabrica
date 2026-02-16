@@ -133,10 +133,7 @@ canvas{
 }
 
 @media print{
-.print-spacer{
-  display:block;
-  height:250px; /* ajuste conforme altura header + status */
-}
+
   /* evita quebrar conteúdo */
   .componente-bloco {
     page-break-inside: avoid;
@@ -152,14 +149,15 @@ canvas{
 
   /* cabeçalho fixo */
   .print-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+  position: fixed;
+  top: 10mm;
+  left: 10mm;
+  right: 10mm;
   }
 
   body {
     zoom: 0.92;
+    margin-top: 150px; /* espaço para header */
   }
 
   /* numeração páginas */
@@ -182,9 +180,9 @@ canvas{
   }
   .status-fixo{
   position: fixed;
-  top: 115px;   /* logo abaixo do header */
-  left: 0;
-  right: 0;
+  top: 55mm; /* abaixo do header */
+  left: 10mm;
+  right: 10mm;
 }
 }
 
@@ -201,8 +199,4 @@ canvas{
 .linha-separadora{
   border-top:2px solid #000;
   margin:6px 0;
-}
-
-.print-spacer{
-  display:none;
 }
