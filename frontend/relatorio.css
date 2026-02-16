@@ -179,3 +179,8 @@ canvas{
     font-size: 10px;
   }
 }
+
+.linha-separadora{
+  border-top:2px solid #000;
+  margin:8px 0;
+}
