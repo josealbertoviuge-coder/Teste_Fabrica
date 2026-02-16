@@ -145,14 +145,18 @@ canvas{
 
 @page {
   size: A4 portrait;
-  margin: 15mm 10mm 15mm 10mm;
+
+  /*
+    espaço reservado para o cabeçalho
+    funciona em TODAS as páginas
+  */
+  margin: 60mm 10mm 15mm 10mm;
 }
 
 @media print{
 
   body{
     margin:0;
-    zoom:0.92;
   }
 
   /*
@@ -165,15 +169,6 @@ canvas{
     right: 0;
     background: white;
     z-index: 9999;
-  }
-
-  /*
-    ESSENCIAL:
-    padding-top funciona em TODAS as páginas
-    usando altura calculada automaticamente
-  */
-  .report{
-    padding-top: calc(var(--altura-header) + 150mm);
   }
 
   /* mantém gráficos dentro da página */
