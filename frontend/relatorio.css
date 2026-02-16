@@ -18,7 +18,7 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  border-bottom:2px solid #000;
+  border-bottom:none;
   padding-bottom:10px;
   margin-bottom:20px;
 }
