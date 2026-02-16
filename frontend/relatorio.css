@@ -173,7 +173,7 @@ canvas{
     usando altura calculada automaticamente
   */
   .report{
-    padding-top: calc(var(--altura-header) + 15mm);
+    padding-top: calc(var(--altura-header) + 150mm);
   }
 
   /* mantém gráficos dentro da página */
