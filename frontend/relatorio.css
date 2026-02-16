@@ -144,7 +144,9 @@ canvas{
 }
 
 @media print{
-
+.report{
+  margin-top: calc(var(--altura-header) + 5mm);
+}
   body{
     margin:0;
     zoom:0.92;
@@ -158,16 +160,6 @@ canvas{
     right: 0;
     background: white;
     z-index: 999;
-  }
-
-  /*
-    cria espaço REAL abaixo do cabeçalho
-    evitando que o conteúdo fique escondido
-  */
-  .print-header::after{
-    content:"";
-    display:block;
-    height: 15mm;   /* ajuste fino se necessário */
   }
 
   /* mantém gráficos dentro da página */
