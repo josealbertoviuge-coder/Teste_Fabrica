@@ -383,14 +383,17 @@ maxDate.setHours(24, 0, 0, 0);
       maintainAspectRatio:false,
       indexAxis:"y",
 
-      plugins:{
-        turnoNoturno: true,
-        legend:{display:false},
-        title:{
-          display:true,
-          text:"Linha do Tempo de Fabricação / Manufacturing Timeline"
-        }
-      },
+  plugins:{
+  turnoNoturno: true,
+  legend:{display:false},
+
+  title:{
+    display:true,
+    text:"Linha do Tempo de Fabricação / Manufacturing Timeline"
+  },
+
+  datalabels: false   // ⭐ desativa textos sobre as barras
+},
 
       scales:{
 x:{
