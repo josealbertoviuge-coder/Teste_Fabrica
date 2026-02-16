@@ -15,26 +15,27 @@
   <img src="/logo_Carbogas.png" class="logo">
 
   <div class="header-center">
-
     <div>MTS v1.0 - Manufacturing Tracking System</div>
     <div>Relatório de Fabricação / Manufacturing Report</div>
     <div id="infoOP"></div>
     <div id="dataRelatorio"></div>
-
   </div>
 
   <img id="qrRelatorio" class="qr">
 
+  <!-- LINHA + STATUS + LINHA fazem parte do cabeçalho -->
+  <div class="header-bottom">
+    <div class="linha-separadora"></div>
+
+    <div class="status-linha">
+      <strong>Status Final / Final Status:</strong>
+      <span id="statusFinal"></span>
+    </div>
+
+    <div class="linha-separadora"></div>
+  </div>
+
 </header>
-
-<div class="linha-separadora"></div>
-
-<div class="status-linha">
-  <strong>Status Final / Final Status:</strong>
-  <span id="statusFinal"></span>
-</div>
-
-<div class="linha-separadora"></div>
 
 <div id="componentesRelatorio"></div>
 
@@ -70,3 +71,4 @@
 
 </body>
 </html>
+
