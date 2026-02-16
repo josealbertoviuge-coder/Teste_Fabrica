@@ -3,7 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>Relatório de Fabricação / Manufacturing Report</title>
+
   <link rel="stylesheet" href="/relatorio.css">
+
+  <!-- melhora renderização de impressão -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    /* evita quebra feia na impressão */
+    canvas {
+      page-break-inside: avoid;
+    }
+
+    .componente-bloco {
+      page-break-inside: avoid;
+      margin-bottom: 28px;
+    }
+  </style>
 </head>
 
 <body>
@@ -31,8 +47,16 @@
     <span id="statusFinal"></span>
   </section>
 
+  <!-- COMPONENTES + GRÁFICOS -->
   <div id="componentesRelatorio"></div>
 
+  <!-- OBSERVAÇÕES -->
+  <section style="margin-top:30px;">
+    <strong>Observações / Notes:</strong>
+    <div style="height:80px;border-bottom:1px solid #000;"></div>
+  </section>
+
+  <!-- ASSINATURAS -->
   <section class="assinaturas">
     <div>
       ___________________________<br>
@@ -47,13 +71,23 @@
 
 </div>
 
-<!-- Chart.js -->
+<!-- ========================= -->
+<!-- CHART.JS -->
+<!-- ========================= -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
 <!-- Adapter de datas -->
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
 
-<!-- Script -->
+<!-- Plugin para valores nas barras -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script>
+  // registra plugin globalmente
+  Chart.register(ChartDataLabels);
+</script>
+
+<!-- Script do relatório -->
 <script src="/relatorio.js"></script>
 
 </body>
