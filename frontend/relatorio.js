@@ -130,48 +130,6 @@ function gerarTicks12h(inicio, fim) {
   return ticks;
 }
 
-const rotacionarDatasPlugin = {
-  id: "rotacionarDatas",
-
-  afterDraw(chart){
-    const { ctx, scales } = chart;
-    const xScale = scales.x;
-
-    ctx.save();
-
-    xScale.ticks.forEach((tick, i) => {
-      const label = tick.label;
-      if(!label) return;
-
-      // identifica datas (dd/mm)
-      if(label.includes('/')){
-
-        const x = xScale.getPixelForTick(i);
-        const y = xScale.bottom + 18;
-
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(-Math.PI / 4);
-
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#222";
-
-        // 🔹 datas em negrito
-        ctx.font = "bold 11px sans-serif";
-
-        ctx.fillText(label, 0, 0);
-        ctx.restore();
-
-        tick.label = ""; // remove original
-      }
-    });
-
-    ctx.restore();
-  }
-};
-
-Chart.register(rotacionarDatasPlugin);
-
 async function carregarRelatorio() {
 
   const params = new URLSearchParams(window.location.search);
@@ -453,18 +411,17 @@ ticks:{
   source:'data',
   autoSkip:false,
   padding:8,
-  maxRotation:45,
-  minRotation:45,
-  font:{ weight:"normal" },
 
-  callback:(value)=>{
+  callback:(value, index, ticks)=>{
     const d = new Date(value);
     const h = d.getHours();
 
-    // meio-dia → mostra hora
-    if(h === 12) return "12:00";
+    // meio-dia → hora normal
+    if(h === 12){
+      return "12:00";
+    }
 
-    // meia-noite → mostra data
+    // meia-noite → data
     if(h === 0){
       const dia = String(d.getDate()).padStart(2,'0');
       const mes = String(d.getMonth()+1).padStart(2,'0');
@@ -472,6 +429,28 @@ ticks:{
     }
 
     return "";
+  },
+
+  font: ctx => {
+    const d = new Date(ctx.tick.value);
+
+    // datas em negrito
+    if(d.getHours() === 0){
+      return { weight: 'bold', size: 11 };
+    }
+
+    // 12:00 normal
+    return { weight: 'normal', size: 11 };
+  },
+
+  maxRotation: ctx => {
+    const d = new Date(ctx.tick.value);
+    return d.getHours() === 0 ? 45 : 0;
+  },
+
+  minRotation: ctx => {
+    const d = new Date(ctx.tick.value);
+    return d.getHours() === 0 ? 45 : 0;
   }
 },
 
