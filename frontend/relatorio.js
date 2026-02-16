@@ -551,13 +551,39 @@ function montarDuracao(etapas, canvasId){
       responsive:false,
       maintainAspectRatio:false,
       indexAxis:"y",
-      plugins:{
-        legend:{display:false},
-        title:{
-          display:true,
-          text:"Duração Total por Etapa / Total Time by Step"
-        }
-      },
+plugins:{
+  legend:{display:false},
+
+  title:{
+    display:true,
+    text:"Duração Total por Etapa / Total Time by Step"
+  },
+
+  datalabels:{
+    anchor:'center',
+    align:'center',
+    clamp:true,
+
+    formatter: v => `${v} h`,
+
+    font:{
+      weight:'bold',
+      size:11
+    },
+
+    color: ctx => {
+      const etapa = labels[ctx.dataIndex];
+
+      // concluída (barra azul)
+      if(!status[etapa]){
+        return "#facc15";   // amarelo
+      }
+
+      // em andamento (barra laranja)
+      return "#000";        // preto
+    }
+  }
+},
       scales:{
         x:{
           grid:{ color:"rgba(0,0,0,0.15)" },
