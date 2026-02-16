@@ -119,26 +119,12 @@ window.addEventListener("load", carregarRelatorio);
 //
 
 function gerarTicks12h(inicio, fim) {
-
   const ticks = [];
+  let cursor = new Date(inicio);
 
-  const dia = new Date(inicio);
-  dia.setHours(0, 0, 0, 0);
-
-  const ultimo = new Date(fim);
-  ultimo.setHours(0, 0, 0, 0);
-
-  while (dia <= ultimo) {
-
-    // meia-noite
-    ticks.push(new Date(dia).getTime());
-
-    // meio-dia garantido
-    const meioDia = new Date(dia);
-    meioDia.setHours(12, 0, 0, 0);
-    ticks.push(meioDia.getTime());
-
-    dia.setDate(dia.getDate() + 1);
+  while (cursor <= fim) {
+    ticks.push(cursor.getTime());
+    cursor.setHours(cursor.getHours() + 12);
   }
 
   return ticks;
@@ -356,19 +342,23 @@ function montarGantt(etapas, canvasId){
 
   const valores = dados.flatMap(d=>d.x);
 
-  const minDate = new Date(Math.min(...valores));
-  const maxDate = new Date(Math.max(...valores));
+  function alinhar12h(date, paraCima=false){
+  const d = new Date(date);
+  d.setMinutes(0,0,0);
 
-  // alinhar aos múltiplos de 12h
-  minDate.setMinutes(0,0,0);
-  minDate.setHours(Math.floor(minDate.getHours()/12)*12);
+  const h = d.getHours();
+  const resto = h % 12;
 
-  maxDate.setMinutes(0,0,0);
-  maxDate.setHours(Math.ceil(maxDate.getHours()/12)*12);
+  if(resto !== 0){
+    d.setHours(h + (paraCima ? (12-resto) : -resto));
+  }
 
-  // espaço extra evita remoção do tick
-  maxDate.setHours(maxDate.getHours() + 6);
-
+  return d;
+}
+  
+const minDate = alinhar12h(new Date(Math.min(...valores)));
+const maxDate = alinhar12h(new Date(Math.max(...valores)), true);
+  
   const ticks12h = gerarTicks12h(minDate, maxDate);
 
   canvas.height = Math.max(labels.length * 55, 280);
@@ -418,15 +408,19 @@ x:{
   },
 
   ticks:{
+    source: 'data',
     autoSkip:false,
     padding:8,
     maxRotation:0,
     font:{ weight:"bold" },
-    callback:(value)=>{
-      const d = new Date(value);
-      if(d.getHours() === 12) return "12:00";
-      return "";
-    }
+callback:(value)=>{
+  const d = new Date(value);
+  return d.getHours() === 0
+    ? "00:00"
+    : d.getHours() === 12
+      ? "12:00"
+      : "";
+}
   },
 
   grid:{
