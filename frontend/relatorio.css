@@ -115,6 +115,9 @@ canvas{
   left: 20mm;
   font-size: 10px;
 }
+    .componente-bloco {
+    page-break-inside: avoid;
+  }
 }
 
 .status-andamento {
