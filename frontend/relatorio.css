@@ -133,7 +133,10 @@ canvas{
 }
 
 @media print{
-
+.print-spacer{
+  display:block;
+  height:190px; /* ajuste conforme altura header + status */
+}
   /* evita quebrar conteúdo */
   .componente-bloco {
     page-break-inside: avoid;
@@ -156,7 +159,6 @@ canvas{
   }
 
   body {
-    margin-top: 190px;   /* espaço para header fixo */
     zoom: 0.92;
   }
 
@@ -199,4 +201,8 @@ canvas{
 .linha-separadora{
   border-top:2px solid #000;
   margin:6px 0;
+}
+
+.print-spacer{
+  display:none;
 }
