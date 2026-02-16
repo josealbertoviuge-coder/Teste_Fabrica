@@ -178,6 +178,12 @@ canvas{
     left: 20mm;
     font-size: 10px;
   }
+  .status-fixo{
+  position: fixed;
+  top: 115px;   /* logo abaixo do header */
+  left: 0;
+  right: 0;
+}
 }
 
 .status-linha{
