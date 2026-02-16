@@ -413,7 +413,7 @@ ticks:{
   padding:8,
   maxRotation:45,
   minRotation:45,
-  font:{ weight:"bold" },
+  font:{ weight:"normal" },
 
   callback:(value)=>{
     const d = new Date(value);
