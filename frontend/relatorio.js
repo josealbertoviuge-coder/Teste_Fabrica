@@ -113,7 +113,8 @@ function dataBR() {
 function formatarDataBR(dataISO) {
   if (!dataISO) return "-";
 
-  const d = new Date(dataISO);
+  // remove o Z para evitar conversão de fuso
+  const d = new Date(dataISO.replace("Z", ""));
 
   if (isNaN(d)) return "-";
 
