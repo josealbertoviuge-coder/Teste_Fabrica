@@ -108,6 +108,13 @@ canvas{
     font-size: 10px;
     color: #444;
   }
+  body::before {
+  content: "MTS v1.0 • Manufacturing Tracking System";
+  position: fixed;
+  bottom: 10mm;
+  left: 20mm;
+  font-size: 10px;
+}
 }
 
 .status-andamento {
