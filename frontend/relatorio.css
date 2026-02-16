@@ -133,7 +133,9 @@ canvas{
 }
 
 @media print{
-
+.report{
+  padding-top: 0;
+}
   /* evita quebrar conteúdo */
   .componente-bloco {
     page-break-inside: avoid;
