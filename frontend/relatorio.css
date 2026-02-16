@@ -6,6 +6,11 @@ body{
   background:white;
 }
 
+/* garante que padding não aumente largura */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 .report{
   max-width:1000px;
   margin:auto;
@@ -144,22 +149,31 @@ canvas{
 }
 
 @media print{
-.report{
-  margin-top: calc(var(--altura-header) + 5mm);
-}
+
   body{
     margin:0;
     zoom:0.92;
   }
 
-  /* HEADER FIXO REPETIDO EM TODAS AS PÁGINAS */
+  /*
+    HEADER FIXO REPETIDO EM TODAS AS PÁGINAS
+  */
   .print-header{
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     background: white;
-    z-index: 999;
+    z-index: 9999;
+  }
+
+  /*
+    ESSENCIAL:
+    padding-top funciona em TODAS as páginas
+    usando altura calculada automaticamente
+  */
+  .report{
+    padding-top: calc(var(--altura-header) + 5mm);
   }
 
   /* mantém gráficos dentro da página */
