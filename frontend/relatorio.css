@@ -184,3 +184,13 @@ canvas{
   border-top:2px solid #000;
   margin:8px 0;
 }
+
+.status-linha{
+  text-align:center;
+  font-size:15px;
+  margin:6px 0;
+}
+
+.status-linha span{
+  font-weight:bold;
+}
