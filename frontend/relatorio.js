@@ -407,21 +407,31 @@ x:{
     scale.ticks = ticks12h.map(t => ({ value: t }));
   },
 
-  ticks:{
-    source: 'data',
-    autoSkip:false,
-    padding:8,
-    maxRotation:0,
-    font:{ weight:"bold" },
-callback:(value)=>{
-  const d = new Date(value);
-  return d.getHours() === 0
-    ? "00:00"
-    : d.getHours() === 12
-      ? "12:00"
-      : "";
-}
-  },
+ticks:{
+  source:'data',
+  autoSkip:false,
+  padding:8,
+  maxRotation:45,
+  minRotation:45,
+  font:{ weight:"bold" },
+
+  callback:(value)=>{
+    const d = new Date(value);
+    const h = d.getHours();
+
+    // meio-dia → mostra hora
+    if(h === 12) return "12:00";
+
+    // meia-noite → mostra data
+    if(h === 0){
+      const dia = String(d.getDate()).padStart(2,'0');
+      const mes = String(d.getMonth()+1).padStart(2,'0');
+      return `${dia}/${mes}`;
+    }
+
+    return "";
+  }
+},
 
   grid:{
     drawTicks:true,
