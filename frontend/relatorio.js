@@ -357,7 +357,11 @@ function montarGantt(etapas, canvasId){
 }
   
 const minDate = alinhar12h(new Date(Math.min(...valores)));
-const maxDate = alinhar12h(new Date(Math.max(...valores)), true);
+const ultimoValor = new Date(Math.max(...valores));
+
+// vai para 00:00 do dia seguinte
+const maxDate = new Date(ultimoValor);
+maxDate.setHours(24, 0, 0, 0);
   
   const ticks12h = gerarTicks12h(minDate, maxDate);
 
