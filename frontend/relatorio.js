@@ -412,16 +412,16 @@ ticks:{
   autoSkip:false,
   padding:8,
 
-  callback:(value, index, ticks)=>{
+  callback:(value)=>{
     const d = new Date(value);
     const h = d.getHours();
 
-    // meio-dia → hora normal
+    // 12:00 → hora (normal)
     if(h === 12){
       return "12:00";
     }
 
-    // meia-noite → data
+    // 00:00 → data (negrito)
     if(h === 0){
       const dia = String(d.getDate()).padStart(2,'0');
       const mes = String(d.getMonth()+1).padStart(2,'0');
@@ -432,27 +432,19 @@ ticks:{
   },
 
   font: ctx => {
-    const d = new Date(ctx.tick.value);
+    const h = new Date(ctx.tick.value).getHours();
 
-    // datas em negrito
-    if(d.getHours() === 0){
-      return { weight: 'bold', size: 11 };
-    }
-
-    // 12:00 normal
-    return { weight: 'normal', size: 11 };
+    return {
+      size: 11,
+      weight: h === 0 ? 'bold' : 'normal',   // ⭐ data em negrito
+      family: 'sans-serif'
+    };
   },
 
-  maxRotation: ctx => {
-    const d = new Date(ctx.tick.value);
-    return d.getHours() === 0 ? 45 : 0;
-  },
-
-  minRotation: ctx => {
-    const d = new Date(ctx.tick.value);
-    return d.getHours() === 0 ? 45 : 0;
-  }
+  minRotation: 45,
+  maxRotation: 45
 },
+
 
   grid:{
     drawTicks:true,
