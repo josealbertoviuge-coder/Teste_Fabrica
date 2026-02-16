@@ -84,8 +84,14 @@ canvas{
 }
 
 @media print{
-  body{
-    margin:0;
+ .print-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+  body {
+    margin-top: 140px; /* espaço para cabeçalho fixo */
   }
 }
 
