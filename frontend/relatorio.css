@@ -30,6 +30,7 @@ body{
   flex-shrink:0;
 }
 
+/* centro do cabeçalho */
 .header-center{
   display:flex;
   flex-direction:column;
@@ -77,8 +78,19 @@ canvas{
 /* ================= COMPONENTES ================= */
 
 .componente-bloco{
-  margin-top:40px;
+  margin-top:30px;
+
+  /* evita quebra interna */
+  break-inside: avoid;
   page-break-inside: avoid;
+
+  /* força iniciar nova página */
+  page-break-before: always;
+}
+
+/* evita página em branco no primeiro */
+.componente-bloco:first-of-type{
+  page-break-before: auto;
 }
 
 .componente-bloco h2{
@@ -95,6 +107,8 @@ canvas{
   margin-top:60px;
   text-align:center;
 }
+
+/* ================= OBSERVAÇÕES ================= */
 
 .page-break{
   page-break-after: always;
@@ -129,7 +143,7 @@ canvas{
     zoom:0.92;
   }
 
-  /* HEADER FIXO REPETIDO */
+  /* HEADER FIXO REPETIDO EM TODAS AS PÁGINAS */
   .print-header{
     position: fixed;
     top: 0;
@@ -138,21 +152,24 @@ canvas{
     background: white;
   }
 
-  /* RESERVA ESPAÇO PARA O HEADER */
+  /* reserva espaço real para o cabeçalho */
   .report{
     margin-top: 85mm;
     padding-top:0;
   }
 
+  /* mantém gráficos dentro da página */
   canvas{
     max-height:220px !important;
   }
 
+  /* evita quebra feia */
   .componente-bloco{
+    break-inside: avoid;
     page-break-inside: avoid;
   }
 
-  /* numeração */
+  /* numeração páginas */
   body::after {
     content: "Página " counter(page) " de " counter(pages);
     position: fixed;
@@ -161,6 +178,7 @@ canvas{
     font-size: 10px;
   }
 
+  /* rodapé institucional */
   body::before {
     content: "MTS v1.0 • Manufacturing Tracking System";
     position: fixed;
