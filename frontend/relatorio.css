@@ -180,11 +180,6 @@ canvas{
   }
 }
 
-.linha-separadora{
-  border-top:2px solid #000;
-  margin:8px 0;
-}
-
 .status-linha{
   text-align:center;
   font-size:15px;
@@ -193,4 +188,9 @@ canvas{
 
 .status-linha span{
   font-weight:bold;
+}
+
+.linha-separadora{
+  border-top:2px solid #000;
+  margin:6px 0;
 }
