@@ -391,7 +391,7 @@ maxDate.setHours(24, 0, 0, 0);
     display:true,
     text:"Linha do Tempo de Fabricação / Manufacturing Timeline"
   },
-
+  tooltip: { enabled: false },   // ⭐ remove hint
   datalabels: false   // ⭐ desativa textos sobre as barras
 },
 
@@ -556,7 +556,7 @@ function montarDuracao(etapas, canvasId){
       indexAxis:"y",
 plugins:{
   legend:{display:false},
-
+  tooltip: { enabled: false },   // ⭐ remove hint
   title:{
     display:true,
     text:"Duração Total por Etapa / Total Time by Step"
