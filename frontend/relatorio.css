@@ -81,9 +81,25 @@ canvas{
 
 @page {
   size: A4 portrait;
+  margin: 5mm;
 }
 
 @media print{
+    .componente-bloco {
+    page-break-inside: avoid;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    margin-bottom: 6px;
+  }
+
+  table {
+    margin-bottom: 6px;
+  }
+    canvas {
+    max-height: 220px !important;
+  }
  .print-header {
     position: fixed;
     top: 0;
@@ -92,12 +108,10 @@ canvas{
   }
   body {
     margin-top: 140px; /* espaço para cabeçalho fixo */
+    zoom: 0.92;
   }
   .page-break {
     page-break-after: always;
-  }
-    @page {
-    margin: 20mm;
   }
 
   body::after {
@@ -115,9 +129,6 @@ canvas{
   left: 20mm;
   font-size: 10px;
 }
-    .componente-bloco {
-    page-break-inside: avoid;
-  }
 }
 
 .status-andamento {
