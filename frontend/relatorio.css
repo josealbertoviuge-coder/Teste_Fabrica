@@ -93,6 +93,9 @@ canvas{
   body {
     margin-top: 140px; /* espaço para cabeçalho fixo */
   }
+  .page-break {
+    page-break-after: always;
+  }
 }
 
 .status-andamento {
