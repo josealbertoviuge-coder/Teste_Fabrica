@@ -135,7 +135,7 @@ canvas{
 @media print{
 .print-spacer{
   display:block;
-  height:190px; /* ajuste conforme altura header + status */
+  height:250px; /* ajuste conforme altura header + status */
 }
   /* evita quebrar conteúdo */
   .componente-bloco {
