@@ -130,6 +130,48 @@ function gerarTicks12h(inicio, fim) {
   return ticks;
 }
 
+const rotacionarDatasPlugin = {
+  id: "rotacionarDatas",
+
+  afterDraw(chart){
+    const { ctx, scales } = chart;
+    const xScale = scales.x;
+
+    ctx.save();
+
+    xScale.ticks.forEach((tick, i) => {
+      const label = tick.label;
+      if(!label) return;
+
+      // identifica datas (dd/mm)
+      if(label.includes('/')){
+
+        const x = xScale.getPixelForTick(i);
+        const y = xScale.bottom + 18;
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(-Math.PI / 4);
+
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#222";
+
+        // 🔹 datas em negrito
+        ctx.font = "bold 11px sans-serif";
+
+        ctx.fillText(label, 0, 0);
+        ctx.restore();
+
+        tick.label = ""; // remove original
+      }
+    });
+
+    ctx.restore();
+  }
+};
+
+Chart.register(rotacionarDatasPlugin);
+
 async function carregarRelatorio() {
 
   const params = new URLSearchParams(window.location.search);
