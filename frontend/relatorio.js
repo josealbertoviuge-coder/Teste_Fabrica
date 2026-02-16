@@ -623,3 +623,29 @@ plugins:{
     }
   });
 }
+
+// ===============================
+// AJUSTE AUTOMÁTICO DO HEADER NA IMPRESSÃO
+// ===============================
+
+function ajustarEspacoHeader() {
+
+  const header = document.getElementById("printHeader");
+  if (!header) return;
+
+  const altura = header.offsetHeight;
+
+  document.documentElement.style.setProperty(
+    "--altura-header",
+    altura + "px"
+  );
+}
+
+// calcula ao carregar
+window.addEventListener("load", ajustarEspacoHeader);
+
+// recalcula antes de imprimir
+window.addEventListener("beforeprint", ajustarEspacoHeader);
+
+// recalcula se redimensionar
+window.addEventListener("resize", ajustarEspacoHeader);
