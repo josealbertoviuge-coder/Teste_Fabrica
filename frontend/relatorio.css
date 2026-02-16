@@ -167,7 +167,7 @@ canvas{
   .print-header::after{
     content:"";
     display:block;
-    height: 75mm;   /* ajuste fino se necessário */
+    height: 15mm;   /* ajuste fino se necessário */
   }
 
   /* mantém gráficos dentro da página */
