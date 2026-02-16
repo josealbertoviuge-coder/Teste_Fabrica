@@ -259,7 +259,8 @@ function montarSecoesComponentes(componentes) {
       <h2>${nomeComp}</h2>
       <table id="tabela_${i}"></table>
       <canvas id="gantt_${i}"></canvas>
-      <canvas id="duracao_${i}"></canvas>
+<canvas id="duracao_${i}"></canvas>
+<div class="page-break"></div>
     `;
 
     container.appendChild(bloco);
