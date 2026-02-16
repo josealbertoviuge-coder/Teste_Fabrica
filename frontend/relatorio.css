@@ -18,9 +18,6 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  border-bottom:none;
-  padding-bottom:10px;
-  margin-bottom:20px;
 }
 
 .logo{
@@ -33,30 +30,14 @@ body{
   flex-shrink:0;
 }
 
-/* centro do cabeçalho */
 .header-center{
   display:flex;
   flex-direction:column;
   align-items:center;
   text-align:center;
   flex:1;
-}
-
-.header-info h1{
-  margin:0;
-  font-size:20px;
-}
-
-/* STATUS dentro do header */
-
-.status-header{
-  margin-top:6px;
-  font-size:15px;
-  letter-spacing:.3px;
-}
-
-.status-header span{
-  font-weight:bold;
+  font-size:14px;
+  line-height:1.3;
 }
 
 /* cores automáticas */
@@ -106,10 +87,6 @@ canvas{
   margin-bottom:10px;
 }
 
-.componente-bloco canvas{
-  margin-top:10px;
-}
-
 /* ================= ASSINATURAS ================= */
 
 .assinaturas{
@@ -119,73 +96,8 @@ canvas{
   text-align:center;
 }
 
-/* ================= OBSERVAÇÕES ================= */
-
 .page-break{
   page-break-after: always;
-}
-
-/* ================= IMPRESSÃO ================= */
-
-@page {
-  size: A4 portrait;
-  margin: 5mm;
-}
-
-@media print{
-.report{
-  padding-top: 0;
-}
-  /* evita quebrar conteúdo */
-  .componente-bloco {
-    page-break-inside: avoid;
-    margin-bottom: 10px;
-  }
-
-  h2 { margin-bottom: 6px; }
-  table { margin-bottom: 6px; }
-
-  canvas {
-    max-height: 220px !important;
-  }
-
-  /* cabeçalho fixo */
-  .print-header {
-  position: fixed;
-  top: 10mm;
-  left: 10mm;
-  right: 10mm;
-  }
-
-  body {
-    zoom: 0.92;
-    margin-top: 150px; /* espaço para header */
-  }
-
-  /* numeração páginas */
-  body::after {
-    content: "Página " counter(page) " de " counter(pages);
-    position: fixed;
-    bottom: 10mm;
-    right: 20mm;
-    font-size: 10px;
-    color: #444;
-  }
-
-  /* rodapé institucional */
-  body::before {
-    content: "MTS v1.0 • Manufacturing Tracking System";
-    position: fixed;
-    bottom: 10mm;
-    left: 20mm;
-    font-size: 10px;
-  }
-  .status-fixo{
-  position: fixed;
-  top: 55mm; /* abaixo do header */
-  left: 10mm;
-  right: 10mm;
-}
 }
 
 .status-linha{
@@ -201,4 +113,60 @@ canvas{
 .linha-separadora{
   border-top:2px solid #000;
   margin:6px 0;
+}
+
+/* ================= IMPRESSÃO ================= */
+
+@page {
+  size: A4 portrait;
+  margin: 15mm 10mm 15mm 10mm;
+}
+
+@media print{
+
+  body{
+    margin:0;
+    zoom:0.92;
+  }
+
+  /* HEADER FIXO REPETIDO */
+  .print-header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white;
+  }
+
+  /* RESERVA ESPAÇO PARA O HEADER */
+  .report{
+    margin-top: 85mm;
+    padding-top:0;
+  }
+
+  canvas{
+    max-height:220px !important;
+  }
+
+  .componente-bloco{
+    page-break-inside: avoid;
+  }
+
+  /* numeração */
+  body::after {
+    content: "Página " counter(page) " de " counter(pages);
+    position: fixed;
+    bottom: 10mm;
+    right: 10mm;
+    font-size: 10px;
+  }
+
+  body::before {
+    content: "MTS v1.0 • Manufacturing Tracking System";
+    position: fixed;
+    bottom: 10mm;
+    left: 10mm;
+    font-size: 10px;
+  }
+
 }
