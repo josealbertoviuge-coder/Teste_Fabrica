@@ -219,34 +219,21 @@ const pdf = await page.pdf({
   printBackground: true,
   scale: 1,   // ⭐ impede redução automática
   preferCSSPageSize: true,
-
-  displayHeaderFooter: true,
-
-  margin: {
-    top: "15mm",
+    margin: {
+    top: "20mm",
     bottom: "20mm",
     left: "10mm",
     right: "10mm"
   },
-
+  
   footerTemplate: `
-    <div style="
-      width:100%;
-      font-size:9px;
-      padding:0 10mm;
-      color:#444;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    ">
+    <div style="width:100%; font-size:9px; padding:0 10mm; display:flex; justify-content:space-between;">
       <span>MTS v1.0 • Manufacturing Tracking System</span>
       <span>Página <span class="pageNumber"></span> de <span class="totalPages"></span></span>
     </div>
   `,
-
   headerTemplate: `<div></div>`
 });
-
     await browser.close();
 
     res.set({
@@ -284,6 +271,7 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
 
