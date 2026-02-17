@@ -402,6 +402,9 @@ maxDate.setHours(24, 0, 0, 0);
       responsive:false,
       maintainAspectRatio:false,
       indexAxis:"y",
+      layout: {
+  padding: 0
+},
 
   plugins:{
   turnoNoturno: true,
@@ -582,6 +585,9 @@ function montarDuracao(etapas, canvasId){
       responsive:false,
       maintainAspectRatio:false,
       indexAxis:"y",
+      layout: {
+  padding: 0
+},
 plugins:{
   legend:{display:false},
   tooltip: { enabled: false },   // ⭐ remove hint
