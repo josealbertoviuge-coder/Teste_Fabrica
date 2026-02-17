@@ -181,6 +181,7 @@ canvas{
 canvas{
   height: 260px !important;
   max-height: none !important;
+  image-rendering: optimizeQuality;
 }
 
   /* evita quebras feias */
