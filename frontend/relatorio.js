@@ -488,7 +488,8 @@ ticks:{
 
   title:{
     display:true,
-    text:"Tempo / Time"
+    text:"Tempo / Time",
+    weight:"bold"
   }
 },
         y:{
@@ -496,7 +497,8 @@ ticks:{
           grid:{ color:"rgba(0,0,0,0.15)" },
           title:{
             display:true,
-            text:"Etapas / Steps"
+            text:"Etapas / Steps",
+            weight:"bold"
           }
         }
       }
@@ -609,14 +611,16 @@ plugins:{
           grid:{ color:"rgba(0,0,0,0.15)" },
           title:{
             display:true,
-            text:"Horas Acumuladas / Cumulated Hours"
+            text:"Horas Acumuladas / Cumulated Hours",
+            weight:"bold"
           }
         },
         y:{
           ticks:{ font:{weight:"bold"} },
           title:{
             display:true,
-            text:"Etapas / Steps"
+            text:"Etapas / Steps",
+            weight:"bold"
           }
         }
       }
