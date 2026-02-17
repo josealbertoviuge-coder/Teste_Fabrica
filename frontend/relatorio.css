@@ -162,7 +162,7 @@ canvas{
   size: A4 portrait;
 
   /* margens equilibradas (elimina a “testa”) */
-  margin: 12mm 3mm 12mm 3mm;
+  margin: 5mm 3mm 10mm 3mm;
 }
 
 @media print{
@@ -181,6 +181,7 @@ canvas{
     margin:0;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    padding-bottom: 18mm;
   }
 
   /* Gantt maior para leitura */
@@ -199,4 +200,24 @@ canvas{
     image-rendering: optimizeQuality;
   }
 }
+}
+
+/* ================= RODAPÉ ISO ================= */
+
+.footer-iso{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 9px;
+  color: #444;
+
+  padding: 4px 8mm;
+  border-top: 1px solid #000;
+  background: white;
 }
