@@ -199,14 +199,26 @@ canvas{
     max-height: none !important;
     image-rendering: optimizeQuality;
   }
+}
+
+/* ================= RODAPÉ ISO ================= */
+
+/* ================= RODAPÉ ISO ================= */
+
+/* oculto na tela */
+.footer-iso{
+  display: none;
+}
+
+@media print {
 
   .footer-iso{
+    display: flex;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
 
-    display: flex;
     justify-content: space-between;
     align-items: center;
 
@@ -217,12 +229,9 @@ canvas{
     border-top: 1px solid #000;
     background: white;
   }
-}
-}
 
-/* ================= RODAPÉ ISO ================= */
-
-/* oculto na tela */
-.footer-iso{
-  display: none;
+  /* evita conteúdo ficar atrás do rodapé */
+  body{
+    padding-bottom: 18mm;
+  }
 }
