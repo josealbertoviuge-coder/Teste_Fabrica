@@ -6,6 +6,7 @@ import express from "express";
 import cors from "cors";
 import pkg from "pg";
 import path from "path";
+import puppeteer from "puppeteer";
 import { fileURLToPath } from "url";
 
 const { Pool } = pkg;
@@ -184,6 +185,56 @@ app.get(/^\/op\/(.+)/, async (req, res) => {
   }
 });
 
+// ======================================================
+// 🔹 GERAR PDF DO RELATÓRIO
+// ======================================================
+
+app.get("/pdf/:codigo", async (req, res) => {
+  try {
+    const codigo = req.params.codigo;
+
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      headless: "new"
+    });
+
+    const page = await browser.newPage();
+
+    // carrega seu relatório já existente
+    await page.goto(
+      `https://${req.headers.host}/relatorio.html?codigo=${codigo}`,
+      { waitUntil: "networkidle0" }
+    );
+
+    // aguarda renderização dos gráficos
+    await new Promise(r => setTimeout(r, 1500));
+
+    const pdf = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: {
+        top: "15mm",
+        bottom: "15mm",
+        left: "10mm",
+        right: "10mm"
+      }
+    });
+
+    await browser.close();
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `inline; filename=relatorio-${codigo}.pdf`,
+      "Content-Length": pdf.length
+    });
+
+    res.send(pdf);
+
+  } catch (err) {
+    console.error("Erro ao gerar PDF:", err);
+    res.status(500).send("Erro ao gerar PDF");
+  }
+});
 
 // ======================================================
 // 🔹 ROTA DE LOGIN (OPCIONAL)
@@ -206,5 +257,6 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
