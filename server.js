@@ -186,85 +186,6 @@ app.get(/^\/op\/(.+)/, async (req, res) => {
 });
 
 // ======================================================
-// 🔹 GERAR PDF DO RELATÓRIO (COM TAG)
-// ======================================================
-
-app.get("/pdf/:codigo", async (req, res) => {
-  try {
-    const codigo = req.params.codigo;
-    const tag = req.query.tag;
-
-const browser = await puppeteer.launch({
-  args: chromium.args,
-  executablePath: await chromium.executablePath(),
-  headless: chromium.headless,
-});
-
-    const page = await browser.newPage();
-
-    let url = `http://localhost:${PORT}/relatorio.html?codigo=${codigo}`;
-
-    if (tag) {
-      url += `&tag=${encodeURIComponent(tag)}`;
-    }
-
-    await page.goto(url, { waitUntil: "networkidle0" });
-
-    // aguarda renderização dos gráficos
-    await new Promise(r => setTimeout(r, 1500));
-
-const pdf = await page.pdf({
-  format: "A4",
-  printBackground: true,
-
-  scale: 1,                 // impede redução automática
-  preferCSSPageSize: true,
-
-  displayHeaderFooter: true,   // ⭐ OBRIGATÓRIO
-
-  margin: {
-    top: "20mm",
-    bottom: "20mm",
-    left: "10mm",
-    right: "10mm"
-  },
-
-  headerTemplate: `<div></div>`,
-
-  footerTemplate: `
-    <div style="
-      width:100%;
-      font-size:9px;
-      padding:0 10mm;
-      display:flex;
-      justify-content:space-between;
-      color:#444;
-    ">
-      <span>MTS v1.0 • Manufacturing Tracking System</span>
-      <span>
-        Página <span class="pageNumber"></span>
-        de <span class="totalPages"></span>
-      </span>
-    </div>
-  `
-});
-    await browser.close();
-
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename=relatorio-${codigo}.pdf`,
-      "Content-Length": pdf.length
-    });
-
-    res.send(pdf);
-
-  } catch (err) {
-    console.error("Erro ao gerar PDF:", err);
-    res.status(500).send("Erro ao gerar PDF");
-  }
-});
-
-// ======================================================
 // 🔹 ROTA DE LOGIN (OPCIONAL)
 // ======================================================
 
@@ -285,6 +206,7 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
 
