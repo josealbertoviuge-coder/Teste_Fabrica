@@ -162,6 +162,8 @@ canvas{
 @media print{
   body{
     margin:0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   /*
