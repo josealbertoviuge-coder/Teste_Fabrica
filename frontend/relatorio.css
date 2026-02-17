@@ -150,7 +150,7 @@ canvas{
     espaço reservado para o cabeçalho
     funciona em TODAS as páginas
   */
-  margin: 60mm 10mm 15mm 10mm;
+  margin: 35mm 10mm 15mm 10mm;
 }
 
 @media print{
