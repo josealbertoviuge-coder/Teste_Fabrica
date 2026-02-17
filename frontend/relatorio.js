@@ -301,6 +301,8 @@ function montarTabela(etapas, id){
   document.getElementById(id).innerHTML = html;
 }
 
+Chart.defaults.devicePixelRatio = 3;
+
 //
 // ==============================
 // GANTT PROFISSIONAL
