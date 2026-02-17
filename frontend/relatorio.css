@@ -172,10 +172,6 @@ canvas{
   display:none;
 }
 
-body {
-  counter-reset: page;
-}
-
 @media print{
 
   body{
@@ -230,7 +226,7 @@ body {
   }
 
   /* numeração */
-  .page::after{
-    content: counter(page);
-  }
+.footer-iso .page::after {
+  content: counter(page);
+}
 }
