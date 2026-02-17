@@ -92,7 +92,8 @@ th{
 /* ================= GRÁFICOS ================= */
 
 canvas{
-  width:100% !important;
+  max-width:100%;
+  height:auto;
   margin-top:8px;
   page-break-inside: avoid;
 }
