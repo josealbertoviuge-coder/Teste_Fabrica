@@ -192,15 +192,34 @@ async function carregarRelatorio() {
     "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
     window.location.origin + "/?codigo=" + codigo;
 
-  const todasEtapas = Object.values(componentes).flat();
+  let existeEtapaEmAndamento = false;
 
-  let statusFinal = "Concluído / Concluded";
+Object.values(componentes).forEach(lista => {
 
-  if (todasEtapas.some(e =>
-    (e.status || "").toLowerCase().includes("andamento")
-  )) {
-    statusFinal = "Em Andamento / In Progress";
-  }
+  // agrupa por nome da etapa
+  const etapasAgrupadas = {};
+
+  lista.forEach(e => {
+    if (!etapasAgrupadas[e.nome_etapa]) {
+      etapasAgrupadas[e.nome_etapa] = [];
+    }
+    etapasAgrupadas[e.nome_etapa].push(e);
+  });
+
+  Object.values(etapasAgrupadas).forEach(registros => {
+    const ultimo = registros[registros.length - 1];
+    const status = (ultimo.status || "").toLowerCase();
+
+    if (status.includes("andamento")) {
+      existeEtapaEmAndamento = true;
+    }
+  });
+
+});
+
+const statusFinal = existeEtapaEmAndamento
+  ? "Em Andamento / In Progress"
+  : "Concluído / Concluded";
 
   const statusEl = document.getElementById("statusFinal");
   statusEl.innerText = statusFinal;
