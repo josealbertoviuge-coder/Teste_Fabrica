@@ -178,7 +178,6 @@ canvas{
     margin:0;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    padding-bottom: 18mm;
   }
 
   .print-header{
@@ -206,23 +205,23 @@ canvas{
 
   /* RODAPÉ */
   .footer-iso{
-    display:flex !important;
+    display:block;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
 
-    justify-content: space-between;
-    align-items: center;
-
     font-size: 9px;
     color: #444;
 
-    padding: 4px 4mm;
     border-top: 1px solid #000;
-    background: white;
+    padding: 4px 10mm;
 
-    z-index: 9999;
+    background: white;
+  }
+    .footer-iso div{
+    display:flex;
+    justify-content: space-between;
   }
 
   /* numeração */
