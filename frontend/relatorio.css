@@ -167,28 +167,36 @@ canvas{
 
 @media print{
 
-  body{
-    margin:0;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
   /* REMOVE header fixo (quebrava o PDF) */
   .print-header{
     position: static;
   }
-
-  /* mantém gráficos dentro da página */
-canvas{
-  height: 260px !important;
-  max-height: none !important;
-  image-rendering: optimizeQuality;
-}
 
   /* evita quebras feias */
   .componente-bloco{
     break-inside: avoid;
     page-break-inside: avoid;
   }
+  body{
+    margin:0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 
+  /* Gantt maior para leitura */
+  canvas[id^="gantt_"]{
+    height: 340px !important;
+  }
+
+  /* gráfico de duração mantém proporção */
+  canvas[id^="duracao_"]{
+    height: 220px !important;
+  }
+
+  /* qualidade máxima */
+  canvas{
+    max-height: none !important;
+    image-rendering: optimizeQuality;
+  }
+}
 }
