@@ -165,42 +165,6 @@ canvas{
   margin: 5mm 3mm 10mm 3mm;
 }
 
-@media print{
-
-  /* REMOVE header fixo (quebrava o PDF) */
-  .print-header{
-    position: static;
-  }
-
-  /* evita quebras feias */
-  .componente-bloco{
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-  body{
-    margin:0;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-    padding-bottom: 18mm;
-  }
-
-  /* Gantt maior para leitura */
-  canvas[id^="gantt_"]{
-    height: 340px !important;
-  }
-
-  /* gráfico de duração mantém proporção */
-  canvas[id^="duracao_"]{
-    height: 220px !important;
-  }
-
-  /* qualidade máxima */
-  canvas{
-    max-height: none !important;
-    image-rendering: optimizeQuality;
-  }
-}
-
 /* ================= RODAPÉ ISO ================= */
 
 /* oculto na tela */
@@ -208,10 +172,41 @@ canvas{
   display: none;
 }
 
-@media print {
+@media print{
 
+  body{
+    margin:0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    padding-bottom: 18mm;
+  }
+
+  .print-header{
+    position: static;
+  }
+
+  .componente-bloco{
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Gantt maior */
+  canvas[id^="gantt_"]{
+    height: 340px !important;
+  }
+
+  canvas[id^="duracao_"]{
+    height: 220px !important;
+  }
+
+  canvas{
+    max-height: none !important;
+    image-rendering: optimizeQuality;
+  }
+
+  /* RODAPÉ */
   .footer-iso{
-    display: flex;
+    display:flex !important;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -223,16 +218,13 @@ canvas{
     font-size: 9px;
     color: #444;
 
-    padding: 4px 8mm;
+    padding: 4px 4mm;
     border-top: 1px solid #000;
     background: white;
   }
 
-  /* evita conteúdo ficar atrás do rodapé */
-  body{
-    padding-bottom: 18mm;
-  }
-    .page::after {
+  /* numeração */
+  .page::after{
     content: counter(page);
   }
 }
