@@ -187,22 +187,4 @@ canvas{
     page-break-inside: avoid;
   }
 
-  /* numeração páginas */
-  body::after {
-    content: "Página " counter(page) " de " counter(pages);
-    position: fixed;
-    bottom: 8mm;
-    right: 8mm;
-    font-size: 9px;
-  }
-
-  /* rodapé institucional */
-  body::before {
-    content: "MTS v1.0 • Manufacturing Tracking System";
-    position: fixed;
-    bottom: 8mm;
-    left: 8mm;
-    font-size: 9px;
-  }
-
 }
