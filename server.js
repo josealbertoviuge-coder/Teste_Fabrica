@@ -192,25 +192,23 @@ app.get(/^\/op\/(.+)/, async (req, res) => {
 app.get("/pdf/:codigo", async (req, res) => {
   try {
     const codigo = req.params.codigo;
-    const tag = req.query.tag; // ← recebe ?tag=
+    const tag = req.query.tag;
 
     const browser = await puppeteer.launch({
-  headless: true,
-
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-gpu",
-    "--no-zygote",
-    "--single-process"
-  ]
-});
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--no-zygote",
+        "--single-process"
+      ]
+    });
 
     const page = await browser.newPage();
 
-    // monta URL igual ao relatório normal
-    let url = `https://${req.headers.host}/relatorio.html?codigo=${codigo}`;
+    let url = `http://localhost:${PORT}/relatorio.html?codigo=${codigo}`;
 
     if (tag) {
       url += `&tag=${encodeURIComponent(tag)}`;
@@ -218,7 +216,7 @@ app.get("/pdf/:codigo", async (req, res) => {
 
     await page.goto(url, { waitUntil: "networkidle0" });
 
-    // aguarda gráficos renderizarem
+    // aguarda renderização dos gráficos
     await new Promise(r => setTimeout(r, 1500));
 
     const pdf = await page.pdf({
@@ -269,6 +267,7 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
 
