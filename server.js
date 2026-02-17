@@ -48,6 +48,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "index.html"));
 });
 
+/*
 // ======================================================
 // 🔹 BUSCA POR TAG (MODO ORIGINAL)
 // ======================================================
@@ -110,7 +111,7 @@ app.get("/tag/:codigo", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
+*/
 // ======================================================
 // 🔹 BUSCA POR OP (SUPORTA BARRAS - VERSÃO FINAL)
 // ======================================================
@@ -284,6 +285,7 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
 
