@@ -161,7 +161,7 @@ canvas{
     espaço reservado para o cabeçalho
     funciona em TODAS as páginas
   */
-  margin: 10mm 5mm 15mm 5mm;
+  margin: 50mm 5mm 15mm 5mm;
 }
 
 @media print{
@@ -178,13 +178,11 @@ canvas{
   */
   .print-header{
     position: fixed;
-    top: 10mm;   /* respeita margem superior do @page */
-    left: 10mm;  /* respeita margem lateral */
-    right: 10mm;
+    top: 0mm;   /* respeita margem superior do @page */
+    left: 5mm;  /* respeita margem lateral */
+    right: 5mm;
     background: white;
     z-index: 9999;
-    margin:0;
-    padding:0;
   }
 
   /* mantém gráficos dentro da página */
