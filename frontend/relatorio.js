@@ -1,3 +1,6 @@
+Chart.defaults.devicePixelRatio = window.devicePixelRatio * 2;
+Chart.defaults.font.family = "Arial, sans-serif";
+
 // ============================
 // LINHAS DE VIRADA DE DIA (PRECISAS)
 // ============================
@@ -300,8 +303,6 @@ function montarTabela(etapas, id){
 
   document.getElementById(id).innerHTML = html;
 }
-
-Chart.defaults.devicePixelRatio = 3;
 
 //
 // ==============================
