@@ -203,8 +203,6 @@ canvas{
 
 /* ================= RODAPÉ ISO ================= */
 
-/* ================= RODAPÉ ISO ================= */
-
 /* oculto na tela */
 .footer-iso{
   display: none;
@@ -233,5 +231,8 @@ canvas{
   /* evita conteúdo ficar atrás do rodapé */
   body{
     padding-bottom: 18mm;
+  }
+    .page::after {
+    content: counter(page);
   }
 }
