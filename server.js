@@ -195,9 +195,17 @@ app.get("/pdf/:codigo", async (req, res) => {
     const tag = req.query.tag; // ← recebe ?tag=
 
     const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      headless: "new"
-    });
+  headless: true,
+
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--no-zygote",
+    "--single-process"
+  ]
+});
 
     const page = await browser.newPage();
 
@@ -261,6 +269,7 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
 
