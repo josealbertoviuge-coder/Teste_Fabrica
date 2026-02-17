@@ -160,7 +160,7 @@ canvas{
 
 @media print{
 .report{
-  padding-top: 55mm; /* altura real do header */
+  padding-top: 10mm; /* altura real do header */
 }
   body{
     margin:0;
