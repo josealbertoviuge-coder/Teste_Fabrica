@@ -217,22 +217,37 @@ const browser = await puppeteer.launch({
 const pdf = await page.pdf({
   format: "A4",
   printBackground: true,
-  scale: 1,   // ⭐ impede redução automática
+
+  scale: 1,                 // impede redução automática
   preferCSSPageSize: true,
-    margin: {
+
+  displayHeaderFooter: true,   // ⭐ OBRIGATÓRIO
+
+  margin: {
     top: "20mm",
     bottom: "20mm",
     left: "10mm",
     right: "10mm"
   },
-  
+
+  headerTemplate: `<div></div>`,
+
   footerTemplate: `
-    <div style="width:100%; font-size:9px; padding:0 10mm; display:flex; justify-content:space-between;">
+    <div style="
+      width:100%;
+      font-size:9px;
+      padding:0 10mm;
+      display:flex;
+      justify-content:space-between;
+      color:#444;
+    ">
       <span>MTS v1.0 • Manufacturing Tracking System</span>
-      <span>Página <span class="pageNumber"></span> de <span class="totalPages"></span></span>
+      <span>
+        Página <span class="pageNumber"></span>
+        de <span class="totalPages"></span>
+      </span>
     </div>
-  `,
-  headerTemplate: `<div></div>`
+  `
 });
     await browser.close();
 
@@ -271,6 +286,7 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
 
