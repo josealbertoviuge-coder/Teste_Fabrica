@@ -199,25 +199,30 @@ canvas{
     max-height: none !important;
     image-rendering: optimizeQuality;
   }
+
+  .footer-iso{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 9px;
+    color: #444;
+
+    padding: 4px 8mm;
+    border-top: 1px solid #000;
+    background: white;
+  }
 }
 }
 
 /* ================= RODAPÉ ISO ================= */
 
+/* oculto na tela */
 .footer-iso{
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  font-size: 9px;
-  color: #444;
-
-  padding: 4px 8mm;
-  border-top: 1px solid #000;
-  background: white;
+  display: none;
 }
