@@ -280,12 +280,16 @@ function montarSecoesComponentes(componentes) {
     const bloco = document.createElement("section");
     bloco.className = "componente-bloco";
 
-    bloco.innerHTML = `
-      <h2>${nomeComp}</h2>
-      <table id="tabela_${i}"></table>
-      <canvas id="gantt_${i}"></canvas>
-<canvas id="duracao_${i}"></canvas>
-    `;
+bloco.innerHTML = `
+  <h2>${nomeComp}</h2>
+  <table id="tabela_${i}"></table>
+  <canvas id="gantt_${i}"></canvas>
+  <canvas id="duracao_${i}"></canvas>
+
+  <div class="footer-page">
+    Carbogas Ltda. • MTS v1.0 • Manufacturing Tracking System
+  </div>
+`;
 
     container.appendChild(bloco);
 
