@@ -177,9 +177,10 @@ canvas{
   }
 
   /* mantém gráficos dentro da página */
-  canvas{
-    max-height:220px !important;
-  }
+canvas{
+  height: 260px !important;
+  max-height: none !important;
+}
 
   /* evita quebras feias */
   .componente-bloco{
