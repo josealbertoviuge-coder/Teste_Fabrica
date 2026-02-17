@@ -195,17 +195,11 @@ app.get("/pdf/:codigo", async (req, res) => {
     const codigo = req.params.codigo;
     const tag = req.query.tag;
 
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--no-zygote",
-        "--single-process"
-      ]
-    });
+const browser = await puppeteer.launch({
+  args: chromium.args,
+  executablePath: await chromium.executablePath(),
+  headless: chromium.headless,
+});
 
     const page = await browser.newPage();
 
@@ -268,6 +262,7 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
 
