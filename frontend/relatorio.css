@@ -156,18 +156,10 @@ canvas{
 
 @page {
   size: A4 portrait;
-
-  /*
-    espaço reservado para o cabeçalho
-    funciona em TODAS as páginas
-  */
-  margin: 50mm 5mm 15mm 5mm;
+  margin: 42mm 5mm 15mm 5mm;
 }
 
 @media print{
-.report{
-  padding-top: 45mm; /* altura real do header */
-}
   body{
     margin:0;
   }
@@ -176,14 +168,14 @@ canvas{
     HEADER FIXO REPETIDO EM TODAS AS PÁGINAS
     deve respeitar a margem superior da página
   */
-  .print-header{
-    position: fixed;
-    top: 0mm;   /* respeita margem superior do @page */
-    left: 5mm;  /* respeita margem lateral */
-    right: 5mm;
-    background: white;
-    z-index: 9999;
-  }
+.print-header{
+  position: fixed;
+  top: 0;
+  left: 5mm;
+  right: 5mm;
+  background: white;
+  z-index: 9999;
+}
 
   /* mantém gráficos dentro da página */
   canvas{
