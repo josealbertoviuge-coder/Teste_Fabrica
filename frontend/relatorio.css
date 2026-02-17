@@ -15,6 +15,9 @@ body{
   max-width:1000px;
   margin:auto;
   padding:20px;
+
+  /* evita colapso de margem no topo da primeira página */
+  padding-top: 1px;
 }
 
 /* ================= HEADER ================= */
@@ -29,11 +32,13 @@ body{
 .logo{
   width:140px;
   flex-shrink:0;
+  display:block;
 }
 
 .qr{
   width:90px;
   flex-shrink:0;
+  display:block;
 }
 
 /* centro do cabeçalho */
@@ -161,14 +166,17 @@ canvas{
 
   /*
     HEADER FIXO REPETIDO EM TODAS AS PÁGINAS
+    deve respeitar a margem superior da página
   */
   .print-header{
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 10mm;   /* respeita margem superior do @page */
+    left: 10mm;  /* respeita margem lateral */
+    right: 10mm;
     background: white;
     z-index: 9999;
+    margin:0;
+    padding:0;
   }
 
   /* mantém gráficos dentro da página */
