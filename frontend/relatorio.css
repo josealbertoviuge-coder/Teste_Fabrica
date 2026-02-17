@@ -205,22 +205,15 @@ canvas{
 
   /* RODAPÉ */
 .footer-iso{
-  display:block;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+    display:block;
+    margin-top: 10mm;
+    padding-top: 4px;
+    border-top: 1px solid #000;
+    font-size: 9px;
+    color: #444;
+  }
 
-  font-size: 9px;
-  color: #444;
-
-  border-top: 1px solid #000;
-  padding: 4px 10mm;
-
-  background: rgba(255,255,255,0.98); /* ← IMPORTANTE */
-  transform: translateZ(0);
-}
-    .footer-iso div{
+  .footer-iso div{
     display:flex;
     justify-content: space-between;
   }
