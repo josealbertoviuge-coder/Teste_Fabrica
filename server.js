@@ -6,8 +6,6 @@ import express from "express";
 import cors from "cors";
 import pkg from "pg";
 import path from "path";
-import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
 import { fileURLToPath } from "url";
 
 const { Pool } = pkg;
@@ -286,6 +284,7 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
 
