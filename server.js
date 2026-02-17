@@ -218,6 +218,7 @@ const pdf = await page.pdf({
   format: "A4",
   printBackground: true,
   scale: 1,   // ⭐ impede redução automática
+  preferCSSPageSize: true,
 
   displayHeaderFooter: true,
 
@@ -283,6 +284,7 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
 
