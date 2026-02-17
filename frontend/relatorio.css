@@ -159,7 +159,9 @@ canvas{
 }
 
 @media print{
-
+.report{
+  padding-top: 55mm; /* altura real do header */
+}
   body{
     margin:0;
   }
