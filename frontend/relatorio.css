@@ -162,7 +162,7 @@ canvas{
   size: A4 portrait;
 
   /* margens equilibradas (elimina a “testa”) */
-  margin: 5mm 3mm 5mm 3mm;
+  margin: 12mm 3mm 12mm 3mm;
 }
 
 @media print{
