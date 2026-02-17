@@ -156,9 +156,6 @@ async function carregarRelatorio() {
   const codigo = params.get("codigo");
   const tagSelecionada = params.get("tag");
 
-  document.getElementById("dataISO").innerText =
-  new Date().toLocaleDateString("pt-BR");
-
   if (!codigo) {
     alert("Código da OP não informado.");
     return;
