@@ -204,21 +204,22 @@ canvas{
   }
 
   /* RODAPÉ */
-  .footer-iso{
-    display:block;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+.footer-iso{
+  display:block;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
 
-    font-size: 9px;
-    color: #444;
+  font-size: 9px;
+  color: #444;
 
-    border-top: 1px solid #000;
-    padding: 4px 10mm;
+  border-top: 1px solid #000;
+  padding: 4px 10mm;
 
-    background: white;
-  }
+  background: rgba(255,255,255,0.98); /* ← IMPORTANTE */
+  transform: translateZ(0);
+}
     .footer-iso div{
     display:flex;
     justify-content: space-between;
@@ -228,4 +229,7 @@ canvas{
 .footer-iso .page::after {
   content: counter(page);
 }
+    html, body {
+    height: 100%;
+  }
 }
