@@ -172,6 +172,10 @@ canvas{
   display:none;
 }
 
+.footer-page{
+  display:none;
+}
+
 @media print{
 
   body{
@@ -225,4 +229,17 @@ canvas{
     html, body {
     height: 100%;
   }
+
+  .footer-page{
+    display:block;
+    margin-top:8mm;
+    padding-top:4px;
+    border-top:1px solid #000;
+    font-size:9px;
+    color:#444;
+    text-align:center;
+  }
+
+
+  
 }
