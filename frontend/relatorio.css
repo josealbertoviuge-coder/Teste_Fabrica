@@ -14,10 +14,7 @@ body{
 .report{
   max-width:1200px;
   margin:auto;
-  padding:20px;
-
-  /* evita colapso de margem no topo da primeira página */
-  padding-top: 1px;
+  padding:20px 20px 10px 20px;
 }
 
 /* ================= HEADER ================= */
@@ -26,12 +23,13 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  flex-wrap:wrap; /* permite linha inferior ocupar toda largura */
+  flex-wrap:wrap;
+  margin-bottom:10px; /* espaço natural abaixo do header */
 }
 
 .logo{
-  width:150px;   /* aumente aqui */
-  height:auto;   /* mantém proporção */
+  width:150px;
+  height:auto;
   flex-shrink:0;
 }
 
@@ -49,7 +47,7 @@ body{
   text-align:center;
   flex:1;
   font-size:14px;
-  line-height:1.3;
+  line-height:1.25;
 }
 
 /* linha inferior do header (status) */
@@ -75,16 +73,17 @@ body{
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:10px;
+  margin-top:8px;
 }
 
 th, td{
   border:1px solid #000;
   text-align:center;
-font-size:12px;
-padding:3px 5px;
-  line-height:1.1;   /* compacta verticalmente */
+  font-size:11px;
+  padding:3px 4px;
+  line-height:1.1;
 }
+
 th{
   font-weight:bold;
   background:#f2f2f2;
@@ -94,20 +93,23 @@ th{
 
 canvas{
   width:100% !important;
-  margin-top:10px;
+  margin-top:8px;
   page-break-inside: avoid;
 }
 
 /* ================= COMPONENTES ================= */
 
 .componente-bloco{
-  margin-top:30px;
+
+  /* remove espaços extras */
+  margin-top:0;
+  padding-top:0;
 
   /* evita quebra interna */
   break-inside: avoid;
   page-break-inside: avoid;
 
-  /* força iniciar nova página */
+  /* nova página para cada componente */
   page-break-before: always;
 }
 
@@ -119,7 +121,7 @@ canvas{
 .componente-bloco h2{
   border-bottom:2px solid #000;
   padding-bottom:4px;
-  margin-bottom:10px;
+  margin:10px 0 6px 0;
 }
 
 /* ================= ASSINATURAS ================= */
@@ -127,7 +129,7 @@ canvas{
 .assinaturas{
   display:flex;
   justify-content:space-between;
-  margin-top:60px;
+  margin-top:40px;
   text-align:center;
 }
 
@@ -139,8 +141,8 @@ canvas{
 
 .status-linha{
   text-align:center;
-  font-size:15px;
-  margin:6px 0;
+  font-size:14px;
+  margin:4px 0;
 }
 
 .status-linha span{
@@ -149,42 +151,37 @@ canvas{
 
 .linha-separadora{
   border-top:2px solid #000;
-  margin:6px 0;
+  margin:4px 0;
 }
 
-/* ================= IMPRESSÃO ================= */
+/* ================= IMPRESSÃO / PDF ================= */
 
 @page {
   size: A4 portrait;
-  margin: 42mm 5mm 15mm 5mm;
+
+  /* margens equilibradas (elimina a “testa”) */
+  margin: 12mm 8mm 12mm 8mm;
 }
 
 @media print{
+
   body{
     margin:0;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  /*
-    HEADER FIXO REPETIDO EM TODAS AS PÁGINAS
-    deve respeitar a margem superior da página
-  */
-.print-header{
-  position: fixed;
-  top: 0;
-  left: 5mm;
-  right: 5mm;
-  background: white;
-  z-index: 9999;
-}
+  /* REMOVE header fixo (quebrava o PDF) */
+  .print-header{
+    position: static;
+  }
 
   /* mantém gráficos dentro da página */
   canvas{
     max-height:220px !important;
   }
 
-  /* evita quebra feia */
+  /* evita quebras feias */
   .componente-bloco{
     break-inside: avoid;
     page-break-inside: avoid;
@@ -194,18 +191,18 @@ canvas{
   body::after {
     content: "Página " counter(page) " de " counter(pages);
     position: fixed;
-    bottom: 10mm;
-    right: 10mm;
-    font-size: 10px;
+    bottom: 8mm;
+    right: 8mm;
+    font-size: 9px;
   }
 
   /* rodapé institucional */
   body::before {
     content: "MTS v1.0 • Manufacturing Tracking System";
     position: fixed;
-    bottom: 10mm;
-    left: 10mm;
-    font-size: 10px;
+    bottom: 8mm;
+    left: 8mm;
+    font-size: 9px;
   }
 
 }
