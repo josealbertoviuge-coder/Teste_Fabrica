@@ -14,9 +14,9 @@ function abrirRelatorio(){
   }
 
   const url =
-    "https://teste-fabrica.onrender.com/pdf/" +
+    "/relatorio.html?codigo=" +
     encodeURIComponent(codigo) +
-    "?tag=" +
+    "&tag=" +
     encodeURIComponent(tagAtual);
 
   window.open(url, "_blank");
@@ -863,6 +863,7 @@ setInterval(() => {
   if (chartGantt) chartGantt.update();
   if (chartDuracao) chartDuracao.update();
 }, 300);
+
 
 
 
