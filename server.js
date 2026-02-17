@@ -186,12 +186,13 @@ app.get(/^\/op\/(.+)/, async (req, res) => {
 });
 
 // ======================================================
-// 🔹 GERAR PDF DO RELATÓRIO
+// 🔹 GERAR PDF DO RELATÓRIO (COM TAG)
 // ======================================================
 
 app.get("/pdf/:codigo", async (req, res) => {
   try {
     const codigo = req.params.codigo;
+    const tag = req.query.tag; // ← recebe ?tag=
 
     const browser = await puppeteer.launch({
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -200,13 +201,16 @@ app.get("/pdf/:codigo", async (req, res) => {
 
     const page = await browser.newPage();
 
-    // carrega seu relatório já existente
-    await page.goto(
-      `https://${req.headers.host}/relatorio.html?codigo=${codigo}`,
-      { waitUntil: "networkidle0" }
-    );
+    // monta URL igual ao relatório normal
+    let url = `https://${req.headers.host}/relatorio.html?codigo=${codigo}`;
 
-    // aguarda renderização dos gráficos
+    if (tag) {
+      url += `&tag=${encodeURIComponent(tag)}`;
+    }
+
+    await page.goto(url, { waitUntil: "networkidle0" });
+
+    // aguarda gráficos renderizarem
     await new Promise(r => setTimeout(r, 1500));
 
     const pdf = await page.pdf({
@@ -257,6 +261,7 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor iniciado na porta ${PORT}`);
 });
+
 
 
 
