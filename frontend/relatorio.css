@@ -30,7 +30,7 @@ body{
 }
 
 .logo{
-  width:200px;   /* aumente aqui */
+  width:150px;   /* aumente aqui */
   height:auto;   /* mantém proporção */
   flex-shrink:0;
 }
