@@ -168,10 +168,6 @@ canvas{
 /* ================= RODAPÉ ISO ================= */
 
 /* oculto na tela */
-.footer-iso{
-  display:none;
-}
-
 .footer-page{
   display:none;
 }
@@ -208,25 +204,8 @@ canvas{
   }
 
   /* RODAPÉ */
-.footer-iso{
-    display:block;
-    margin-top: 10mm;
-    padding-top: 4px;
-    border-top: 1px solid #000;
-    font-size: 9px;
-    color: #444;
-  }
 
-  .footer-iso div{
-    display:flex;
-    justify-content: space-between;
-  }
-
-  /* numeração */
-.footer-iso .page::after {
-  content: counter(page);
-}
-    html, body {
+  html, body {
     height: 100%;
   }
 
