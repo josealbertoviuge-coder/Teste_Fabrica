@@ -2,7 +2,6 @@ function abrirRelatorio(){
 
   const params = new URLSearchParams(window.location.search);
   const codigo = params.get("codigo");
-  const tagSelecionada = params.get("tag");
 
   if (!codigo) {
     alert("Nenhuma OP carregada.");
@@ -15,9 +14,9 @@ function abrirRelatorio(){
   }
 
   const url =
-    "/relatorio.html?codigo=" +
+    "/pdf/" +
     encodeURIComponent(codigo) +
-    "&tag=" +
+    "?tag=" +
     encodeURIComponent(tagAtual);
 
   window.open(url, "_blank");
@@ -864,5 +863,6 @@ setInterval(() => {
   if (chartGantt) chartGantt.update();
   if (chartDuracao) chartDuracao.update();
 }, 300);
+
 
 
