@@ -14,7 +14,7 @@ function abrirRelatorio(){
   }
 
   const url =
-    "/pdf/" +
+    "https://teste-fabrica.onrender.com/pdf/" +
     encodeURIComponent(codigo) +
     "?tag=" +
     encodeURIComponent(tagAtual);
@@ -863,6 +863,7 @@ setInterval(() => {
   if (chartGantt) chartGantt.update();
   if (chartDuracao) chartDuracao.update();
 }, 300);
+
 
 
 
